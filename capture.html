@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Games - Kostenloses Starter-Pack erhalten</title>
+    <link rel="stylesheet" href="shared.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="language.js"></script>
+</head>
+<body>
+    <!-- A/B Test Variant Selector -->
+    <div class="variant-selector">
+        <a href="index.html?variant=A" class="variant-btn" data-translate="variantA">Variante A: 10-Min Games</a>
+        <a href="index.html?variant=B" class="variant-btn" data-translate="variantB">Variante B: Multisensory Grammar</a>
+    </div>
+
+    <!-- Screen 4: Email Capture -->
+    <div class="screen">
+        <div class="container">
+            <div class="back-nav">
+                <a href="#" onclick="navigateWithTracking('chooser.html', 'back-click'); return false;" class="back-btn" data-translate="backButton">← Zurück</a>
+            </div>
+            
+            <div class="capture-content" style="max-width: 600px; margin: 0 auto; text-align: center;">
+                <h2 data-translate="freeStarterPack">Kostenloses Starter-Pack erhalten</h2>
+                <p class="subtitle" data-translate="starterPackDesc">3 sofort einsetzbare Grammar Games + Anleitung per E-Mail</p>
+                
+                <div class="card" style="margin-bottom: 40px;">
+                    <h3 id="pack-title" data-translate="personalPack">Ihr persönliches Starter-Pack:</h3>
+                    <div class="pack-contents" id="pack-contents">
+                        <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px;">
+                            <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">📋</div>
+                            <span style="font-weight: 500; color: #2c3e50;" data-translate="packItem1">3 Printable Game-Karten</span>
+                        </div>
+                        <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px;">
+                            <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">📖</div>
+                            <span style="font-weight: 500; color: #2c3e50;" data-translate="packItem2">Schritt-für-Schritt Anleitung</span>
+                        </div>
+                        <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px;">
+                            <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">🎯</div>
+                            <span style="font-weight: 500; color: #2c3e50;" data-translate="packItem3">Altersgerechte Schwierigkeit</span>
+                        </div>
+                        <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                            <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">⏱️</div>
+                            <span style="font-weight: 500; color: #2c3e50;" data-translate="packItem4">Je nur 10 Minuten</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <form id="email-form" class="email-form" onsubmit="submitEmail(event); return false;" style="margin-bottom: 30px;">
+                    <div class="form-group">
+                        <input type="email" id="email-input" required>
+                        <input type="text" id="name-input">
+                    </div>
+                    
+                    <button type="submit" class="cta-button primary large" id="submit-btn" data-translate="getStarterPack">
+                        🎁 Kostenloses Starter-Pack erhalten
+                    </button>
+                </form>
+                
+                <div class="trust-indicators">
+                    <div class="indicator" data-translate="freeUnbinding">✓ Kostenlos & unverbindlich</div>
+                    <div class="indicator" data-translate="immediateDownload">✓ Sofortiger Download</div>
+                    <div class="indicator" data-translate="noSpam">✓ Keine Spam-Mails</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="analytics.js"></script>
+    <script>
+        // Update pack content based on age from URL parameter
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const age = urlParams.get('age');
+            
+            if (age) {
+                updatePackContent(age);
+            }
+        });
+        
+        function updatePackContent(age) {
+            const packTitle = document.getElementById('pack-title');
+            const packContents = document.getElementById('pack-contents');
+            
+            if (age === '4-6') {
+                packTitle.textContent = window.languageSystem.t('starterPack46');
+                packContents.innerHTML = `
+                    <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px;">
+                        <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">🐱</div>
+                        <span style="font-weight: 500; color: #2c3e50;">${window.languageSystem.t('pack46Item1')}</span>
+                    </div>
+                    <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px;">
+                        <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">🌈</div>
+                        <span style="font-weight: 500; color: #2c3e50;">${window.languageSystem.t('pack46Item2')}</span>
+                    </div>
+                    <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px;">
+                        <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">🏃‍♂️</div>
+                        <span style="font-weight: 500; color: #2c3e50;">${window.languageSystem.t('pack46Item3')}</span>
+                    </div>
+                    <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                        <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">📖</div>
+                        <span style="font-weight: 500; color: #2c3e50;">${window.languageSystem.t('pack46Item4')}</span>
+                    </div>
+                `;
+            } else if (age === '7-10') {
+                packTitle.textContent = window.languageSystem.t('starterPack710');
+                packContents.innerHTML = `
+                    <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px;">
+                        <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">📝</div>
+                        <span style="font-weight: 500; color: #2c3e50;">${window.languageSystem.t('pack710Item1')}</span>
+                    </div>
+                    <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px;">
+                        <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">⚡</div>
+                        <span style="font-weight: 500; color: #2c3e50;">${window.languageSystem.t('pack710Item2')}</span>
+                    </div>
+                    <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px;">
+                        <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">🔤</div>
+                        <span style="font-weight: 500; color: #2c3e50;">${window.languageSystem.t('pack710Item3')}</span>
+                    </div>
+                    <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                        <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">🎯</div>
+                        <span style="font-weight: 500; color: #2c3e50;">${window.languageSystem.t('pack710Item4')}</span>
+                    </div>
+                `;
+            }
+        }
+        
+        function submitEmail(event) {
+            event.preventDefault();
+            
+            const emailInput = document.getElementById('email-input');
+            const nameInput = document.getElementById('name-input');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            // Validate email
+            if (!emailInput.value || !emailInput.value.includes('@')) {
+                alert(window.languageSystem.t('validEmailRequired'));
+                return;
+            }
+            
+            // Track email submission
+            trackClick('email-submit', {
+                email: emailInput.value,
+                name: nameInput.value || 'Anonymous',
+                timestamp: new Date().toISOString()
+            });
+            
+            // Show loading state
+            submitBtn.textContent = window.languageSystem.t('sending');
+            submitBtn.disabled = true;
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                // Navigate to thank you page
+                navigateWithTracking('thankyou.html', 'email-submitted');
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

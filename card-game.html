@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Game 1 – Karten zu Paaren verbinden</title>
+
+  <!-- Nimmt dein globales Styling mit, falls vorhanden -->
+  <link rel="stylesheet" href="shared.css" />
+
+  <style>
+    /* --------- Game-spezifische Styles (größere Karten) --------- */
+    :root{
+      --card-size: 220px;   /* Desktop-Kartengröße */
+      --card-gap: 28px;
+      --img-scale: 1.25;    /* zoomt die PNGs leicht (Transparenzränder) */
+    }
+    @media (max-width:1200px){ :root{ --card-size: 200px; --card-gap: 24px; --img-scale: 1.2; } }
+    @media (max-width:900px) { :root{ --card-size: 180px; --card-gap: 20px; --img-scale: 1.15; } }
+    @media (max-width:700px) { :root{ --card-size: 160px; --card-gap: 18px; --img-scale: 1.12; } }
+    @media (max-width:520px) { :root{ --card-size: 140px; --card-gap: 16px; --img-scale: 1.08; } }
+
+    .topbar{display:flex;gap:12px;align-items:center;justify-content:space-between;margin:16px 0;}
+    .lang-switch{display:flex;gap:8px;}
+    .lang-switch button{border:none;padding:10px 14px;border-radius:999px;background:#fff;box-shadow:0 4px 12px rgba(0,0,0,.1);cursor:pointer}
+    .lang-switch button.active{background:linear-gradient(45deg,#FF8A95,#FFB3BA);color:#fff}
+
+    #board{
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(var(--card-size), 1fr));
+      gap: var(--card-gap);
+      margin-top: 18px;
+    }
+    .card{
+      position:relative;
+      width: var(--card-size);
+      height: var(--card-size);
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(0,0,0,.12);
+      display:grid;place-items:center;
+      overflow:hidden;
+      user-select:none;
+      touch-action: manipulation;
+    }
+    .card img{
+      width:100%; height:100%;
+      object-fit: contain;
+      padding: 6px;
+      transform: scale(var(--img-scale));
+      transform-origin: center;
+      will-change: transform;
+      pointer-events:none;
+    }
+
+    .card.dragging{opacity:.7}
+    .card.selected{outline:4px solid rgba(255,138,149,.9)}
+    .card.attempt{transform:scale(.98);transition:transform .15s}
+    .card.shake{animation:shake .35s}
+    .card.matched{opacity:0;transform:scale(.9);transition:all .15s ease;pointer-events:none}
+    @keyframes shake{10%,90%{transform:translateX(-1px)}20%,80%{transform:translateX(2px)}30%,50%,70%{transform:translateX(-4px)}40%,60%{transform:translateX(4px)}}
+
+    #foundWrap{margin-top:18px}
+    #foundPairs{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+    .found-pair{display:inline-flex;align-items:center;padding:8px 10px;background:#fff;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+    .found-pair img{width:56px;height:56px;padding:0}
+    .found-pair span{margin:0 6px;font-weight:700}
+
+    #winOverlay{position:fixed;inset:0;background:rgba(0,0,0,.35);display:grid;place-items:center;opacity:0;pointer-events:none;transition:.2s}
+    #winOverlay.show{opacity:1;pointer-events:auto}
+    #winOverlay .modal{background:#fff;padding:24px 28px;border-radius:16px;font-size:18px;min-width:280px;text-align:center;box-shadow:0 16px 44px rgba(0,0,0,.25)}
+    .cta{border:none;border-radius:999px;padding:10px 16px;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.12)}
+    .cta.primary{background:linear-gradient(45deg,#FF8A95,#FFB3BA);color:#fff}
+    .cta.ghost{background:#fff}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <button class="cta ghost" onclick="resetGame()">🔄 Spiel zurücksetzen</button>
+      <div class="lang-switch">
+        <button id="btn-de" class="active" onclick="switchLanguage('de', this)">Deutsch</button>
+        <button id="btn-zh" onclick="switchLanguage('zh', this)">中文</button>
+      </div>
+    </div>
+
+    <h1>Ordne die Karten in 6 Paare</h1>
+    <p>Ziehe zusammengehörige Karten aufeinander (z.&nbsp;B. <em>I</em> und <em>ich</em>). Richtige Paare verschwinden und erscheinen unten als Treffer.</p>
+
+    <div id="board" aria-live="polite"></div>
+
+    <div id="foundWrap">
+      <h3>Korrekte Paare</h3>
+      <div id="foundPairs"></div>
+    </div>
+  </div>
+
+  <!-- Win overlay -->
+  <div id="winOverlay" role="dialog" aria-modal="true" aria-label="Alle Paare gefunden">
+    <div class="modal">
+      🎉 Super! Du hast alle 6 Paare gefunden.
+      <div style="margin-top:12px;display:flex;gap:8px;justify-content:center">
+        <button class="cta ghost" onclick="resetGame()">Nochmal spielen</button>
+        <a class="cta primary" id="nextLink" href="sorting-game.html?lang=de">Weiter zu Spiel 2</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ---------------- Daten (Dateinamen exakt wie in /cards) ---------------- */
+
+    // Deutsch (EN ↔ DE)
+    const SET_DE = [
+      // Pronomen
+      { id:"ich",        img:"cards/german_ich.png",        pair:"PRON_I",   lang:"de", label:"ich" },
+      { id:"I",          img:"cards/german_I.png",          pair:"PRON_I",   lang:"en", label:"I"   },
+
+      { id:"du",         img:"cards/german_du.png",         pair:"PRON_YOU", lang:"de", label:"du"  },
+      { id:"you",        img:"cards/german_you.png",        pair:"PRON_YOU", lang:"en", label:"you" },
+
+      { id:"er_sie_es",  img:"cards/german_er_sie_es.png",  pair:"PRON_3S",  lang:"de", label:"er/sie/es" },
+      { id:"he_she_it",  img:"cards/german_he_she_it.png",  pair:"PRON_3S",  lang:"en", label:"he/she/it" },
+
+      // Verb "sein" ↔ "to be"
+      { id:"bin",        img:"cards/german_bin.png",        pair:"VERB_AM",  lang:"de", label:"bin" },
+      { id:"am",         img:"cards/german_am.png",         pair:"VERB_AM",  lang:"en", label:"am"  },
+
+      { id:"bist",       img:"cards/german_bist.png",       pair:"VERB_ARE", lang:"de", label:"bist" },
+      { id:"are",        img:"cards/german_are.png",        pair:"VERB_ARE", lang:"en", label:"are" },
+
+      { id:"ist",        img:"cards/german_ist.png",        pair:"VERB_IS",  lang:"de", label:"ist" },
+      { id:"is",         img:"cards/german_is.png",         pair:"VERB_IS",  lang:"en", label:"is"  }
+    ];
+
+    // 中文 (EN ↔ ZH)
+    const SET_ZH = [
+      // Pronomen
+      { id:"wo",           img:"cards/mandarin_wo.png",          pair:"PRON_I",   lang:"zh", label:"我 (wǒ)" },
+      { id:"I_zh",         img:"cards/mandarin_I.png",           pair:"PRON_I",   lang:"en", label:"I" },
+
+      { id:"ni",           img:"cards/mandarin_ni.png",          pair:"PRON_YOU", lang:"zh", label:"你 (nǐ)" },
+      { id:"you_zh",       img:"cards/mandarin_you.png",         pair:"PRON_YOU", lang:"en", label:"you" },
+
+      { id:"ta_ta_ta",     img:"cards/mandarin_ta_ta_ta.png",    pair:"PRON_3S",  lang:"zh", label:"他/她/它 (tā)" },
+      { id:"he_she_it_zh", img:"cards/mandarin_he_she_it.png",   pair:"PRON_3S",  lang:"en", label:"he/she/it" },
+
+      // 是 (shì) ↔ am/are/is
+      { id:"wo_shi",       img:"cards/mandarin_wo_shi.png",      pair:"VERB_AM",  lang:"zh", label:"我是" },
+      { id:"am_zh",        img:"cards/mandarin_am.png",          pair:"VERB_AM",  lang:"en", label:"am"  },
+
+      { id:"ni_shi",       img:"cards/mandarin_ni_shi.png",      pair:"VERB_ARE", lang:"zh", label:"你是" },
+      { id:"are_zh",       img:"cards/mandarin_are.png",         pair:"VERB_ARE", lang:"en", label:"are" },
+
+      { id:"ta_shi",       img:"cards/mandarin_ta_shi.png",      pair:"VERB_IS",  lang:"zh", label:"他/她/它是" },
+      { id:"is_zh",        img:"cards/mandarin_is.png",          pair:"VERB_IS",  lang:"en", label:"is"   }
+    ];
+
+    /* ---------------- Logik ---------------- */
+
+    const $  = (s, r=document)=>r.querySelector(s);
+    const $$ = (s, r=document)=>Array.from(r.querySelectorAll(s));
+    const shuffle = a => a.map(x=>[Math.random(),x]).sort((m,n)=>m[0]-n[0]).map(x=>x[1]);
+
+    let currentLang = (new URLSearchParams(location.search).get('lang') || 'de').toLowerCase();
+    let deck = [], selected = null, matchedPairs = 0;
+    const TOTAL_PAIRS = 6;
+
+    function buildCard(c){
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.draggable = true;
+      el.dataset.id = c.id;
+      el.dataset.pair = c.pair;
+      el.dataset.lang = c.lang;
+
+      const img = document.createElement('img');
+      img.src = c.img;
+      img.alt = c.label;
+      img.decoding = 'async';
+      el.appendChild(img);
+
+      // Drag & Drop
+      el.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('text/plain', c.id);
+        e.dataTransfer.effectAllowed = 'move';
+        el.classList.add('dragging');
+      });
+      el.addEventListener('dragend', () => el.classList.remove('dragging'));
+      el.addEventListener('dragover', e => e.preventDefault());
+      el.addEventListener('drop', e => {
+        e.preventDefault();
+        const fromId = e.dataTransfer.getData('text/plain');
+        const fromEl = document.querySelector(`.card[data-id="${fromId}"]`);
+        if (!fromEl || fromEl === el || el.classList.contains('matched') || fromEl.classList.contains('matched')) return;
+        tryMatch(fromEl, el);
+      });
+
+      // Tap-to-match (mobil)
+      el.addEventListener('click', () => {
+        if (el.classList.contains('matched')) return;
+        if (!selected) {
+          selected = el; el.classList.add('selected');
+        } else if (selected === el) {
+          el.classList.remove('selected'); selected = null;
+        } else {
+          tryMatch(selected, el);
+          selected.classList.remove('selected'); selected = null;
+        }
+      });
+
+      return el;
+    }
+
+    function tryMatch(a, b){
+      a.classList.add('attempt'); b.classList.add('attempt');
+
+      const ok = a.dataset.pair === b.dataset.pair
+              && a.dataset.id   !== b.dataset.id
+              && a.dataset.lang !== b.dataset.lang; // verhindert ich↔ich
+
+      if (ok){
+        a.classList.add('matched'); b.classList.add('matched');
+        a.draggable = b.draggable = false;
+        setTimeout(()=>{
+          addToFound(a,b);
+          a.remove(); b.remove();
+          matchedPairs++;
+          if (matchedPairs===TOTAL_PAIRS) showWin();
+        },150);
+      } else {
+        a.classList.add('shake'); b.classList.add('shake');
+        setTimeout(()=>{ a.classList.remove('shake','attempt'); b.classList.remove('shake','attempt'); },400);
+      }
+    }
+
+    function addToFound(a,b){
+      const rail = $('#foundPairs');
+      const wrap = document.createElement('div');
+      wrap.className = 'found-pair';
+      const i1 = a.querySelector('img').cloneNode();
+      const i2 = b.querySelector('img').cloneNode();
+      wrap.appendChild(i1);
+      const plus = document.createElement('span'); plus.textContent = ' + ';
+      wrap.appendChild(plus);
+      wrap.appendChild(i2);
+      rail.appendChild(wrap);
+    }
+
+    function showWin(){ $('#winOverlay').classList.add('show'); }
+    function hideWin(){ $('#winOverlay').classList.remove('show'); }
+
+    function resetGame(){
+      hideWin();
+      matchedPairs = 0;
+      $('#foundPairs').innerHTML = '';
+
+      const data = currentLang === 'zh' ? SET_ZH : SET_DE;
+      deck = shuffle(data.slice());
+
+      const board = $('#board');
+      board.innerHTML = '';
+      deck.forEach(c => board.appendChild(buildCard(c)));
+
+      // UI aktualisieren
+      $('#btn-de').classList.toggle('active', currentLang==='de');
+      $('#btn-zh').classList.toggle('active', currentLang==='zh');
+
+      // Weiter-Link richtig setzen
+      const next = $('#nextLink');
+      if (next) next.href = currentLang==='zh' ? 'sorting-game.html?lang=zh' : 'sorting-game.html?lang=de';
+    }
+
+    function switchLanguage(lang){
+      currentLang = lang;
+      const url = new URL(location.href);
+      url.searchParams.set('lang', lang);
+      history.replaceState({}, '', url); // URL sauber halten
+      resetGame();
+    }
+
+    // Start
+    document.addEventListener('DOMContentLoaded', resetGame);
+    window.switchLanguage = switchLanguage;
+    window.resetGame = resetGame;
+  </script>
+</body>
+</html>

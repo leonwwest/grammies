@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Games - 10-Min Grammatik für Kinder</title>
+    <link rel="stylesheet" href="shared.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="language.js"></script>
+</head>
+<body>
+    <!-- A/B Test Variant Selector -->
+    <div class="variant-selector">
+        <a href="?variant=A" class="variant-btn" onclick="setVariant('A'); return false;" data-translate="variantA">Variante A: 10-Min Games</a>
+        <a href="?variant=B" class="variant-btn" onclick="setVariant('B'); return false;" data-translate="variantB">Variante B: Multisensory Grammar</a>
+    </div>
+
+    <!-- Screen 1: Hero Landing -->
+    <div class="screen">
+        <div class="container">
+            <div class="hero-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;">
+                <div class="hero-left">
+                    <div class="badge" data-translate="ageRange">Für Kinder 4-10 Jahre</div>
+                    <h1 id="hero-headline" data-translate="heroHeadlineA">10-Minuten Grammatik-Games</h1>
+                    <p id="hero-subline" data-translate="heroSublineA">Spielerisch, multisensorisch, kurz und strukturiert - Grammatik lernen war noch nie so einfach!</p>
+
+                    <div class="value-props">
+                        <div class="prop">
+                            <div class="icon">🎮</div>
+                            <span data-translate="playful">Spielerisch</span>
+                        </div>
+                        <div class="prop">
+                            <div class="icon">🎨</div>
+                            <span data-translate="multisensory">Multisensorisch</span>
+                        </div>
+                        <div class="prop">
+                            <div class="icon">⏰</div>
+                            <span data-translate="timeLimit">Nur 10 Minuten</span>
+                        </div>
+                        <div class="prop">
+                            <div class="icon">📋</div>
+                            <span data-translate="structured">Strukturiert</span>
+                        </div>
+                    </div>
+
+                    <a href="#" class="cta-button primary" onclick="navigateWithTracking('preview.html', 'hero-to-preview'); return false;" data-translate="viewExampleGames">
+                        Beispiel-Games ansehen
+                    </a>
+                </div>
+                
+                <div class="hero-visual">
+                    <div class="game-preview-card" style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15); transform: rotate(3deg); transition: transform 0.3s ease;">
+                        <div class="card-header" style="font-weight: 600; color: #2c3e50; margin-bottom: 20px; font-size: 1.2em;" data-translate="grammarGame1">Grammar Game #1</div>
+                        <div class="card-content">
+                            <div class="game-elements" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                                <div class="color-dot red"></div>
+                                <div class="color-dot blue"></div>
+                                <div class="color-dot green"></div>
+                            </div>
+                            <p style="color: #666; font-weight: 500;" data-translate="nounVerbAdj">Nomen • Verb • Adjektiv</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="analytics.js"></script>
+
+</body>
+</html>

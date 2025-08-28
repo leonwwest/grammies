@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Games - Vielen Dank! Starter-Pack unterwegs</title>
+    <link rel="stylesheet" href="shared.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="language.js"></script>
+</head>
+<body>
+    <!-- A/B Test Variant Selector -->
+    <div class="variant-selector">
+        <a href="index.html?variant=A" class="variant-btn" data-translate="variantA">Variante A: 10-Min Games</a>
+        <a href="index.html?variant=B" class="variant-btn" data-translate="variantB">Variante B: Multisensory Grammar</a>
+    </div>
+
+    <!-- Screen 5: Thank You -->
+    <div class="screen">
+        <div class="container">
+            <div class="thankyou-content" style="max-width: 600px; margin: 0 auto; text-align: center;">
+                <div class="success-icon">🎉</div>
+                <h2 data-translate="thankYou">Vielen Dank!</h2>
+                <p class="subtitle" data-translate="packOnTheWay">Ihr Starter-Pack ist unterwegs</p>
+                
+                <div class="confirmation-details">
+                    <div class="detail-item">
+                        <div class="icon">📧</div>
+                        <div class="text">
+                            <strong data-translate="emailSent">E-Mail gesendet</strong>
+                            <span data-translate="checkInbox">Prüfen Sie Ihren Posteingang (auch Spam-Ordner)</span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="icon">📥</div>
+                        <div class="text">
+                            <strong data-translate="immediatelyAvailable">Sofort verfügbar</strong>
+                            <span data-translate="pdfReady">PDFs direkt zum Ausdrucken</span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="icon">🎮</div>
+                        <div class="text">
+                            <strong data-translate="getStarted">Loslegen</strong>
+                            <span id="selected-age-text" data-translate="gamesReady">Spiele für Ihr Kind bereit</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="next-steps" style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                    <a href="#" class="cta-button secondary" onclick="showMoreGames(); return false;" data-translate="moreGames">
+                        Mehr Spiele ansehen
+                    </a>
+                    <a href="#" class="cta-button primary" onclick="restartJourney(); return false;" data-translate="startOver">
+                        Nochmal von vorne
+                    </a>
+                </div>
+
+                <!-- Success metrics display -->
+                <div class="card" style="margin-top: 40px; background: linear-gradient(135deg, #FF8A95, #FFB3BA); color: white;">
+                    <h3 style="color: white; margin-bottom: 20px;" data-translate="prototypeSuccess">🎯 Prototype Erfolgreich!</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; text-align: center;">
+                        <div>
+                            <div style="font-size: 2em; font-weight: bold;" id="final-submit-rate">--%</div>
+                            <div style="font-size: 0.9em; opacity: 0.9;" data-translate="emailSubmitRate">Email Submit Rate</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 2em; font-weight: bold;" id="total-journey">--</div>
+                            <div style="font-size: 0.9em; opacity: 0.9;" data-translate="screenJourney">Screen Journey</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 2em; font-weight: bold;" id="variant-tested">A</div>
+                            <div style="font-size: 0.9em; opacity: 0.9;" data-translate="variantTested">Variant Tested</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.3);">
+                        <strong data-translate="hypothesisStatus">Hypothese-Status: </strong>
+                        <span id="hypothesis-status">Zu testen</span>
+                        <br><small style="opacity: 0.8;" data-translate="target">Ziel: ≥8-12% Email Submit Rate</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="analytics.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            updateFinalMetrics();
+            checkHypothesis();
+        });
+
+        function updateFinalMetrics() {
+            const analytics = window.analytics.sessionData;
+            
+            // Update age-specific text
+            const selectedAgeText = document.getElementById('selected-age-text');
+            if (analytics.ageSelected) {
+                selectedAgeText.textContent = window.languageSystem.t('gamesReadyAge', { age: analytics.ageSelected });
+            }
+            
+            // Calculate final metrics
+            const captureViews = analytics.screens.capture || 1;
+            const emailSubmits = analytics.clicks.emailSubmit;
+            const submitRate = ((emailSubmits / captureViews) * 100).toFixed(1);
+            
+            // Update final display
+            document.getElementById('final-submit-rate').textContent = submitRate + '%';
+            document.getElementById('total-journey').textContent = '5/5';
+            document.getElementById('variant-tested').textContent = analytics.variant;
+            
+            // Update analytics panel
+            const emailRateEl = document.getElementById('email-submit-rate');
+            if (emailRateEl) emailRateEl.textContent = submitRate + '%';
+        }
+        
+        function checkHypothesis() {
+            const analytics = window.analytics.sessionData;
+            const captureViews = analytics.screens.capture || 1;
+            const emailSubmits = analytics.clicks.emailSubmit;
+            const submitRate = (emailSubmits / captureViews) * 100;
+            
+            const hypothesisStatus = document.getElementById('hypothesis-status');
+            const hypothesisResult = document.getElementById('hypothesis-result');
+            
+            if (submitRate >= 12) {
+                hypothesisStatus.textContent = '🎉 Hervorragend! (≥12%)';
+                hypothesisStatus.style.color = '#4CAF50';
+                if (hypothesisResult) hypothesisResult.textContent = '🏆 Übertroffen';
+            } else if (submitRate >= 8) {
+                hypothesisStatus.textContent = '✅ Hypothese bestätigt! (8-12%)';
+                hypothesisStatus.style.color = '#FFC107';
+                if (hypothesisResult) hypothesisResult.textContent = '✓ Bestätigt';
+            } else {
+                hypothesisStatus.textContent = '📊 Unter Zielwert (<8%)';
+                hypothesisStatus.style.color = '#ff6b6b';
+                if (hypothesisResult) hypothesisResult.textContent = '⚠ Optimierung nötig';
+            }
+        }
+        
+        function showMoreGames() {
+            trackClick('more-games');
+            alert(window.languageSystem.t('moreGamesFeature'));
+        }
+        
+        function restartJourney() {
+            trackClick('restart');
+
+            const confirmRestart = confirm(window.languageSystem.t('restartJourneyConfirm'));
+
+            if (confirmRestart) {
+                // Reset analytics
+                window.analytics.resetSession();
+
+                // Navigate back to start
+                window.location.href = 'index.html';
+            }
+        }
+        
+        // Auto-generate final report
+        setTimeout(() => {
+            const report = window.analytics.generateReport();
+            console.log('📊 Final Prototype Report:');
+            console.table(report);
+        }, 2000);
+    </script>
+</body>
+</html>

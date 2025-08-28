@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Games - Language Sorting Game</title>
+    <link rel="stylesheet" href="shared.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .game-container {
+            max-width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #8FA8FF 0%, #A0B8FF 50%, #C8D9FF 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            position: relative;
+            z-index: 100;
+        }
+
+        .game-header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .language-selector {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 200;
+        }
+
+        .language-btn {
+            background: linear-gradient(45deg, #FF8A95, #FFB3BA);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 138, 149, 0.3);
+            margin-left: 10px;
+        }
+
+        .language-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 138, 149, 0.4);
+        }
+
+        .language-btn.active {
+            background: linear-gradient(45deg, #4CAF50, #81C784);
+        }
+
+        .game-controls {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 200;
+        }
+
+        .reset-btn {
+            background: linear-gradient(45deg, #FF8A95, #FFB3BA);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 138, 149, 0.3);
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 138, 149, 0.4);
+        }
+
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            height: calc(100vh - 160px);
+            margin-top: 20px;
+        }
+
+        .floating-cards-area {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px;
+            justify-items: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .sorting-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            flex: 1;
+        }
+
+        .card {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            background: white;
+            border-radius: 15px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+            border: 3px solid transparent;
+            z-index: 10;
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            z-index: 50;
+        }
+
+        .card.dragging {
+            cursor: grabbing;
+            transform: rotate(5deg) scale(1.1);
+            z-index: 1000;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .card.sorted {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .card.available:hover {
+            transform: translateY(-5px) scale(1.05);
+        }
+
+        .sorting-column {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+        }
+
+        .column-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            color: white;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        .column-header.german {
+            background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+        }
+
+        .column-header.english {
+            background: linear-gradient(45deg, #4ECDC4, #81E6D9);
+        }
+
+        .sorting-area {
+            flex: 1;
+            border: 4px dashed rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            align-content: start;
+            transition: all 0.3s ease;
+            min-height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .sorting-area.drop-active {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #4CAF50;
+            border-style: solid;
+        }
+
+        .sorted-card {
+            width: 100%;
+            height: 140px;
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .sorted-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .sorted-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .success-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            color: white;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            text-align: center;
+        }
+
+        .success-message .celebration {
+            font-size: 4em;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite;
+        }
+
+        .success-message h2 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .success-message p {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .play-again-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .play-again-btn:hover {
+            background: white;
+            color: #4CAF50;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-30px); }
+            60% { transform: translateY(-15px); }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #FFD700;
+            animation: confetti-fall 3s linear infinite;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .sorting-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .card {
+                width: 120px;
+                height: 120px;
+            }
+
+            .cards-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 15px;
+            }
+
+            .column-header {
+                font-size: 1.4em;
+            }
+
+            .game-header h1 {
+                font-size: 1.8em;
+            }
+
+            .sorting-area {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 10px;
+                min-height: 250px;
+            }
+
+            .sorted-card {
+                height: 120px;
+            }
+
+            .floating-cards-area {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="language-selector">
+            <button class="language-btn active" onclick="setLanguage('german')">Deutsch</button>
+            <button class="language-btn" onclick="setLanguage('mandarin')">中文</button>
+        </div>
+
+        <div class="game-controls">
+            <button class="reset-btn" onclick="resetGame()">🔄 <span id="resetText">Neues Spiel</span></button>
+        </div>
+
+        <div class="game-header">
+            <h1 id="gameTitle">Lass uns noch einmal spielen!</h1>
+            <p id="gameInstructions">Welche Sprachen siehst du? Kannst du das Rätsel lösen?</p>
+        </div>
+
+        <div class="game-area">
+            <div class="floating-cards-area">
+                <h3 style="color: white; text-align: center; margin-bottom: 15px;">📚 Alle Karten / All Cards</h3>
+                <div class="cards-grid" id="cardsGrid">
+                    <!-- Cards will be generated here -->
+                </div>
+            </div>
+
+            <div class="sorting-container">
+                <div class="sorting-column">
+                    <div class="column-header german" id="germanHeader">Deutsch</div>
+                    <div class="sorting-area" id="germanArea" data-language="german">
+                        <!-- German cards will be sorted here -->
+                    </div>
+                </div>
+
+                <div class="sorting-column">
+                    <div class="column-header english" id="englishHeader">English</div>
+                    <div class="sorting-area" id="englishArea" data-language="english">
+                        <!-- English cards will be sorted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="success-message" id="successMessage">
+        <div class="celebration">🎉</div>
+        <h2 id="successTitle">Super!</h2>
+        <p id="successText">Du hast alle Karten richtig sortiert!</p>
+        <button class="play-again-btn" onclick="resetGame()">
+            <span id="playAgainText">Nochmal spielen</span>
+        </button>
+    </div>
+
+    <script>
+        // Language data
+        const translations = {
+            german: {
+                gameTitle: "Lass uns noch einmal spielen!",
+                gameInstructions: "Welche Sprachen siehst du? Kannst du das Rätsel lösen?",
+                germanHeader: "Deutsch",
+                englishHeader: "Englisch",
+                resetText: "Neues Spiel",
+                successTitle: "Super!",
+                successText: "Du hast alle Karten richtig sortiert!",
+                playAgainText: "Nochmal spielen"
+            },
+            mandarin: {
+                gameTitle: "再玩一次！",
+                gameInstructions: "你看到了哪些语言？你能完成拼图吗？",
+                germanHeader: "普通话",
+                englishHeader: "英语", 
+                resetText: "新游戏",
+                successTitle: "太棒了！",
+                successText: "你正确分类了所有卡片！",
+                playAgainText: "再玩一次"
+            }
+        };
+
+        // Card data for sorting game
+        const cardSets = {
+            german: [
+                // German cards
+                { id: 1, filename: "german_ich.png", language: "german" },
+                { id: 2, filename: "german_du.png", language: "german" },
+                { id: 3, filename: "german_er_sie_es.png", language: "german" },
+                { id: 4, filename: "german_bin.png", language: "german" },
+                { id: 5, filename: "german_bist.png", language: "german" },
+                { id: 6, filename: "german_ist.png", language: "german" },
+                
+                // English cards
+                { id: 7, filename: "german_I.png", language: "english" },
+                { id: 8, filename: "german_you.png", language: "english" },
+                { id: 9, filename: "german_he_she_it.png", language: "english" },
+                { id: 10, filename: "german_am.png", language: "english" },
+                { id: 11, filename: "german_are.png", language: "english" },
+                { id: 12, filename: "german_is.png", language: "english" }
+            ],
+            mandarin: [
+                // Mandarin cards
+                { id: 1, filename: "mandarin_wo.png", language: "german" }, // Using "german" column for mandarin
+                { id: 2, filename: "mandarin_ni.png", language: "german" },
+                { id: 3, filename: "mandarin_ta_ta_ta.png", language: "german" },
+                { id: 4, filename: "mandarin_wo_shi.png", language: "german" },
+                { id: 5, filename: "mandarin_ni_shi.png", language: "german" },
+                { id: 6, filename: "mandarin_ta_shi.png", language: "german" },
+                
+                // English cards
+                { id: 7, filename: "mandarin_I.png", language: "english" },
+                { id: 8, filename: "mandarin_you.png", language: "english" },
+                { id: 9, filename: "mandarin_he_she_it.png", language: "english" },
+                { id: 10, filename: "mandarin_am.png", language: "english" },
+                { id: 11, filename: "mandarin_are.png", language: "english" },
+                { id: 12, filename: "mandarin_is.png", language: "english" }
+            ]
+        };
+
+        let currentLanguage = 'german';
+        let draggedCard = null;
+        let sortedCards = new Set();
+        let gameCompleted = false;
+
+        // Initialize the game
+        function initGame() {
+            createFloatingCards();
+            setupDragAndDrop();
+            updateLanguage();
+            
+            setTimeout(() => {
+                console.log('Sorting game initialized. Cards available:', document.querySelectorAll('.card:not(.sorted)').length);
+            }, 100);
+        }
+
+        function setLanguage(language) {
+            currentLanguage = language;
+            
+            // Update button states
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            resetGame();
+        }
+
+        function updateLanguage() {
+            const t = translations[currentLanguage];
+            document.getElementById('gameTitle').textContent = t.gameTitle;
+            document.getElementById('gameInstructions').textContent = t.gameInstructions;
+            document.getElementById('germanHeader').textContent = t.germanHeader;
+            document.getElementById('englishHeader').textContent = t.englishHeader;
+            document.getElementById('resetText').textContent = t.resetText;
+            document.getElementById('successTitle').textContent = t.successTitle;
+            document.getElementById('successText').textContent = t.successText;
+            document.getElementById('playAgainText').textContent = t.playAgainText;
+        }
+
+        // Create cards in grid layout
+        function createFloatingCards() {
+            const container = document.getElementById('cardsGrid');
+            const cards = cardSets[currentLanguage];
+            const shuffledCards = [...cards].sort(() => Math.random() - 0.5);
+            
+            container.innerHTML = '';
+            
+            shuffledCards.forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card available';
+                cardElement.draggable = true;
+                cardElement.dataset.cardId = card.id;
+                cardElement.dataset.language = card.language;
+                
+                cardElement.innerHTML = `<img src="cards/${card.filename}" alt="Card ${card.id}" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'background: linear-gradient(135deg, #ff9a9e, #fecfef); width: 100%; height: 100%; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 0.8em; color: white; text-align: center;\\'>${card.filename}</div>'">`;
+                
+                // Add drag event listeners
+                cardElement.addEventListener('dragstart', handleDragStart);
+                cardElement.addEventListener('dragend', handleDragEnd);
+                cardElement.addEventListener('touchstart', handleTouchStart, { passive: false });
+                cardElement.addEventListener('touchmove', handleTouchMove, { passive: false });
+                cardElement.addEventListener('touchend', handleTouchEnd, { passive: false });
+                
+                container.appendChild(cardElement);
+            });
+        }
+
+        // Setup drag and drop for sorting areas
+        function setupDragAndDrop() {
+            const sortingAreas = document.querySelectorAll('.sorting-area');
+
+            sortingAreas.forEach(area => {
+                area.removeEventListener('dragover', handleDragOver);
+                area.removeEventListener('dragenter', handleDragEnter);
+                area.removeEventListener('dragleave', handleDragLeave);
+                area.removeEventListener('drop', handleDrop);
+                
+                area.addEventListener('dragover', handleDragOver);
+                area.addEventListener('dragenter', handleDragEnter);
+                area.addEventListener('dragleave', handleDragLeave);
+                area.addEventListener('drop', handleDrop);
+            });
+        }
+
+        let touchCardElement = null;
+        let touchOffset = { x: 0, y: 0 };
+
+        function handleDragStart(e) {
+            const card = e.target.closest('.card');
+            if (!card) return;
+            
+            const cardId = parseInt(card.dataset.cardId);
+            if (sortedCards.has(cardId)) {
+                e.preventDefault();
+                return false;
+            }
+            
+            draggedCard = card;
+            card.classList.add('dragging');
+            card.classList.remove('floating');
+            
+            if (e.dataTransfer) {
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', cardId.toString());
+            }
+            
+            console.log('Drag started for card:', cardId);
+        }
+
+        function handleTouchStart(e) {
+            e.preventDefault();
+            const card = e.target.closest('.card');
+            if (!card || sortedCards.has(parseInt(card.dataset.cardId))) {
+                return;
+            }
+            
+            touchCardElement = card;
+            const touch = e.touches[0];
+            const rect = card.getBoundingClientRect();
+            touchOffset.x = touch.clientX - rect.left;
+            touchOffset.y = touch.clientY - rect.top;
+            
+            card.classList.add('dragging');
+            card.classList.remove('floating');
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+            if (!touchCardElement) return;
+            
+            const touch = e.touches[0];
+            touchCardElement.style.left = (touch.clientX - touchOffset.x) + 'px';
+            touchCardElement.style.top = (touch.clientY - touchOffset.y) + 'px';
+            touchCardElement.style.zIndex = '1000';
+        }
+
+        function handleTouchEnd(e) {
+            e.preventDefault();
+            if (!touchCardElement) return;
+            
+            const touch = e.changedTouches[0];
+            const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+            const sortingArea = elementBelow ? elementBelow.closest('.sorting-area') : null;
+            
+            if (sortingArea) {
+                draggedCard = touchCardElement;
+                handleDrop({ target: sortingArea, preventDefault: () => {} });
+            }
+            
+            touchCardElement.classList.remove('dragging');
+            if (!sortedCards.has(parseInt(touchCardElement.dataset.cardId))) {
+                touchCardElement.classList.add('floating');
+            }
+            touchCardElement.style.zIndex = '10';
+            touchCardElement = null;
+        }
+
+        function handleDragEnd(e) {
+            const card = e.target.closest('.card');
+            if (!card) return;
+            
+            card.classList.remove('dragging');
+            const cardId = parseInt(card.dataset.cardId);
+            
+            if (!sortedCards.has(cardId)) {
+                card.classList.add('floating');
+            }
+            
+            draggedCard = null;
+            console.log('Drag ended for card:', cardId);
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            if (e.target.classList.contains('sorting-area')) {
+                e.target.classList.add('drop-active');
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (e.target.classList.contains('sorting-area')) {
+                e.target.classList.remove('drop-active');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.target.classList.remove('drop-active');
+            
+            if (!draggedCard || !e.target.classList.contains('sorting-area')) return;
+            
+            const sortingArea = e.target;
+            const cardId = parseInt(draggedCard.dataset.cardId);
+            const cardLanguage = draggedCard.dataset.language;
+            const areaLanguage = sortingArea.dataset.language;
+            
+            // Check if card is dropped in correct area
+            if (cardLanguage === areaLanguage) {
+                // Correct placement
+                const sortedCard = document.createElement('div');
+                sortedCard.className = 'sorted-card';
+                sortedCard.innerHTML = draggedCard.innerHTML;
+                sortingArea.appendChild(sortedCard);
+                
+                // Hide original card
+                draggedCard.style.display = 'none';
+                sortedCards.add(cardId);
+                
+                // Add success animation
+                sortedCard.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    sortedCard.style.transform = 'scale(1)';
+                }, 300);
+                
+                // Check if game is complete
+                if (sortedCards.size === 12) {
+                    setTimeout(showCelebration, 500);
+                }
+            } else {
+                // Wrong placement - card returns to floating area
+                setTimeout(() => {
+                    draggedCard.classList.add('floating');
+                }, 500);
+            }
+        }
+
+        function showCelebration() {
+            gameCompleted = true;
+            const successMessage = document.getElementById('successMessage');
+            successMessage.style.display = 'flex';
+            
+            // Create confetti effect
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    createConfetti();
+                }, i * 100);
+            }
+        }
+
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.backgroundColor = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4'][Math.floor(Math.random() * 5)];
+            confetti.style.animationDelay = Math.random() * 3 + 's';
+            
+            document.getElementById('successMessage').appendChild(confetti);
+            
+            setTimeout(() => {
+                confetti.remove();
+            }, 3000);
+        }
+
+        function resetGame() {
+            gameCompleted = false;
+            sortedCards.clear();
+            
+            // Hide success message
+            document.getElementById('successMessage').style.display = 'none';
+            
+            // Clear sorting areas
+            document.querySelectorAll('.sorting-area').forEach(area => {
+                area.innerHTML = '';
+                area.classList.remove('drop-active');
+            });
+            
+            // Remove all cards
+            document.getElementById('cardsGrid').innerHTML = '';
+            
+            // Recreate game
+            initGame();
+        }
+
+        // Initialize the game when page loads
+        document.addEventListener('DOMContentLoaded', initGame);
+
+        // Handle window resize
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                if (!gameCompleted) {
+                    createFloatingCards();
+                    setupDragAndDrop();
+                }
+            }, 250);
+        });
+    </script>
+</body>
+</html>

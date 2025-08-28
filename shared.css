@@ -1,0 +1,672 @@
+/* Shared CSS für alle Grammar Games Prototype Screens */
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.6;
+    color: #2c3e50;
+    background: linear-gradient(135deg, #8FA8FF 0%, #A0B8FF 50%, #C8D9FF 100%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.screen {
+    min-height: 100vh;
+    padding: 40px 0;
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Typography */
+h1 {
+    font-size: 3.2em;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    font-size: 2.4em;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+h3 {
+    font-size: 1.8em;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.subtitle {
+    font-size: 1.3em;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+#hero-subline {
+    font-size: 1.3em;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 40px;
+    text-align: left;
+}
+
+/* Badge */
+.badge {
+    background: linear-gradient(45deg, #FF8A95, #FFB3BA);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-block;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(255, 138, 149, 0.3);
+}
+
+/* Buttons */
+.cta-button {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.cta-button.primary {
+    background: linear-gradient(45deg, #FF8A95, #FFB3BA);
+    color: white;
+    box-shadow: 0 8px 25px rgba(255, 138, 149, 0.3);
+}
+
+.cta-button.primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(255, 138, 149, 0.4);
+}
+
+.cta-button.secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.cta-button.secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.cta-button.large {
+    padding: 18px 40px;
+    font-size: 1.2em;
+    width: 100%;
+}
+
+/* Navigation */
+.back-nav {
+    margin-bottom: 30px;
+}
+
+.back-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    min-width: 100px;
+    min-height: 44px;
+    touch-action: manipulation; /* Bessere Touch-Performance */
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Value Props */
+.value-props {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.prop {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.prop:hover {
+    transform: translateY(-5px);
+}
+
+.prop .icon {
+    font-size: 2em;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+}
+
+.prop span {
+    color: white;
+    font-weight: 500;
+    font-size: 1.1em;
+}
+
+/* Cards */
+.card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.card-title {
+    font-size: 1.4em;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+/* Color coding for grammar */
+.color-dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.color-dot.red { background: #FFB3BA; }
+.color-dot.blue { background: #87CEEB; }
+.color-dot.green { background: #98FB98; }
+
+.word-card {
+    padding: 10px 20px;
+    border-radius: 10px;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+    margin: 5px;
+}
+
+.word-card.red { background: #FFB3BA; color: #2c3e50; }
+.word-card.blue { background: #87CEEB; color: white; }
+.word-card.green { background: #98FB98; color: #2c3e50; }
+
+/* Forms */
+.form-group {
+    display: grid;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.form-group input {
+    padding: 15px 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25px;
+    font-size: 1.1em;
+    background: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #FF8A95;
+    background: white;
+}
+
+/* Age Selection */
+.age-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.age-card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 3px solid transparent;
+    text-decoration: none;
+    color: inherit;
+}
+
+.age-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    border-color: #FF8A95;
+    text-decoration: none;
+    color: inherit;
+}
+
+.age-range {
+    font-size: 2em;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+
+.age-description {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    opacity: 0.8;
+    color: #666;
+}
+
+.example-games h4 {
+    margin-bottom: 15px;
+    font-size: 1.1em;
+    color: #2c3e50;
+}
+
+.example-games ul {
+    list-style: none;
+}
+
+.example-games li {
+    margin-bottom: 8px;
+    font-size: 1em;
+    color: #666;
+}
+
+/* Trust indicators */
+.trust-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.indicator {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95em;
+    font-weight: 500;
+}
+
+/* Success elements */
+.success-icon {
+    font-size: 4em;
+    margin-bottom: 20px;
+}
+
+.confirmation-details {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    margin: 40px 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-item .icon {
+    font-size: 1.8em;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(45deg, #FF8A95, #FFB3BA);
+    border-radius: 50%;
+}
+
+.detail-item .text {
+    text-align: left;
+    flex: 1;
+}
+
+.detail-item strong {
+    display: block;
+    color: #2c3e50;
+    font-size: 1.1em;
+    margin-bottom: 5px;
+}
+
+.detail-item span {
+    color: #666;
+}
+
+/* A/B Testing Selector */
+.variant-selector {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+}
+
+/* Mobile: A/B Buttons nach unten verschieben */
+@media (max-width: 768px) {
+    .variant-selector {
+        top: auto;
+        bottom: 20px;
+        right: 20px;
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    .variant-btn {
+        padding: 10px 14px;
+        font-size: 13px;
+        min-width: 80px;
+        min-height: 44px; /* Touch-friendly */
+    }
+}
+
+/* Sehr kleine Bildschirme: Buttons noch kompakter */
+@media (max-width: 480px) {
+    .variant-selector {
+        bottom: 15px;
+        right: 15px;
+        gap: 8px;
+    }
+
+    .variant-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+        min-width: 70px;
+        min-height: 40px;
+    }
+}
+
+.variant-btn {
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    touch-action: manipulation;
+    user-select: none; /* Verhindert Text-Auswahl auf Touch */
+}
+
+.variant-btn:hover,
+.variant-btn.active {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+}
+
+/* Analytics Panel - Hidden for regular users */
+.analytics-panel {
+    display: none; /* Hidden for normal users */
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    min-width: 280px;
+    z-index: 1000;
+    font-size: 14px;
+}
+
+.analytics-panel h3 {
+    margin-bottom: 15px;
+    font-size: 16px;
+    color: white;
+}
+
+.metric {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+}
+
+.metric .label {
+    font-weight: 500;
+}
+
+.metric .value {
+    font-weight: 700;
+    color: #FF8A95;
+}
+
+/* Language Selector */
+.language-selector {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+
+.language-dropdown {
+    position: relative;
+}
+
+.language-btn {
+    background: linear-gradient(45deg, #FF8A95, #FFB3BA);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1.1em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 138, 149, 0.3);
+}
+
+.language-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 138, 149, 0.4);
+}
+
+.language-options {
+    position: absolute;
+    top: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border-radius: 15px;
+    padding: 8px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    display: none;
+    min-width: 150px;
+}
+
+.language-options button {
+    width: 100%;
+    padding: 10px 15px;
+    border: none;
+    background: transparent;
+    color: #2c3e50;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.language-options button:hover {
+    background: rgba(255, 138, 149, 0.1);
+}
+
+.language-options button.active {
+    background: linear-gradient(45deg, #FF8A95, #FFB3BA);
+    color: white;
+}
+
+/* Responsive Design */
+
+/* Large Desktop */
+@media (min-width: 1440px) {
+    .container {
+        max-width: 1400px;
+    }
+
+    .hero-content {
+        gap: 80px !important;
+    }
+
+    h1 {
+        font-size: 3.5em;
+    }
+}
+
+/* Medium Desktop/Tablet Landscape */
+@media (min-width: 1024px) and (max-width: 1439px) {
+    .container {
+        max-width: 1100px;
+    }
+
+    .hero-content {
+        gap: 60px !important;
+    }
+}
+
+/* Tablet Portrait */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 15px;
+    }
+
+    h1 {
+        font-size: 2.4em;
+    }
+
+    h2 {
+        font-size: 2em;
+    }
+
+    .hero-content {
+        grid-template-columns: 1fr !important;
+        gap: 40px !important;
+        text-align: center;
+    }
+
+    .value-props {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .age-options {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    /* Back-Button für mobile optimieren */
+    .back-btn {
+        min-width: 120px;
+        min-height: 44px;
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    /* Cards für mobile optimieren */
+    .card, .age-card {
+        padding: 25px 20px;
+        margin-bottom: 20px;
+        border-radius: 12px;
+    }
+
+    /* Buttons touch-friendly machen */
+    .cta-button {
+        min-height: 48px;
+        min-width: 200px;
+        font-size: 16px;
+        padding: 12px 24px;
+    }
+
+    /* Trust indicators vertikal anordnen */
+    .trust-indicators {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 2em;
+    }
+
+    h2 {
+        font-size: 1.6em;
+    }
+
+    .screen {
+        padding: 15px 0;
+    }
+
+    .container {
+        padding: 0 10px;
+    }
+
+    /* Hero section für sehr kleine Bildschirme */
+    .hero-content {
+        gap: 30px !important;
+    }
+
+    /* Cards für sehr kleine Bildschirme optimieren */
+    .card,
+    .age-card,
+    .confirmation-details {
+        padding: 20px;
+    }
+}
