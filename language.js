@@ -1,9 +1,7 @@
-/* language.js – lightweight i18n system for Grammar Games
-   - Usage in HTML: <span data-translate="keyName"></span>
-   - Optional attribute translation: data-translate="key" data-translate-attr="aria-label"
-   - Select language via ?lang=de|zh|en or localStorage('grammarGamesLanguage')
+/* language.js – lightweight i18n for Grammar Games
+   Usage: add data-translate="key" (and optional data-translate-attr="aria-label") on elements.
+   Language selection via ?lang=de|zh|en or localStorage('grammarGamesLanguage')
 */
-
 (function () {
   const messages = {
     /* ====================== DEUTSCH ====================== */
@@ -16,8 +14,7 @@
 
       // --- Startseite (Hero) ---
       heroHeadlineA: '10-Minuten<br/>Grammatik-Games',
-      heroSublineA:
-        'Spielerisch, multisensorisch, kurz und strukturiert – Grammatik lernen war noch nie so einfach!',
+      heroSublineA: 'Spielerisch, multisensorisch, kurz und strukturiert – Grammatik lernen war noch nie so einfach!',
       playful: 'Spielerisch',
       multisensory: 'Multisensorisch',
       timeLimit: 'Nur 10 Minuten',
@@ -33,7 +30,21 @@
       playGame1Now: '▶ Spiel 1 jetzt spielen',
       game2TitleSort: 'Sortieren: Karten in Felder (Drag & Drop)',
       game2SubtitleSort: 'Ziehe passende Karten in die richtigen Felder (z. B. I ↔ ich). Baue 3 richtige Reihen.',
-      playGame2Now: '▶ Spiel 2 jetzt spielen'
+      playGame2Now: '▶ Spiel 2 jetzt spielen',
+
+      // --- Chooser (Altersauswahl) ---
+      chooserTitle: 'Wie alt ist Ihr Kind?',
+      chooserSubtitle: 'Wir zeigen Ihnen die passenden Grammar Games',
+      age46Title: '4–6 Jahre',
+      age46Desc: 'Spielerische Grundlagen',
+      ex1a: 'Tier-Wörter sortieren',
+      ex1b: 'Farben-Adjektive',
+      ex1c: 'Action-Verben',
+      age710Title: '7–10 Jahre',
+      age710Desc: 'Strukturierte Grammatik',
+      ex2a: 'Sätze konstruieren',
+      ex2b: 'Zeit-Formen-Quiz',
+      ex2c: 'Wortarten-Memory'
     },
 
     /* ====================== 简体中文 ====================== */
@@ -62,7 +73,21 @@
       playGame1Now: '▶ 立即开始游戏 1',
       game2TitleSort: '分类：拖到正确区域（拖拽）',
       game2SubtitleSort: '把对应的卡片拖到正确区域，完成 3 行。',
-      playGame2Now: '▶ 立即开始游戏 2'
+      playGame2Now: '▶ 立即开始游戏 2',
+
+      // --- 年龄选择页 ---
+      chooserTitle: '孩子多大了？',
+      chooserSubtitle: '我们将为您推荐合适的语法游戏',
+      age46Title: '4–6 岁',
+      age46Desc: '趣味入门',
+      ex1a: '动物词汇分类',
+      ex1b: '颜色—形容词',
+      ex1c: '动作动词',
+      age710Title: '7–10 岁',
+      age710Desc: '结构化语法',
+      ex2a: '造句训练',
+      ex2b: '时态小测验',
+      ex2c: '词类记忆配对'
     },
 
     /* ====================== ENGLISH ====================== */
@@ -75,8 +100,7 @@
 
       // --- Homepage (Hero) ---
       heroHeadlineA: '10-Minute<br/>Grammar Games',
-      heroSublineA:
-        'Playful, multisensory, short and structured — grammar learning made easy!',
+      heroSublineA: 'Playful, multisensory, short and structured — grammar learning made easy!',
       playful: 'Playful',
       multisensory: 'Multisensory',
       timeLimit: 'Just 10 minutes',
@@ -92,7 +116,21 @@
       playGame1Now: '▶ Play Game 1',
       game2TitleSort: 'Sorting: Cards into fields (Drag & Drop)',
       game2SubtitleSort: 'Drag matching cards into the right fields. Build 3 correct rows.',
-      playGame2Now: '▶ Play Game 2'
+      playGame2Now: '▶ Play Game 2',
+
+      // --- Age chooser ---
+      chooserTitle: 'How old is your child?',
+      chooserSubtitle: 'We’ll show the right Grammar Games',
+      age46Title: 'Ages 4–6',
+      age46Desc: 'Playful foundations',
+      ex1a: 'Sort animal words',
+      ex1b: 'Colors & adjectives',
+      ex1c: 'Action verbs',
+      age710Title: 'Ages 7–10',
+      age710Desc: 'Structured grammar',
+      ex2a: 'Build sentences',
+      ex2b: 'Tense quiz',
+      ex2c: 'Parts-of-speech memory'
     }
   };
 
@@ -116,8 +154,7 @@
         if (attr) el.setAttribute(attr, val);
         else el.innerHTML = val;
       });
-
-      // mark active language buttons
+      // active state for language pills
       root.querySelectorAll('.lang-link').forEach(a => {
         a.classList.toggle('gg-active', (a.dataset.lang || '').toLowerCase() === this.currentLanguage);
       });
@@ -141,13 +178,12 @@
     }
   };
 
-  // Expose
+  // Expose globally
   window.languageSystem = languageSystem;
-  // Convenience global (kept for legacy calls)
   window.setLanguageFromQuery = function (lang) { return languageSystem.setLanguageFromQuery(lang); };
   window.setLanguage = function (lang) { return languageSystem.setLanguage(lang); };
 
-  // Auto-apply once DOM is ready if there are translatable nodes
+  // Auto-apply on load
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => languageSystem.setLanguageFromQuery());
   } else {
