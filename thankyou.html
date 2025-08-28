@@ -1,170 +1,186 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grammar Games - Vielen Dank! Starter-Pack unterwegs</title>
-    <link rel="stylesheet" href="shared.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="language.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grammar Games – Danke!</title>
+
+  <link rel="stylesheet" href="shared.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root{
+      --gg-orange:#FF6B6B;
+      --gg-orange-dark:#ff5a5a;
+      --gg-border:rgba(255,255,255,.55);
+      --gg-shadow:0 12px 30px rgba(26, 26, 44, .22);
+    }
+    body{
+      font-family:"Poppins",system-ui,Segoe UI,Arial,sans-serif;
+      background: radial-gradient(1200px 600px at 20% -10%, #b9c6ff33, #0000),
+                  radial-gradient(1000px 600px at 90% -10%, #a2b3ff30, #0000),
+                  linear-gradient(135deg,#89a6ff 0%, #bba8ff 50%, #d0b7ff 100%);
+      min-height:100vh;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      color:#0f172a;
+    }
+
+    /* ===== Topbar ===== */
+    .gg-topbar{
+      display:flex; align-items:center; gap:12px;
+      padding:14px 18px; position:sticky; top:0; z-index:1050;
+      backdrop-filter:saturate(140%) blur(8px);
+    }
+    .gg-flex-spacer{ flex:1; }
+    .gg-btn{
+      display:inline-flex; align-items:center; gap:.5rem;
+      height:38px; padding:0 14px; border-radius:22px;
+      font:600 14px/1.1 "Poppins",system-ui,Segoe UI,Arial,sans-serif;
+      text-decoration:none; cursor:pointer; user-select:none;
+      transition:.18s ease; border:1.5px solid transparent; color:#fff;
+    }
+    .gg-primary{ background:var(--gg-orange); border-color:var(--gg-orange); box-shadow:0 6px 18px rgba(255,107,107,.28); }
+    .gg-primary:hover{ transform:translateY(-1px); background:var(--gg-orange-dark); }
+    .gg-ghost{ background:transparent; color:#fff; border-color:var(--gg-border); }
+    .gg-ghost:hover{ background:rgba(255,255,255,.10); }
+    .gg-lang.gg-active{ background:var(--gg-orange); color:#fff; border-color:var(--gg-orange); box-shadow:0 6px 18px rgba(255,107,107,.28); }
+
+    /* ===== Page ===== */
+    .wrap{ max-width:980px; margin:0 auto; padding:0 18px 84px; }
+    .emoji{ font-size:54px; text-align:center; margin-top:16px; }
+    .title{ text-align:center; color:#fff; font-size:clamp(28px,3.4vw,40px); font-weight:800; margin:8px 0 4px; }
+    .sub{ text-align:center; color:#eef; opacity:.98; margin:0 0 26px; }
+
+    .card{
+      background:#fff; border:1px solid rgba(255,255,255,.6);
+      border-radius:24px; box-shadow:0 28px 60px rgba(0,0,0,.14);
+      padding:8px 0 6px; margin:0 auto 22px; max-width:760px;
+    }
+    .row{
+      display:flex; align-items:center; gap:16px; padding:18px 22px;
+    }
+    .row + .row{ border-top:1px solid #eef2f7; }
+    .badge{
+      width:54px; height:54px; border-radius:999px;
+      display:inline-flex; align-items:center; justify-content:center;
+      background:linear-gradient(45deg,#ff8a95,#ffb3ba); color:#fff; font-size:22px;
+      box-shadow:0 6px 16px rgba(0,0,0,.08);
+    }
+    .row h3{ margin:0; font-size:18px; font-weight:800; color:#0f172a; }
+    .row p{ margin:4px 0 0; color:#6b7280; font-weight:600; }
+
+    .cta{
+      display:flex; gap:12px; justify-content:center; margin-top:12px;
+    }
+    .cta .btn{
+      height:54px; padding:0 22px; border-radius:28px; border:1.5px solid transparent;
+      font:800 16px/1 "Poppins",system-ui,Segoe UI,Arial,sans-serif; cursor:pointer; transition:.18s ease;
+      color:#fff; background:var(--gg-orange); box-shadow:0 10px 24px rgba(255,107,107,.28);
+    }
+    .cta .btn:hover{ transform:translateY(-1px); background:var(--gg-orange-dark); }
+  </style>
+
+  <script src="language.js"></script>
 </head>
 <body>
-    <!-- A/B Test Variant Selector -->
-    <div class="variant-selector">
-        <a href="index.html?variant=A" class="variant-btn" data-translate="variantA">Variante A: 10-Min Games</a>
-        <a href="index.html?variant=B" class="variant-btn" data-translate="variantB">Variante B: Multisensory Grammar</a>
-    </div>
 
-    <!-- Screen 5: Thank You -->
-    <div class="screen">
-        <div class="container">
-            <div class="thankyou-content" style="max-width: 600px; margin: 0 auto; text-align: center;">
-                <div class="success-icon">🎉</div>
-                <h2 data-translate="thankYou">Vielen Dank!</h2>
-                <p class="subtitle" data-translate="packOnTheWay">Ihr Starter-Pack ist unterwegs</p>
-                
-                <div class="confirmation-details">
-                    <div class="detail-item">
-                        <div class="icon">📧</div>
-                        <div class="text">
-                            <strong data-translate="emailSent">E-Mail gesendet</strong>
-                            <span data-translate="checkInbox">Prüfen Sie Ihren Posteingang (auch Spam-Ordner)</span>
-                        </div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="icon">📥</div>
-                        <div class="text">
-                            <strong data-translate="immediatelyAvailable">Sofort verfügbar</strong>
-                            <span data-translate="pdfReady">PDFs direkt zum Ausdrucken</span>
-                        </div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="icon">🎮</div>
-                        <div class="text">
-                            <strong data-translate="getStarted">Loslegen</strong>
-                            <span id="selected-age-text" data-translate="gamesReady">Spiele für Ihr Kind bereit</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="next-steps" style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-                    <a href="#" class="cta-button secondary" onclick="showMoreGames(); return false;" data-translate="moreGames">
-                        Mehr Spiele ansehen
-                    </a>
-                    <a href="#" class="cta-button primary" onclick="restartJourney(); return false;" data-translate="startOver">
-                        Nochmal von vorne
-                    </a>
-                </div>
+  <!-- Topbar -->
+  <div class="gg-topbar">
+    <a class="gg-btn gg-primary back-link" href="#"><span>←</span><span style="margin-left:.25rem" data-translate="backButton">Zurück</span></a>
+    <div class="gg-flex-spacer"></div>
+    <a class="gg-btn gg-ghost gg-lang lang-link" data-lang="de" href="#">Deutsch</a>
+    <a class="gg-btn gg-ghost gg-lang lang-link" data-lang="zh" href="#">中文</a>
+  </div>
 
-                <!-- Success metrics display -->
-                <div class="card" style="margin-top: 40px; background: linear-gradient(135deg, #FF8A95, #FFB3BA); color: white;">
-                    <h3 style="color: white; margin-bottom: 20px;" data-translate="prototypeSuccess">🎯 Prototype Erfolgreich!</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; text-align: center;">
-                        <div>
-                            <div style="font-size: 2em; font-weight: bold;" id="final-submit-rate">--%</div>
-                            <div style="font-size: 0.9em; opacity: 0.9;" data-translate="emailSubmitRate">Email Submit Rate</div>
-                        </div>
-                        <div>
-                            <div style="font-size: 2em; font-weight: bold;" id="total-journey">--</div>
-                            <div style="font-size: 0.9em; opacity: 0.9;" data-translate="screenJourney">Screen Journey</div>
-                        </div>
-                        <div>
-                            <div style="font-size: 2em; font-weight: bold;" id="variant-tested">A</div>
-                            <div style="font-size: 0.9em; opacity: 0.9;" data-translate="variantTested">Variant Tested</div>
-                        </div>
-                    </div>
-                    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.3);">
-                        <strong data-translate="hypothesisStatus">Hypothese-Status: </strong>
-                        <span id="hypothesis-status">Zu testen</span>
-                        <br><small style="opacity: 0.8;" data-translate="target">Ziel: ≥8-12% Email Submit Rate</small>
-                    </div>
-                </div>
-            </div>
+  <div class="wrap">
+    <div class="emoji">🎉</div>
+    <h1 class="title" data-translate="thankYouTitle">Danke!</h1>
+    <p class="sub" data-translate="packOnTheWay">Dein Starter-Pack ist unterwegs.</p>
+
+    <section class="card">
+      <div class="row">
+        <div class="badge">📧</div>
+        <div>
+          <h3 data-translate="emailSent">E-Mail gesendet</h3>
+          <p data-translate="checkInbox">Bitte Posteingang prüfen (inkl. Spam).</p>
         </div>
+      </div>
+      <div class="row">
+        <div class="badge">⬇️</div>
+        <div>
+          <h3 data-translate="immediatelyAvailable">Sofort verfügbar</h3>
+          <p data-translate="pdfReady">PDF-Download steht bereit.</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="badge">🎮</div>
+        <div>
+          <h3 data-translate="getStarted">Loslegen</h3>
+          <p id="ageLine">Spiele sind bereit.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Only ONE CTA as requested -->
+    <div class="cta">
+      <a class="btn" id="startOverBtn" data-translate="startOver" href="#">Neu starten</a>
     </div>
+  </div>
 
+  <script src="analytics.js"></script>
+  <script>
+    (function(){
+      const VARIANT='A';
+      const qs  = new URLSearchParams(location.search);
+      const LANG = (qs.get('lang') || window.languageSystem?.currentLanguage || localStorage.getItem('grammarGamesLanguage') || 'de').toLowerCase();
+      const AGE  = qs.get('age') || '';
 
+      // Apply language
+      try{
+        if (window.setLanguageFromQuery) window.setLanguageFromQuery(LANG);
+        else if (window.languageSystem?.applyTranslations){ window.languageSystem.currentLanguage = LANG; window.languageSystem.applyTranslations(); }
+      }catch(_){}
 
-    <script src="analytics.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            updateFinalMetrics();
-            checkHypothesis();
+      const t = (k)=> window.languageSystem?.t?.(k) || k;
+
+      // Age line with placeholder
+      const ageLine = document.getElementById('ageLine');
+      const template = t('gamesReadyAge');
+      ageLine.textContent = template.includes('{age}') ? template.replace('{age}', AGE || '4–10') : template;
+
+      // Back → preview.html
+      document.querySelectorAll('.back-link').forEach(a=>{
+        const u = new URL('preview.html', location.href);
+        u.searchParams.set('variant', VARIANT);
+        u.searchParams.set('lang', LANG);
+        a.href = u.pathname + '?' + u.searchParams.toString();
+      });
+
+      // Lang pills keep params
+      document.querySelectorAll('.lang-link').forEach(a=>{
+        const L = a.dataset.lang;
+        const u = new URL(location.href);
+        u.searchParams.set('lang', L);
+        u.searchParams.set('variant', VARIANT);
+        u.searchParams.set('age', AGE);
+        a.href = u.pathname + '?' + u.searchParams.toString();
+        a.classList.toggle('gg-active', L === LANG);
+      });
+
+      // Start over → index.html
+      const startOver = document.getElementById('startOverBtn');
+      if (startOver){
+        const u = new URL('index.html', location.href);
+        u.searchParams.set('variant', VARIANT);
+        u.searchParams.set('lang', LANG);
+        startOver.href = u.pathname + '?' + u.searchParams.toString();
+        startOver.addEventListener('click', (e)=>{
+          e.preventDefault();
+          try{ window.analytics?.trackClick?.('thankyou_start_over'); }catch(_){}
+          location.href = startOver.href;
         });
-
-        function updateFinalMetrics() {
-            const analytics = window.analytics.sessionData;
-            
-            // Update age-specific text
-            const selectedAgeText = document.getElementById('selected-age-text');
-            if (analytics.ageSelected) {
-                selectedAgeText.textContent = window.languageSystem.t('gamesReadyAge', { age: analytics.ageSelected });
-            }
-            
-            // Calculate final metrics
-            const captureViews = analytics.screens.capture || 1;
-            const emailSubmits = analytics.clicks.emailSubmit;
-            const submitRate = ((emailSubmits / captureViews) * 100).toFixed(1);
-            
-            // Update final display
-            document.getElementById('final-submit-rate').textContent = submitRate + '%';
-            document.getElementById('total-journey').textContent = '5/5';
-            document.getElementById('variant-tested').textContent = analytics.variant;
-            
-            // Update analytics panel
-            const emailRateEl = document.getElementById('email-submit-rate');
-            if (emailRateEl) emailRateEl.textContent = submitRate + '%';
-        }
-        
-        function checkHypothesis() {
-            const analytics = window.analytics.sessionData;
-            const captureViews = analytics.screens.capture || 1;
-            const emailSubmits = analytics.clicks.emailSubmit;
-            const submitRate = (emailSubmits / captureViews) * 100;
-            
-            const hypothesisStatus = document.getElementById('hypothesis-status');
-            const hypothesisResult = document.getElementById('hypothesis-result');
-            
-            if (submitRate >= 12) {
-                hypothesisStatus.textContent = '🎉 Hervorragend! (≥12%)';
-                hypothesisStatus.style.color = '#4CAF50';
-                if (hypothesisResult) hypothesisResult.textContent = '🏆 Übertroffen';
-            } else if (submitRate >= 8) {
-                hypothesisStatus.textContent = '✅ Hypothese bestätigt! (8-12%)';
-                hypothesisStatus.style.color = '#FFC107';
-                if (hypothesisResult) hypothesisResult.textContent = '✓ Bestätigt';
-            } else {
-                hypothesisStatus.textContent = '📊 Unter Zielwert (<8%)';
-                hypothesisStatus.style.color = '#ff6b6b';
-                if (hypothesisResult) hypothesisResult.textContent = '⚠ Optimierung nötig';
-            }
-        }
-        
-        function showMoreGames() {
-            trackClick('more-games');
-            alert(window.languageSystem.t('moreGamesFeature'));
-        }
-        
-        function restartJourney() {
-            trackClick('restart');
-
-            const confirmRestart = confirm(window.languageSystem.t('restartJourneyConfirm'));
-
-            if (confirmRestart) {
-                // Reset analytics
-                window.analytics.resetSession();
-
-                // Navigate back to start
-                window.location.href = 'index.html';
-            }
-        }
-        
-        // Auto-generate final report
-        setTimeout(() => {
-            const report = window.analytics.generateReport();
-            console.log('📊 Final Prototype Report:');
-            console.table(report);
-        }, 2000);
-    </script>
+      }
+    })();
+  </script>
 </body>
 </html>

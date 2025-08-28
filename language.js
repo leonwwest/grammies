@@ -1,7 +1,7 @@
 /* language.js – lightweight i18n for Grammar Games
-   Usage in HTML: 
+   Usage in HTML:
      <span data-translate="key"></span>
-     or translate attributes: data-translate="key" data-translate-attr="aria-label"
+     (optional) data-translate-attr="aria-label"
    Select language via ?lang=de|zh|en or localStorage('grammarGamesLanguage')
 */
 (function () {
@@ -73,7 +73,18 @@
       getStarterPack: 'Starter-Pack erhalten',
       freeUnbinding: 'Jederzeit abmelden',
       immediateDownload: 'Sofort-Download',
-      noSpam: 'Kein Spam'
+      noSpam: 'Kein Spam',
+
+      // --- Thank You ---
+      thankYouTitle: 'Danke!',
+      packOnTheWay: 'Dein Starter-Pack ist unterwegs.',
+      emailSent: 'E-Mail gesendet',
+      checkInbox: 'Bitte Posteingang prüfen (inkl. Spam).',
+      immediatelyAvailable: 'Sofort verfügbar',
+      pdfReady: 'PDF-Download steht bereit.',
+      getStarted: 'Loslegen',
+      gamesReadyAge: 'Spiele für {age} Jahre sind bereit.',
+      startOver: 'Neu starten'
     },
 
     /* ====================== 简体中文 ====================== */
@@ -140,7 +151,18 @@
       getStarterPack: '获取入门礼包',
       freeUnbinding: '可随时退订',
       immediateDownload: '立即下载',
-      noSpam: '不骚扰'
+      noSpam: '不骚扰',
+
+      // --- Thank You ---
+      thankYouTitle: '谢谢！',
+      packOnTheWay: '入门礼包已发送到您的邮箱。',
+      emailSent: '邮件已发送',
+      checkInbox: '请查收收件箱（包含垃圾邮件）。',
+      immediatelyAvailable: '可立即获取',
+      pdfReady: 'PDF 下载已准备好。',
+      getStarted: '开始使用',
+      gamesReadyAge: '{age} 岁的游戏已准备好。',
+      startOver: '重新开始'
     },
 
     /* ====================== ENGLISH ====================== */
@@ -210,7 +232,18 @@
       getStarterPack: 'Get the starter pack',
       freeUnbinding: 'Unsubscribe anytime',
       immediateDownload: 'Immediate download',
-      noSpam: 'No spam'
+      noSpam: 'No spam',
+
+      // --- Thank You ---
+      thankYouTitle: 'Thank you!',
+      packOnTheWay: 'Your starter pack is on the way.',
+      emailSent: 'Email sent',
+      checkInbox: 'Please check your inbox (and spam).',
+      immediatelyAvailable: 'Available immediately',
+      pdfReady: 'PDF download is ready.',
+      getStarted: 'Get started',
+      gamesReadyAge: 'Games for ages {age} are ready.',
+      startOver: 'Start over'
     }
   };
 
@@ -227,15 +260,15 @@
     applyTranslations(root = document) {
       const nodes = root.querySelectorAll('[data-translate]');
       nodes.forEach(el => {
-        const key = el.getAttribute('data-translate');
+        const key  = el.getAttribute('data-translate');
         const attr = el.getAttribute('data-translate-attr');
-        const val = this.t(key);
+        const val  = this.t(key);
         if (!val) return;
         if (attr) el.setAttribute(attr, val);
-        else el.innerHTML = val; // allow <em> etc.
+        else el.innerHTML = val; // keep inline HTML (<em> etc.)
       });
 
-      // mark active language buttons
+      // highlight active language pills
       root.querySelectorAll('.lang-link').forEach(a => {
         a.classList.toggle('gg-active', (a.dataset.lang || '').toLowerCase() === this.currentLanguage);
       });
