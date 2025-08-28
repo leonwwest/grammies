@@ -1,260 +1,340 @@
-// Grammar Games Prototype Analytics
-// Cross-screen tracking using localStorage
+// Grammar Games Prototype Analytics (enhanced)
+// - Cross-screen tracking via localStorage
+// - Safe, no-crash UI updates
+// - Variant & language propagation
+// - Game 1 events (start/pair/complete)
 
 class PrototypeAnalytics {
     constructor() {
-        this.sessionData = this.loadSession();
-        this.initializeTracking();
+      this.sessionData = this.loadSession();
+      this.initializeTracking();
     }
-
+  
+    // ---------- Storage ----------
     loadSession() {
+      try {
         const stored = localStorage.getItem('grammarGamesSession');
-        if (stored) {
-            return JSON.parse(stored);
-        }
-        
-        // Initialize new session
-        return {
-            sessionId: this.generateSessionId(),
-            variant: 'A',
-            startTime: new Date().toISOString(),
-            screens: {
-                hero: 0,
-                preview: 0,
-                chooser: 0,
-                capture: 0,
-                thankyou: 0
-            },
-            clicks: {
-                heroToPreview: 0,
-                previewToChooser: 0,
-                chooserToCapture: 0,
-                emailSubmit: 0,
-                backClicks: 0
-            },
-            ageSelected: null,
-            emailSubmitted: false,
-            currentScreen: 'hero'
-        };
+        if (stored) return JSON.parse(stored);
+      } catch (e) { console.warn('Analytics: could not parse stored session', e); }
+  
+      // New session
+      const now = new Date().toISOString();
+      return {
+        sessionId: this.generateSessionId(),
+        startTime: now,
+        variant: 'A',                 // default, can be overridden by URL
+        currentScreen: 'hero',
+        screens: {
+          hero: 0,
+          preview: 0,
+          chooser: 0,
+          capture: 0,
+          thankyou: 0,
+          cardgame: 0,                // NEW: Game 1
+          sortinggame: 0              // NEW: Game 2
+        },
+        clicks: {
+          heroToPreview: 0,
+          previewToChooser: 0,
+          chooserToCapture: 0,
+          emailSubmit: 0,
+          backClicks: 0,
+          // Game 1
+          game1Start: 0,
+          game1Pairs: 0,
+          game1Complete: 0
+        },
+        game1: {
+          pairsFound: [],            // e.g. ["PRON_I","VERB_AM",...]
+          durationMs: 0,
+          startedAt: null,
+          completedAt: null
+        },
+        ageSelected: null,
+        emailSubmitted: false
+      };
     }
-
+  
     saveSession() {
+      try {
         localStorage.setItem('grammarGamesSession', JSON.stringify(this.sessionData));
+      } catch (e) {
+        console.warn('Analytics: could not save session', e);
+      }
     }
-
+  
     generateSessionId() {
-        return 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+      return 'sess_' + Math.random().toString(36).slice(2, 10) + '_' + Date.now();
     }
-
+  
+    // ---------- Init ----------
     initializeTracking() {
-        // Track page load
-        this.trackScreenView(this.getCurrentScreen());
-        
-        // Display analytics if panel exists
-        this.updateAnalyticsDisplay();
-        
-        console.log('📊 Analytics initialized for session:', this.sessionData.sessionId);
+      // Screen view on load
+      this.trackScreenView(this.getCurrentScreen());
     }
-
+  
     getCurrentScreen() {
-        const path = window.location.pathname;
-        const filename = path.split('/').pop() || 'index.html';
-        
-        switch (filename) {
-            case 'index.html':
-            case '':
-                return 'hero';
-            case 'preview.html':
-                return 'preview';
-            case 'chooser.html':
-                return 'chooser';
-            case 'capture.html':
-                return 'capture';
-            case 'thankyou.html':
-                return 'thankyou';
-            default:
-                return 'unknown';
-        }
+      const path = (location.pathname.split('/').pop() || '').toLowerCase();
+      switch (path) {
+        case '':
+        case 'index.html':        return 'hero';
+        case 'preview.html':      return 'preview';
+        case 'chooser.html':      return 'chooser';
+        case 'capture.html':      return 'capture';
+        case 'thankyou.html':     return 'thankyou';
+        case 'card-game.html':    return 'cardgame';     // NEW
+        case 'sorting-game.html': return 'sortinggame';  // NEW
+        default:                  return 'unknown';
+      }
     }
-
+  
+    // ---------- Screens ----------
     trackScreenView(screen) {
-        if (this.sessionData.screens[screen] !== undefined) {
-            this.sessionData.screens[screen]++;
-            this.sessionData.currentScreen = screen;
-            this.saveSession();
-            
-            console.log(`📊 Screen view: ${screen} (Total: ${this.sessionData.screens[screen]})`);
-            this.updateAnalyticsDisplay();
-        }
-    }
-
-    trackClick(action, data = {}) {
-        console.log(`🎯 Click tracked: ${action}`, data);
-        
-        switch (action) {
-            case 'hero-to-preview':
-                this.sessionData.clicks.heroToPreview++;
-                break;
-            case 'preview-to-chooser':
-                this.sessionData.clicks.previewToChooser++;
-                break;
-            case 'chooser-to-capture':
-                this.sessionData.clicks.chooserToCapture++;
-                break;
-            case 'age-selected':
-                this.sessionData.ageSelected = data.age;
-                break;
-            case 'email-submit':
-                this.sessionData.clicks.emailSubmit++;
-                this.sessionData.emailSubmitted = true;
-                break;
-            case 'back-click':
-                this.sessionData.clicks.backClicks++;
-                break;
-            case 'variant-change':
-                this.sessionData.variant = data.variant;
-                break;
-        }
-        
+      if (this.sessionData.screens[screen] !== undefined) {
+        this.sessionData.screens[screen]++;
+        this.sessionData.currentScreen = screen;
         this.saveSession();
+  
+        console.log(`📊 Screen view: ${screen} (Total: ${this.sessionData.screens[screen]})`);
         this.updateAnalyticsDisplay();
+      }
     }
-
-    setVariant(variant) {
-        this.sessionData.variant = variant;
-        this.trackClick('variant-change', { variant });
-        
-        // Update UI if variant elements exist
-        this.updateVariantUI(variant);
+  
+    // ---------- Clicks & Events ----------
+    trackClick(action, data = {}) {
+      console.log(`🎯 Click: ${action}`, data);
+  
+      switch (action) {
+        case 'hero-to-preview':
+        case 'hero_to_preview':
+          this.sessionData.clicks.heroToPreview++; break;
+  
+        case 'preview-to-chooser':
+        case 'preview_to_chooser':
+          this.sessionData.clicks.previewToChooser++; break;
+  
+        case 'chooser-to-capture':
+        case 'chooser_to_capture':
+          this.sessionData.clicks.chooserToCapture++; break;
+  
+        case 'email-submit':
+        case 'email_submit':
+          this.sessionData.clicks.emailSubmit++;
+          this.sessionData.emailSubmitted = true;
+          break;
+  
+        case 'back-click':
+        case 'back':
+          this.sessionData.clicks.backClicks++; break;
+  
+        case 'age-selected':
+        case 'age_selected':
+          this.sessionData.ageSelected = data?.age ?? data?.value ?? null;
+          break;
+  
+        // ---- Game 1 events ----
+        case 'game1_start':
+          this.sessionData.clicks.game1Start++;
+          this.sessionData.game1.startedAt = Date.now();
+          break;
+  
+        case 'game1_pair':
+          if (data?.pair) {
+            this.sessionData.clicks.game1Pairs++;
+            this.sessionData.game1.pairsFound.push(data.pair);
+          }
+          break;
+  
+        case 'game1_complete':
+          this.sessionData.clicks.game1Complete++;
+          this.sessionData.game1.completedAt = Date.now();
+          if (this.sessionData.game1.startedAt) {
+            this.sessionData.game1.durationMs =
+              this.sessionData.game1.completedAt - this.sessionData.game1.startedAt;
+          }
+          break;
+  
+        default:
+          // no-op
+          break;
+      }
+  
+      this.saveSession();
+      this.updateAnalyticsDisplay();
     }
-
+  
+    // ---------- Variant ----------
+    setVariant(variant = 'A') {
+      const v = (variant || 'A').toUpperCase();
+      if (!['A','B'].includes(v)) return;
+  
+      this.sessionData.variant = v;
+      this.saveSession();
+      console.log(`🧪 Variant set to ${v}`);
+  
+      this.updateVariantUI(v);
+    }
+  
     updateVariantUI(variant) {
-        // Update variant buttons
-        document.querySelectorAll('.variant-btn').forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.textContent.includes(variant === 'A' ? '10-Min' : 'Multisensory')) {
-                btn.classList.add('active');
-            }
-        });
-
-        // Update content based on variant - use language system for translations
-        if (window.languageSystem && window.languageSystem.updateDynamicContent) {
-            window.languageSystem.updateDynamicContent();
-        } else {
-            console.log('Language system not ready for variant update');
+      // Highlight active variant button (if present)
+      document.querySelectorAll('.variant-btn').forEach(btn => {
+        btn.classList.remove('active');
+        const txt = (btn.textContent || btn.innerText || '').toLowerCase();
+        const isA = variant === 'A' && txt.includes('10-min');
+        const isB = variant === 'B' && (txt.includes('multisensory') || txt.includes('multisensory grammar'));
+        if (isA || isB) btn.classList.add('active');
+      });
+  
+      // Let language system refresh any dynamic copy
+      try {
+        if (window.languageSystem?.updateDynamicContent) {
+          window.languageSystem.updateDynamicContent();
         }
+      } catch (e) {
+        console.log('Language system not ready for variant update');
+      }
     }
-
+  
+    // ---------- KPIs / UI wiring ----------
     updateAnalyticsDisplay() {
-        // Calculate conversion rates
-        const heroViews = this.sessionData.screens.hero || 1;
-        const previewViews = this.sessionData.screens.preview || 1;
-        const chooserViews = this.sessionData.screens.chooser || 1;
-        const captureViews = this.sessionData.screens.capture || 1;
-
-        const ctrHeroPreview = ((this.sessionData.clicks.heroToPreview / heroViews) * 100).toFixed(1);
-        const ctrPreviewChooser = ((this.sessionData.clicks.previewToChooser / previewViews) * 100).toFixed(1);
-        const ctrChooserCapture = ((this.sessionData.clicks.chooserToCapture / chooserViews) * 100).toFixed(1);
-        const emailSubmitRate = ((this.sessionData.clicks.emailSubmit / captureViews) * 100).toFixed(1);
-
-        // Update display elements if they exist
-        const elements = {
-            'ctr-hero-preview': `${ctrHeroPreview}%`,
-            'ctr-preview-chooser': `${ctrPreviewChooser}%`,
-            'ctr-chooser-capture': `${ctrChooserCapture}%`,
-            'email-submit-rate': `${emailSubmitRate}%`,
-            'current-variant': this.sessionData.variant,
-            'current-screen': this.sessionData.currentScreen,
-            'total-screens': Object.values(this.sessionData.screens).reduce((a, b) => a + b, 0)
-        };
-
-        Object.entries(elements).forEach(([id, value]) => {
-            const element = document.getElementById(id);
-            if (element) element.textContent = value;
-        });
-
-        // Color code email submit rate
-        const emailRateElement = document.getElementById('email-submit-rate');
-        if (emailRateElement) {
-            const rate = parseFloat(emailSubmitRate);
-            if (rate >= 12) {
-                emailRateElement.style.color = '#4CAF50'; // Green
-            } else if (rate >= 8) {
-                emailRateElement.style.color = '#FFC107'; // Yellow
-            } else {
-                emailRateElement.style.color = '#ff6b6b'; // Red
-            }
-        }
+      // Only run on pages that actually show KPIs
+      const s = this.sessionData.screens;
+      const c = this.sessionData.clicks;
+  
+      // Guard divisors
+      const heroViews   = s.hero    || 1;
+      const previewViews= s.preview || 1;
+      const chooserViews= s.chooser || 1;
+      const captureViews= s.capture || 1;
+  
+      const pct = (num, den) => ((num / (den || 1)) * 100).toFixed(1);
+  
+      const ctrHeroPreview   = pct(c.heroToPreview,   heroViews);
+      const ctrPreviewChooser= pct(c.previewToChooser,previewViews);
+      const ctrChooserCapture= pct(c.chooserToCapture,chooserViews);
+      const emailSubmitRate  = pct(c.emailSubmit,     captureViews);
+  
+      // Fill if elements exist (thankyou.html / capture sidebar etc.)
+      const eHP = document.getElementById('ctr-hero-preview');
+      const ePC = document.getElementById('ctr-preview-chooser');
+      const eCC = document.getElementById('ctr-chooser-capture');
+      const eES = document.getElementById('email-submit-rate');
+  
+      if (eHP) eHP.textContent = `${ctrHeroPreview}%`;
+      if (ePC) ePC.textContent = `${ctrPreviewChooser}%`;
+      if (eCC) eCC.textContent = `${ctrChooserCapture}%`;
+      if (eES) {
+        eES.textContent = `${emailSubmitRate}%`;
+        const rate = parseFloat(emailSubmitRate);
+        // color cue
+        if (rate >= 12)      eES.style.color = '#4CAF50';
+        else if (rate >= 8)  eES.style.color = '#FFC107';
+        else                 eES.style.color = '#ff6b6b';
+      }
+  
+      // Small Game 1 progress display hooks (if you add them to any page)
+      const g1pairs = document.getElementById('g1-pairs-found');
+      if (g1pairs) g1pairs.textContent = String(this.sessionData.clicks.game1Pairs || 0);
+      const g1time  = document.getElementById('g1-duration');
+      if (g1time && this.sessionData.game1.durationMs) {
+        g1time.textContent = Math.round(this.sessionData.game1.durationMs / 1000) + 's';
+      }
     }
-
+  
+    // ---------- Report ----------
     generateReport() {
-        const report = {
-            sessionId: this.sessionData.sessionId,
-            variant: this.sessionData.variant,
-            duration: new Date() - new Date(this.sessionData.startTime),
-            screenViews: this.sessionData.screens,
-            clickEvents: this.sessionData.clicks,
-            ageSelected: this.sessionData.ageSelected,
-            emailSubmitted: this.sessionData.emailSubmitted,
-            conversionRates: {
-                heroToPreview: ((this.sessionData.clicks.heroToPreview / (this.sessionData.screens.hero || 1)) * 100).toFixed(1) + '%',
-                previewToChooser: ((this.sessionData.clicks.previewToChooser / (this.sessionData.screens.preview || 1)) * 100).toFixed(1) + '%',
-                chooserToCapture: ((this.sessionData.clicks.chooserToCapture / (this.sessionData.screens.chooser || 1)) * 100).toFixed(1) + '%',
-                emailSubmission: ((this.sessionData.clicks.emailSubmit / (this.sessionData.screens.capture || 1)) * 100).toFixed(1) + '%'
-            },
-            hypothesisTest: {
-                target: '8-12%',
-                actual: ((this.sessionData.clicks.emailSubmit / (this.sessionData.screens.capture || 1)) * 100).toFixed(1) + '%',
-                success: (this.sessionData.clicks.emailSubmit / (this.sessionData.screens.capture || 1)) * 100 >= 8
-            }
-        };
-
-        console.log('📊 Analytics Report:', report);
-        return report;
-    }
-
-    // Utility functions for navigation with tracking
-    navigateWithTracking(url, trackAction, trackData = {}) {
-        this.trackClick(trackAction, trackData);
-        
-        // Preserve language selection in navigation
-        const currentLang = window.languageSystem ? window.languageSystem.currentLanguage : 'de';
-        const separator = url.includes('?') ? '&' : '?';
-        url += `${separator}lang=${currentLang}`;
-        
-        // Add variant to URL if not default
-        if (this.sessionData.variant !== 'A') {
-            url += `&variant=${this.sessionData.variant}`;
+      const s = this.sessionData.screens;
+      const c = this.sessionData.clicks;
+  
+      const pct = (n, d) => ((n/(d||1))*100).toFixed(1) + '%';
+  
+      const report = {
+        sessionId: this.sessionData.sessionId,
+        variant: this.sessionData.variant,
+        startedAt: this.sessionData.startTime,
+        durationMs: Date.now() - new Date(this.sessionData.startTime).getTime(),
+        screens: s,
+        clicks: c,
+        ageSelected: this.sessionData.ageSelected,
+        emailSubmitted: this.sessionData.emailSubmitted,
+        conversionRates: {
+          heroToPreview:   pct(c.heroToPreview,   s.hero),
+          previewToChooser:pct(c.previewToChooser,s.preview),
+          chooserToCapture:pct(c.chooserToCapture,s.chooser),
+          emailSubmission: pct(c.emailSubmit,     s.capture)
+        },
+        game1: {
+          pairsFound: this.sessionData.game1.pairsFound,
+          durationMs: this.sessionData.game1.durationMs
+        },
+        hypothesisTest: {
+          targetEmailSubmitMin: '8%',
+          targetEmailSubmitGood: '12%',
+          currentEmailSubmit: pct(c.emailSubmit, s.capture)
         }
-        
-        window.location.href = url;
+      };
+  
+      return report;
     }
-
-    // Reset session (for testing)
+  
+    // ---------- Navigation helper ----------
+    navigateWithTracking(url, action = 'nav', data = {}) {
+      try { this.trackClick(action, data); } catch {}
+      // Append lang & variant safely
+      try {
+        const currentLang = window.languageSystem?.currentLanguage || 
+                            new URLSearchParams(location.search).get('lang') || 'de';
+        const v = this.sessionData.variant || 'A';
+  
+        const u = new URL(url, location.href);
+        if (!u.searchParams.get('lang'))    u.searchParams.set('lang', String(currentLang).toLowerCase());
+        if (!u.searchParams.get('variant')) u.searchParams.set('variant', v);
+  
+        location.href = u.pathname + '?' + u.searchParams.toString();
+      } catch (e) {
+        console.warn('navigateWithTracking failed, falling back', e);
+        location.href = url;
+      }
+    }
+  
+    // ---------- Reset (dev only) ----------
     resetSession() {
-        localStorage.removeItem('grammarGamesSession');
-        this.sessionData = this.loadSession();
-        console.log('🔄 Analytics session reset');
-        this.updateAnalyticsDisplay();
+      localStorage.removeItem('grammarGamesSession');
+      this.sessionData = this.loadSession();
+      console.log('🔄 Analytics session reset');
+      this.updateAnalyticsDisplay();
     }
-}
-
-// Global instance
-window.analytics = new PrototypeAnalytics();
-
-// Global functions for easy use in HTML
-window.trackClick = (action, data) => window.analytics.trackClick(action, data);
-window.setVariant = (variant) => window.analytics.setVariant(variant);
-window.navigateWithTracking = (url, action, data) => window.analytics.navigateWithTracking(url, action, data);
-
-// Initialize variant from URL parameter
-document.addEventListener('DOMContentLoaded', function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const variantParam = urlParams.get('variant');
-    if (variantParam && ['A', 'B'].includes(variantParam)) {
-        window.analytics.setVariant(variantParam);
-    } else {
-        // Set to stored variant or default
-        window.analytics.setVariant(window.analytics.sessionData.variant);
+  }
+  
+  // Create global instance
+  window.analytics = new PrototypeAnalytics();
+  
+  // Convenience wrappers (so old inline handlers keep working)
+  window.trackClick = (action, data) => window.analytics.trackClick(action, data);
+  window.setVariant = (variant) => window.analytics.setVariant(variant);
+  window.navigateWithTracking = (url, action, data) => window.analytics.navigateWithTracking(url, action, data);
+  
+  // Initialize variant from URL (or stored)
+  document.addEventListener('DOMContentLoaded', () => {
+    const p = new URLSearchParams(location.search);
+    const v = (p.get('variant') || window.analytics.sessionData.variant || 'A').toUpperCase();
+    if (['A','B'].includes(v)) window.analytics.setVariant(v);
+  });
+  
+  // ---- OPTIONAL: Game 1 auto-hooks ----
+  // If your card-game.html calls these manually, that’s fine. These are here as fallbacks.
+  (function autoWireGame1(){
+    const screen = window.analytics.getCurrentScreen();
+    if (screen !== 'cardgame') return;
+  
+    // Start event on load (if page wants it)
+    if (!window.__g1_started) {
+      window.__g1_started = true;
+      window.analytics.trackClick('game1_start', {});
     }
-});
+  
+    // Expose helpers for the game code to call:
+    window.analyticsGame1Pair = (pairCode) => window.analytics.trackClick('game1_pair', { pair: pairCode });
+    window.analyticsGame1Complete = () => window.analytics.trackClick('game1_complete', {});
+  })();
+  

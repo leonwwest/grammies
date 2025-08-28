@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Game 1 – Karten zu Paaren verbinden</title>
 
-  <!-- Nimmt dein globales Styling mit, falls vorhanden -->
+  <!-- Globales Styling -->
   <link rel="stylesheet" href="shared.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     /* --------- Game-spezifische Styles (größere Karten) --------- */
@@ -21,6 +22,9 @@
     @media (max-width:520px) { :root{ --card-size: 140px; --card-gap: 16px; --img-scale: 1.08; } }
 
     .topbar{display:flex;gap:12px;align-items:center;justify-content:space-between;margin:16px 0;}
+    .cta{border:none;border-radius:999px;padding:10px 16px;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.12);background:#fff}
+    .cta.primary{background:linear-gradient(45deg,#FF8A95,#FFB3BA);color:#fff}
+    .cta.ghost{background:#fff}
     .lang-switch{display:flex;gap:8px;}
     .lang-switch button{border:none;padding:10px 14px;border-radius:999px;background:#fff;box-shadow:0 4px 12px rgba(0,0,0,.1);cursor:pointer}
     .lang-switch button.active{background:linear-gradient(45deg,#FF8A95,#FFB3BA);color:#fff}
@@ -69,18 +73,18 @@
     #winOverlay{position:fixed;inset:0;background:rgba(0,0,0,.35);display:grid;place-items:center;opacity:0;pointer-events:none;transition:.2s}
     #winOverlay.show{opacity:1;pointer-events:auto}
     #winOverlay .modal{background:#fff;padding:24px 28px;border-radius:16px;font-size:18px;min-width:280px;text-align:center;box-shadow:0 16px 44px rgba(0,0,0,.25)}
-    .cta{border:none;border-radius:999px;padding:10px 16px;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.12)}
-    .cta.primary{background:linear-gradient(45deg,#FF8A95,#FFB3BA);color:#fff}
-    .cta.ghost{background:#fff}
   </style>
 </head>
 <body>
   <div class="container">
     <div class="topbar">
-      <button class="cta ghost" onclick="resetGame()">🔄 Spiel zurücksetzen</button>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <a id="backLink" class="cta ghost" href="preview.html">← Zurück</a>
+        <button class="cta ghost" onclick="resetGame()">🔄 Spiel zurücksetzen</button>
+      </div>
       <div class="lang-switch">
-        <button id="btn-de" class="active" onclick="switchLanguage('de', this)">Deutsch</button>
-        <button id="btn-zh" onclick="switchLanguage('zh', this)">中文</button>
+        <button id="btn-de" class="active" onclick="switchLanguage('de')">Deutsch</button>
+        <button id="btn-zh" onclick="switchLanguage('zh')">中文</button>
       </div>
     </div>
 
@@ -106,8 +110,12 @@
     </div>
   </div>
 
+  <!-- Analytics zuerst laden -->
+  <script src="analytics.js"></script>
+
   <script>
-    /* ---------------- Daten (Dateinamen exakt wie in /cards) ---------------- */
+    /* ---------------- Karten-Daten (Dateinamen exakt wie in /cards/) ----------------
+       Hinweis: Falls du z.B. kein german_is.png hast, benenne die Einträge einfach um. */
 
     // Deutsch (EN ↔ DE)
     const SET_DE = [
@@ -221,6 +229,10 @@
       if (ok){
         a.classList.add('matched'); b.classList.add('matched');
         a.draggable = b.draggable = false;
+
+        // ---- Analytics: richtiges Paar ----
+        try { window.analytics?.trackClick('game1_pair', { pair: a.dataset.pair }); } catch {}
+
         setTimeout(()=>{
           addToFound(a,b);
           a.remove(); b.remove();
@@ -246,7 +258,13 @@
       rail.appendChild(wrap);
     }
 
-    function showWin(){ $('#winOverlay').classList.add('show'); }
+    function showWin(){
+      $('#winOverlay').classList.add('show');
+
+      // ---- Analytics: Spiel abgeschlossen ----
+      try { window.analytics?.trackClick('game1_complete', {}); } catch {}
+    }
+
     function hideWin(){ $('#winOverlay').classList.remove('show'); }
 
     function resetGame(){
@@ -268,6 +286,14 @@
       // Weiter-Link richtig setzen
       const next = $('#nextLink');
       if (next) next.href = currentLang==='zh' ? 'sorting-game.html?lang=zh' : 'sorting-game.html?lang=de';
+
+      // ---- Analytics: Start/Reset ----
+      const p = new URLSearchParams(location.search);
+      const meta = {
+        variant: (p.get('variant') || 'A').toUpperCase(),
+        lang: currentLang
+      };
+      try { window.analytics?.trackClick('game1_start', meta); } catch {}
     }
 
     function switchLanguage(lang){
@@ -277,6 +303,20 @@
       history.replaceState({}, '', url); // URL sauber halten
       resetGame();
     }
+
+    // Back-Link so setzen, dass variant/lang erhalten bleiben
+    (function setBackLink(){
+      const p = new URLSearchParams(location.search);
+      const lang = (p.get('lang') || 'de').toLowerCase();
+      const variant = p.get('variant');
+
+      const target = new URL('preview.html', location.href); // Zielseite bei "Zurück"
+      target.searchParams.set('lang', lang);
+      if (variant) target.searchParams.set('variant', variant);
+
+      const back = document.getElementById('backLink');
+      if (back) back.href = target.pathname + '?' + target.searchParams.toString();
+    })();
 
     // Start
     document.addEventListener('DOMContentLoaded', resetGame);

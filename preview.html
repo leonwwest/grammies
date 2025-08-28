@@ -1,149 +1,215 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grammar Games - Beispiel-Spiele ansehen</title>
-    <link rel="stylesheet" href="shared.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="language.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grammar Games – Beispiel-Spiele ansehen</title>
+
+  <link rel="stylesheet" href="shared.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="language.js"></script>
+
+  <style>
+    /* ------- kompakte Memory-Vorschau ------- */
+    .memory-card { grid-column: 1 / -1; }
+    .memory-title { display:flex; align-items:center; gap:.5rem }
+    .memory-sub { color:#566; margin:.25rem 0 1rem 0 }
+    .scroll-strip {
+      display:flex; gap:14px; overflow-x:auto; padding:10px 4px;
+      background:linear-gradient(135deg,#d7f0df,#edf5d2);
+      border-radius:18px; box-shadow:inset 0 1px 0 rgba(255,255,255,.35);
+    }
+    .scroll-strip::-webkit-scrollbar{ height:8px }
+    .scroll-strip::-webkit-scrollbar-thumb{ background:#c9d6e2; border-radius:6px }
+    .mini {
+      flex:0 0 88px; height:88px; border-radius:14px; background:#fff;
+      box-shadow:0 8px 20px rgba(0,0,0,.12); display:grid; place-items:center; overflow:hidden
+    }
+    .mini img{ width:100%; height:100%; object-fit:contain; transform:scale(1.06) }
+
+    .chip-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px }
+    .chip {
+      background:#f6f7ff; border:1px solid #e5e6ff; color:#3b3f57;
+      padding:6px 10px; border-radius:999px; font-weight:600; font-size:.9rem
+    }
+    .chip.red{ background:#fff7f7; border-color:#ffdede }
+
+    .mini-badges { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px }
+    .mini-badge {
+      background:#fff; border:1px solid #e9ecf3; padding:6px 10px; border-radius:10px;
+      font-size:.9rem; color:#445; box-shadow:0 6px 14px rgba(0,0,0,.06)
+    }
+
+    details.memory-more { margin-top:10px }
+    details.memory-more summary {
+      cursor:pointer; list-style:none; user-select:none;
+      display:inline-flex; align-items:center; gap:6px; color:#445; font-weight:600
+    }
+    details.memory-more[open] summary { margin-bottom:8px }
+
+    .more-grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)) }
+    .more-box { background:#fff; border-radius:14px; padding:12px; box-shadow:0 8px 18px rgba(0,0,0,.08) }
+  </style>
 </head>
 <body>
-    <!-- A/B Test Variant Selector -->
-    <div class="variant-selector">
-        <a href="index.html?variant=A" class="variant-btn" data-translate="variantA">Variante A: 10-Min Games</a>
-        <a href="index.html?variant=B" class="variant-btn" data-translate="variantB">Variante B: Multisensory Grammar</a>
-    </div>
+  <!-- Variant selector -->
+  <div class="variant-selector">
+    <a href="index.html?variant=A" class="variant-btn" data-translate="variantA">Variante A: 10-Min Games</a>
+    <a href="index.html?variant=B" class="variant-btn" data-translate="variantB">Variante B: Multisensory Grammar</a>
+  </div>
 
-    <!-- Screen 2: Game Preview -->
-    <div class="screen">
-        <div class="container">
-            <div class="back-nav">
-                <a href="#" onclick="navigateWithTracking('index.html', 'back-click'); return false;" class="back-btn" data-translate="backButton">← Zurück</a>
-            </div>
-            
-            <h2 data-translate="previewTitle">So funktionieren unsere Grammar Games</h2>
-            <p class="subtitle" data-translate="previewSubtitle">Printable Karten mit einfachen Routinen für zu Hause</p>
-            
-            <div class="preview-content" style="display: grid; gap: 30px; margin-bottom: 40px;">
-                <div class="card" style="grid-column: 1 / -1;">
-                    <div class="card-title" data-translate="characterWordGame">🎯 Charakter-Wortarten-Spiel</div>
-                    <div class="card-visual" style="text-align: center; margin-bottom: 30px;">
-                        <!-- Character-based word sorting with cute mascots -->
-                        <div class="character-game" style="background: linear-gradient(135deg, #a8e6cf, #dcedc1); padding: 30px; border-radius: 20px; margin-bottom: 25px;">
-                            <h4 style="margin-bottom: 20px; color: #2c3e50;" data-translate="learningFriends">🌟 Unsere Lern-Freunde helfen beim Sortieren!</h4>
-                            
-                            <!-- Character word cards -->
-                            <div class="character-words" style="display: flex; gap: 20px; margin-bottom: 25px; justify-content: center; flex-wrap: wrap;">
-                                <div style="background: white; border-radius: 15px; padding: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); position: relative;">
-                                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #ff9a9e, #fad0c4); border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 1.8em;">🐻</div>
-                                    <div style="font-weight: bold; color: #e74c3c;">DOG</div>
-                                    <div style="font-size: 0.8em; color: #95a5a6;">Noun</div>
-                                </div>
-                                
-                                <div style="background: white; border-radius: 15px; padding: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #a8edea, #fed6e3); border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 1.8em;">🦸</div>
-                                    <div style="font-weight: bold; color: #3498db;">RUN</div>
-                                    <div style="font-size: 0.8em; color: #95a5a6;">Verb</div>
-                                </div>
-                                
-                                <div style="background: white; border-radius: 15px; padding: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #d299c2, #fef9d7); border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 1.8em;">✨</div>
-                                    <div style="font-weight: bold; color: #27ae60;">FAST</div>
-                                    <div style="font-size: 0.8em; color: #95a5a6;">Adjective</div>
-                                </div>
-                            </div>
-                            
-                            <!-- Character sorting zones -->
-                            <div class="sorting-zones" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                                <div style="background: rgba(231, 76, 60, 0.1); border: 3px dashed #e74c3c; border-radius: 20px; padding: 20px; min-width: 120px; text-align: center;">
-                                    <div style="font-size: 2em; margin-bottom: 10px;">🏠</div>
-                                    <div style="font-weight: 600; color: #e74c3c;" data-translate="nouns">NOUNS</div>
-                                    <div style="font-size: 0.9em; color: #7f8c8d;" data-translate="nounDesc">Things & People</div>
-                                </div>
-                                
-                                <div style="background: rgba(52, 152, 219, 0.1); border: 3px dashed #3498db; border-radius: 20px; padding: 20px; min-width: 120px; text-align: center;">
-                                    <div style="font-size: 2em; margin-bottom: 10px;">⚡</div>
-                                    <div style="font-weight: 600; color: #3498db;" data-translate="verbs">VERBS</div>
-                                    <div style="font-size: 0.9em; color: #7f8c8d;" data-translate="verbDesc">Action Words</div>
-                                </div>
-                                
-                                <div style="background: rgba(39, 174, 96, 0.1); border: 3px dashed #27ae60; border-radius: 20px; padding: 20px; min-width: 120px; text-align: center;">
-                                    <div style="font-size: 2em; margin-bottom: 10px;">🎨</div>
-                                    <div style="font-weight: 600; color: #27ae60;" data-translate="adjectives">ADJECTIVES</div>
-                                    <div style="font-size: 0.9em; color: #7f8c8d;" data-translate="adjectiveDesc">Describing Words</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="routine-steps">
-                        <h4 style="color: #2c3e50; margin-bottom: 15px;" data-translate="miniRoutine">🔄 Mini-Routine (5 Schritte):</h4>
-                        <ol style="color: #666; padding-left: 20px;">
-                            <li style="margin-bottom: 8px; font-size: 1.1em;" data-translate="step1">Karten mischen</li>
-                            <li style="margin-bottom: 8px; font-size: 1.1em;" data-translate="step2">Ein Wort vorlesen</li>
-                            <li style="margin-bottom: 8px; font-size: 1.1em;" data-translate="step3">Farbcode erklären</li>
-                            <li style="margin-bottom: 8px; font-size: 1.1em;" data-translate="step4">Richtige Box finden</li>
-                            <li style="margin-bottom: 8px; font-size: 1.1em;" data-translate="step5">Erfolg feiern! 🎉</li>
-                        </ol>
-                    </div>
-                </div>
-                
-                                <div class="card">
-                    <div class="card-title" data-translate="characterSentenceGame">🏗️ Charakter-Sätze-Spiel</div>
-                    <div class="sentence-builder" style="text-align: center;">
-                        <!-- Character-based sentence building -->
-                        <div style="background: linear-gradient(135deg, #ffecd2, #fcb69f); padding: 25px; border-radius: 20px; margin-bottom: 20px;">
-                            <h4 style="margin-bottom: 20px; color: #2c3e50;" data-translate="charactersBuilding">🎭 Die Charaktere bauen einen Satz!</h4>
-                            
-                            <div class="character-sentence" style="display: flex; gap: 15px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; align-items: center;">
-                                <!-- Character for "I" -->
-                                <div style="background: white; border-radius: 15px; padding: 12px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transform: scale(0.95);">
-                                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #ff9a9e, #fecfef); border-radius: 50%; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-size: 1.4em;">👧</div>
-                                    <div style="font-weight: bold; color: #e74c3c; font-size: 1.1em;">I</div>
-                                </div>
-                                
-                                <div style="font-size: 2em; color: #34495e;">➕</div>
-                                
-                                <!-- Character for "play" -->
-                                <div style="background: white; border-radius: 15px; padding: 12px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transform: scale(0.95);">
-                                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #a8edea, #fed6e3); border-radius: 50%; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-size: 1.4em;">🎮</div>
-                                    <div style="font-weight: bold; color: #3498db; font-size: 1.1em;">PLAY</div>
-                                </div>
-                                
-                                <div style="font-size: 2em; color: #34495e;">➕</div>
-                                
-                                <!-- Character for "games" -->
-                                <div style="background: white; border-radius: 15px; padding: 12px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transform: scale(0.95);">
-                                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #d299c2, #fef9d7); border-radius: 50%; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-size: 1.4em;">🎲</div>
-                                    <div style="font-weight: bold; color: #27ae60; font-size: 1.1em;">GAMES</div>
-                                </div>
-                            </div>
-                            
-                            <div style="font-size: 2em; color: #34495e; margin: 15px 0;">⬇️</div>
-                            
-                            <div class="sentence-result" style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); border: 3px solid #f39c12;">
-                                <div style="font-size: 1.5em; color: #2c3e50; font-weight: 600; margin-bottom: 10px;" data-translate="perfectSentence">
-                                    ✨ "I play games!" ✨
-                                </div>
-                                <div style="font-size: 0.9em; color: #7f8c8d;" data-translate="sentenceStructure">
-                                    👧 Pronoun + 🎮 Verb + 🎲 Noun = Perfect Sentence!
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="text-align: center;">
-                <a href="#" class="cta-button primary" onclick="navigateWithTracking('chooser.html', 'preview-to-chooser'); return false;" data-translate="suitableGames">
-                    Passende Spiele für mein Kind
-                </a>
-            </div>
+  <div class="screen">
+    <div class="container">
+      <div class="back-nav">
+        <a href="#" onclick="navigateWithTracking('index.html','back-click'); return false;" class="back-btn" data-translate="backButton">← Zurück</a>
+      </div>
+
+      <h2 data-translate="previewTitle">So funktionieren unsere Grammar Games</h2>
+      <p class="subtitle" data-translate="previewSubtitle">Printable Karten mit einfachen Routinen für zu Hause</p>
+
+      <!-- ===== GAME 1: kompakte Memory-Vorschau ===== -->
+      <div class="card memory-card">
+        <div class="card-title memory-title" data-translate="game1TitleMemory">🧠 Memory: Karte zu Karte (Drag & Drop)</div>
+        <p class="memory-sub" data-translate="game1SubtitleMemory">
+          Ziehe zwei zusammengehörige Karten aufeinander (z. B. <em>I</em> ↔ <em>ich</em>). Finde alle 6 Paare!
+        </p>
+
+        <!-- Bildleiste -->
+        <div class="scroll-strip" id="memoryMiniGrid" aria-hidden="true"></div>
+
+        <!-- kleine Badges: Was geübt wird -->
+        <div class="mini-badges">
+          <span class="mini-badge">👥 Pronomen &amp; to be</span>
+          <span class="mini-badge">🇩🇪↔️🇬🇧 / 中文</span>
+          <span class="mini-badge">⏱️ 2–4 Min</span>
         </div>
+
+        <!-- Beispiele ein/aus -->
+        <details class="memory-more">
+          <summary>Beispiele anzeigen</summary>
+          <div class="chip-row">
+            <span class="chip">I ↔ ich</span>
+            <span class="chip">you ↔ du</span>
+            <span class="chip">he/she/it ↔ er/sie/es</span>
+            <span class="chip red">am ↔ bin</span>
+            <span class="chip red">are ↔ bist</span>
+            <span class="chip red">is ↔ ist</span>
+          </div>
+
+          <div class="more-grid" style="margin-top:10px">
+            <div class="more-box">
+              <div style="font-weight:600; margin-bottom:6px;" data-translate="g1h2">So geht’s</div>
+              <ol style="margin:0; padding-left:18px; color:#556; line-height:1.55">
+                <li data-translate="g1h2a">Karte anklicken oder ziehen</li>
+                <li data-translate="g1h2b">Auf die passende Karte fallen lassen</li>
+                <li data-translate="g1h2c">Treffer verschwinden ➜ unten als Paar</li>
+              </ol>
+            </div>
+            <div class="more-box">
+              <div style="font-weight:600; margin-bottom:6px;" data-translate="g1h1">Was wird geübt?</div>
+              <ul style="margin:0; padding-left:18px; color:#556; line-height:1.55">
+                <li data-translate="g1h1a">Pronomen &amp; Formen von <em>sein / to be</em></li>
+                <li data-translate="g1h1b">Deutsch ↔ Englisch (umschaltbar auch 中文)</li>
+                <li data-translate="g1h1c">Schnelle Erfolge: 2–4 Minuten</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+
+        <div style="text-align:center; margin-top:14px;">
+          <a class="cta-button primary link-game1" href="card-game.html" data-translate="playGame1Now">▶ Spiel 1 jetzt spielen</a>
+        </div>
+      </div>
+
+      <!-- ===== (Optional) zweites Beispiel wie gehabt – falls gewünscht könntest du es auch löschen ===== -->
+      <div class="card">
+        <div class="card-title" data-translate="characterSentenceGame">🏗️ Charakter-Sätze-Spiel</div>
+        <div class="sentence-builder" style="text-align:center;">
+          <div style="background:linear-gradient(135deg,#ffecd2,#fcb69f); padding:25px; border-radius:20px; margin-bottom:20px;">
+            <h4 style="margin-bottom:20px; color:#2c3e50;" data-translate="charactersBuilding">🎭 Die Charaktere bauen einen Satz!</h4>
+
+            <div style="display:flex; gap:15px; justify-content:center; margin-bottom:20px; flex-wrap:wrap; align-items:center;">
+              <div style="background:#fff; border-radius:15px; padding:12px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,.1); transform:scale(.95);">
+                <div style="width:50px; height:50px; background:linear-gradient(135deg,#ff9a9e,#fecfef); border-radius:50%; margin:0 auto 8px; display:flex; align-items:center; justify-content:center; font-size:1.4em;">👧</div>
+                <div style="font-weight:bold; color:#e74c3c; font-size:1.1em;">I</div>
+              </div>
+
+              <div style="font-size:2em; color:#34495e;">➕</div>
+
+              <div style="background:#fff; border-radius:15px; padding:12px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,.1); transform:scale(.95);">
+                <div style="width:50px; height:50px; background:linear-gradient(135deg,#a8edea,#fed6e3); border-radius:50%; margin:0 auto 8px; display:flex; align-items:center; justify-content:center; font-size:1.4em;">🎮</div>
+                <div style="font-weight:bold; color:#3498db; font-size:1.1em;">PLAY</div>
+              </div>
+
+              <div style="font-size:2em; color:#34495e;">➕</div>
+
+              <div style="background:#fff; border-radius:15px; padding:12px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,.1); transform:scale(.95);">
+                <div style="width:50px; height:50px; background:linear-gradient(135deg,#d299c2,#fef9d7); border-radius:50%; margin:0 auto 8px; display:flex; align-items:center; justify-content:center; font-size:1.4em;">🎲</div>
+                <div style="font-weight:bold; color:#27ae60; font-size:1.1em;">GAMES</div>
+              </div>
+            </div>
+
+            <div style="font-size:2em; color:#34495e; margin:15px 0;">⬇️</div>
+
+            <div style="background:#fff; padding:20px; border-radius:15px; box-shadow:0 5px 20px rgba(0,0,0,.1); border:3px solid #f39c12;">
+              <div style="font-size:1.5em; color:#2c3e50; font-weight:600; margin-bottom:10px;" data-translate="perfectSentence">✨ "I play games!" ✨</div>
+              <div style="font-size:.9em; color:#7f8c8d;" data-translate="sentenceStructure">👧 Pronomen + 🎮 Verb + 🎲 Nomen = Perfekter Satz!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center;">
+        <a href="#" class="cta-button primary" onclick="navigateWithTracking('chooser.html','preview-to-chooser'); return false;" data-translate="suitableGames">
+          Passende Spiele für mein Kind
+        </a>
+      </div>
     </div>
+  </div>
 
+  <!-- keep lang/variant on links + build preview strip -->
+  <script>
+    (function () {
+      const p = new URLSearchParams(location.search);
+      const variant = (p.get('variant') || 'A').toUpperCase();
+      const lang = (p.get('lang') || localStorage.getItem('grammarGamesLanguage') || 'de').toLowerCase();
 
+      // Fix CTA link
+      document.querySelectorAll('.link-game1').forEach(a => {
+        const url = new URL(a.getAttribute('href'), location.href);
+        url.searchParams.set('variant', variant);
+        url.searchParams.set('lang', lang);
+        a.href = url.pathname + '?' + url.searchParams.toString();
+      });
 
-    <script src="analytics.js"></script>
+      // Build compact preview strip
+      const grid = document.getElementById('memoryMiniGrid');
+      if (!grid) return;
+
+      const images = [
+        'cards/german_I.png','cards/german_ich.png',
+        'cards/german_you.png','cards/german_du.png',
+        'cards/german_he_she_it.png','cards/german_er_sie_es.png',
+        'cards/german_am.png','cards/german_bin.png',
+        'cards/german_are.png','cards/german_bist.png',
+        'cards/german_is.png','cards/german_ist.png'
+      ];
+      grid.innerHTML = '';
+      images.forEach(src => {
+        const div = document.createElement('div');
+        div.className = 'mini';
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = src.split('/').pop().replace(/_/g,' ').replace('.png','');
+        div.appendChild(img);
+        grid.appendChild(div);
+      });
+
+      // Re-apply translations if available
+      window.languageSystem?.updateDynamicContent?.();
+    })();
+  </script>
+
+  <script src="analytics.js"></script>
 </body>
 </html>
