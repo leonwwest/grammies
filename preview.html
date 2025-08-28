@@ -7,11 +7,10 @@
 
   <link rel="stylesheet" href="shared.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-  <!-- Übersetzungen / Sprachumschaltung -->
   <script src="language.js"></script>
 
   <style>
-    /* ------- kompakte Memory-Vorschau ------- */
+    /* ------- kompakte Vorschau-Styles (Game 1 & 2) ------- */
     .memory-card { grid-column: 1 / -1; }
     .memory-title { display:flex; align-items:center; gap:.5rem }
     .memory-sub { color:#566; margin:.4rem 0 1rem 0; }
@@ -23,29 +22,19 @@
       border-radius:18px;
       background:linear-gradient(135deg,#dff0e1,#ebf3d8);
       box-shadow:inset 0 1px 0 rgba(255,255,255,.35);
-
-      /* zentriert die zwei Paare */
-      justify-content:center;
+      justify-content:center;     /* zentriert Inhalt */
       align-items:center;
-
-      /* auf kleinen Screens umbrechen statt scrollen */
-      flex-wrap:wrap;
+      flex-wrap:wrap;              /* umbrechen auf kleinen Screens */
     }
 
     .img-plain{
       flex:0 0 auto;
-      height:120px;  /* volle Bildhöhe */
-      width:auto;    /* Seitenverhältnis beibehalten */
-      border-radius:14px;               /* weiche Ecken */
-      background:transparent;           /* kein weißer Rand */
+      height:120px;               /* volle Bildhöhe */
+      width:auto;                 /* Seitenverhältnis */
+      border-radius:14px;
+      background:transparent;     /* kein weißer Rand */
       box-shadow:0 8px 18px rgba(0,0,0,.10);
       display:block;
-    }
-
-    .mini-badges{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px }
-    .mini-badge{
-      background:#fff; border:1px solid #e9ecf3; padding:6px 10px; border-radius:10px;
-      font-size:.9rem; color:#445; box-shadow:0 6px 14px rgba(0,0,0,.06)
     }
   </style>
 </head>
@@ -65,102 +54,92 @@
       <h2 data-translate="previewTitle">So funktionieren unsere Grammar Games</h2>
       <p class="subtitle" data-translate="previewSubtitle">Printable Karten mit einfachen Routinen für zu Hause</p>
 
-      <!-- ===== GAME 1: KOMPAKT ===== -->
+      <!-- ===== GAME 1: Memory (Karte zu Karte) ===== -->
       <div class="card memory-card">
         <div class="card-title memory-title" data-translate="game1TitleMemory">🧠 Memory: Karte zu Karte (Drag & Drop)</div>
-
-        <!-- kurze, allgemeine Beschreibung -->
-        <p class="memory-sub">
+        <p class="memory-sub" data-translate="game1SubtitleMemory">
           Ziehe passende Karten zusammen (z. B. <em>I</em> ↔ <em>ich</em>). Finde 6 Paare.
         </p>
 
-        <!-- 2 Bild-Paare, zentriert, ohne weißen Rand -->
-        <div class="strip-compact">
+        <!-- 2 Bild-Paare, zentriert -->
+        <div class="strip-compact" style="margin-bottom:10px;">
           <!-- Paar 1: I ↔ ich -->
           <img class="img-plain" src="cards/german_I.png"   alt="I">
           <img class="img-plain" src="cards/german_ich.png" alt="ich">
-          <!-- kleiner Abstand zwischen den zwei Paaren -->
           <span style="width:24px; height:1px; flex:0 0 24px;"></span>
           <!-- Paar 2: am ↔ bin -->
           <img class="img-plain" src="cards/german_am.png"  alt="am">
           <img class="img-plain" src="cards/german_bin.png" alt="bin">
         </div>
 
-        <!-- kleine Badges -->
-        <div class="mini-badges">
-          <span class="mini-badge">👥 Pronomen &amp; to be</span>
-          <span class="mini-badge">🇩🇪↔️🇬🇧 / 中文</span>
-          <span class="mini-badge">⏱️ 2–4 Min</span>
-        </div>
-
-        <div style="text-align:center; margin-top:14px;">
-          <a class="cta-button primary link-game1" href="card-game.html" data-translate="playGame1Now">
+        <div style="text-align:center; margin-top:8px;">
+          <a href="#"
+             class="cta-button primary link-game1"
+             onclick="navigateWithTracking('card-game.html','preview-game1-cta'); return false;"
+             data-translate="playGame1Now">
             ▶ Spiel 1 jetzt spielen
           </a>
         </div>
       </div>
 
-      <!-- (optional) zweites Beispiel – kann bleiben oder gelöscht werden -->
-      <div class="card">
-        <div class="card-title" data-translate="characterSentenceGame">🏗️ Charakter-Sätze-Spiel</div>
-        <div class="sentence-builder" style="text-align:center;">
-          <div style="background:linear-gradient(135deg,#ffecd2,#fcb69f); padding:25px; border-radius:20px; margin-bottom:20px;">
-            <h4 style="margin-bottom:20px; color:#2c3e50;" data-translate="charactersBuilding">🎭 Die Charaktere bauen einen Satz!</h4>
+      <!-- ===== GAME 2: Sorting into Slots (compact) ===== -->
+      <div class="card memory-card">
+        <div class="card-title memory-title" data-translate="game2TitleSort">🧩 Sortieren: Karten in Felder (Drag & Drop)</div>
+        <p class="memory-sub" data-translate="game2SubtitleSort">
+          Ziehe passende Karten in die richtigen Felder (z. B. <em>I</em> ↔ <em>ich</em>). Baue 3 richtige Reihen.
+        </p>
 
-            <div style="display:flex; gap:15px; justify-content:center; margin-bottom:20px; flex-wrap:wrap; align-items:center;">
-              <div style="background:#fff; border-radius:15px; padding:12px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,.1); transform:scale(.95);">
-                <div style="width:50px; height:50px; background:linear-gradient(135deg,#ff9a9e,#fecfef); border-radius:50%; margin:0 auto 8px; display:flex; align-items:center; justify-content:center; font-size:1.4em;">👧</div>
-                <div style="font-weight:bold; color:#e74c3c; font-size:1.1em;">I</div>
-              </div>
-              <div style="font-size:2em; color:#34495e;">➕</div>
-              <div style="background:#fff; border-radius:15px; padding:12px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,.1); transform:scale(.95);">
-                <div style="width:50px; height:50px; background:linear-gradient(135deg,#a8edea,#fed6e3); border-radius:50%; margin:0 auto 8px; display:flex; align-items:center; justify-content:center; font-size:1.4em;">🎮</div>
-                <div style="font-weight:bold; color:#3498db; font-size:1.1em;">PLAY</div>
-              </div>
-              <div style="font-size:2em; color:#34495e;">➕</div>
-              <div style="background:#fff; border-radius:15px; padding:12px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,.1); transform:scale(.95);">
-                <div style="width:50px; height:50px; background:linear-gradient(135deg,#d299c2,#fef9d7); border-radius:50%; margin:0 auto 8px; display:flex; align-items:center; justify-content:center; font-size:1.4em;">🎲</div>
-                <div style="font-weight:bold; color:#27ae60; font-size:1.1em;">GAMES</div>
-              </div>
-            </div>
+        <!-- Mini-Vorschau mit 2 Paaren -->
+        <div class="strip-compact" style="margin-bottom:10px;">
+          <img class="img-plain" src="cards/german_I.png"   alt="I">
+          <img class="img-plain" src="cards/german_ich.png" alt="ich">
+          <span style="width:24px;flex:0 0 24px;"></span>
+          <img class="img-plain" src="cards/german_am.png"  alt="am">
+          <img class="img-plain" src="cards/german_bin.png" alt="bin">
+        </div>
 
-            <div style="font-size:2em; color:#34495e; margin:15px 0;">⬇️</div>
-
-            <div style="background:#fff; padding:20px; border-radius:15px; box-shadow:0 5px 20px rgba(0,0,0,.1); border:3px solid #f39c12;">
-              <div style="font-size:1.5em; color:#2c3e50; font-weight:600; margin-bottom:10px;" data-translate="perfectSentence">
-                ✨ "I play games!" ✨
-              </div>
-              <div style="font-size:.9em; color:#7f8c8d;" data-translate="sentenceStructure">
-                👧 Pronomen + 🎮 Verb + 🎲 Nomen = Perfekter Satz!
-              </div>
-            </div>
-          </div>
+        <div style="text-align:center; margin-top:8px;">
+          <a href="#"
+             class="cta-button primary link-game2"
+             onclick="navigateWithTracking('sorting-game.html','preview-game2-cta'); return false;"
+             data-translate="playGame2Now">
+            ▶ Spiel 2 jetzt spielen
+          </a>
         </div>
       </div>
 
       <div style="text-align:center;">
-        <a href="#" class="cta-button primary" onclick="navigateWithTracking('chooser.html','preview-to-chooser'); return false;" data-translate="suitableGames">
+        <a href="#"
+           class="cta-button primary"
+           onclick="navigateWithTracking('chooser.html','preview-to-chooser'); return false;"
+           data-translate="suitableGames">
           Passende Spiele für mein Kind
         </a>
       </div>
     </div>
   </div>
 
-  <!-- lang/variant an CTA anhängen -->
+  <!-- Fallback: wenn navigateWithTracking nicht existiert, einfache URL-Bildung -->
   <script>
     (function () {
-      const p = new URLSearchParams(location.search);
-      const variant = (p.get('variant') || 'A').toUpperCase();
-      const lang = (p.get('lang') || localStorage.getItem('grammarGamesLanguage') || 'de').toLowerCase();
+      if (typeof window.navigateWithTracking === 'function') {
+        // language.js translations refresh (optional)
+        window.languageSystem?.updateDynamicContent?.();
+        return;
+      }
 
-      document.querySelectorAll('.link-game1').forEach(a => {
-        const url = new URL(a.getAttribute('href'), location.href);
+      // Fallback – hängt lang/variant an und navigiert
+      window.navigateWithTracking = function (path, eventName) {
+        try { window.analytics?.trackClick?.(eventName || 'nav'); } catch(e) {}
+        const p = new URLSearchParams(location.search);
+        const variant = (p.get('variant') || 'A').toUpperCase();
+        const lang = (p.get('lang') || localStorage.getItem('grammarGamesLanguage') || 'de').toLowerCase();
+        const url = new URL('/' + path.replace(/^\//,''), location.origin);
         url.searchParams.set('variant', variant);
         url.searchParams.set('lang', lang);
-        a.href = url.pathname + '?' + url.searchParams.toString();
-      });
+        location.href = url.toString();
+      };
 
-      // Übersetzungen ggf. erneut anwenden
       window.languageSystem?.updateDynamicContent?.();
     })();
   </script>

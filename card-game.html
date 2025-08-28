@@ -1,327 +1,439 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Game 1 – Karten zu Paaren verbinden</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grammar Games – Spiel 1 (Paare)</title>
 
-  <!-- Globales Styling -->
   <link rel="stylesheet" href="shared.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 
   <style>
-    /* --------- Game-spezifische Styles (größere Karten) --------- */
     :root{
-      --card-size: 220px;   /* Desktop-Kartengröße */
-      --card-gap: 28px;
-      --img-scale: 1.25;    /* zoomt die PNGs leicht (Transparenzränder) */
+      --gg-orange:#FF6B6B;
+      --gg-orange-dark:#ff5a5a;
+      --gg-surface:rgba(255,255,255,.12);
+      --gg-card:rgba(255,255,255,.16);
+      --gg-border:rgba(255,255,255,.55);
+      --gg-shadow:0 12px 30px rgba(26, 26, 44, .22);
     }
-    @media (max-width:1200px){ :root{ --card-size: 200px; --card-gap: 24px; --img-scale: 1.2; } }
-    @media (max-width:900px) { :root{ --card-size: 180px; --card-gap: 20px; --img-scale: 1.15; } }
-    @media (max-width:700px) { :root{ --card-size: 160px; --card-gap: 18px; --img-scale: 1.12; } }
-    @media (max-width:520px) { :root{ --card-size: 140px; --card-gap: 16px; --img-scale: 1.08; } }
+    body{
+      font-family:"Poppins", system-ui, Segoe UI, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 20% -10%, #b9c6ff33, #0000),
+                  radial-gradient(1000px 600px at 90% -10%, #a2b3ff30, #0000),
+                  linear-gradient(135deg,#89a6ff 0%, #bba8ff 50%, #d0b7ff 100%);
+      min-height:100vh;
+    }
 
-    .topbar{display:flex;gap:12px;align-items:center;justify-content:space-between;margin:16px 0;}
-    .cta{border:none;border-radius:999px;padding:10px 16px;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.12);background:#fff}
-    .cta.primary{background:linear-gradient(45deg,#FF8A95,#FFB3BA);color:#fff}
-    .cta.ghost{background:#fff}
-    .lang-switch{display:flex;gap:8px;}
-    .lang-switch button{border:none;padding:10px 14px;border-radius:999px;background:#fff;box-shadow:0 4px 12px rgba(0,0,0,.1);cursor:pointer}
-    .lang-switch button.active{background:linear-gradient(45deg,#FF8A95,#FFB3BA);color:#fff}
+    /* ===== Topbar ===== */
+    .gg-topbar{
+      display:flex; align-items:center; gap:12px;
+      padding:14px 18px; position:sticky; top:0; z-index:1050;
+      backdrop-filter:saturate(140%) blur(8px);
+    }
+    .gg-flex-spacer{ flex:1; }
+    .gg-btn{
+      display:inline-flex; align-items:center; gap:.5rem;
+      height:38px; padding:0 14px; border-radius:22px;
+      font:600 14px/1.1 "Poppins",system-ui,Segoe UI,Arial,sans-serif;
+      text-decoration:none; cursor:pointer; user-select:none;
+      transition:.18s ease; border:1.5px solid transparent;
+    }
+    .gg-primary{ background:var(--gg-orange); color:#fff; border-color:var(--gg-orange); box-shadow:0 6px 18px rgba(255,107,107,.28); }
+    .gg-primary:hover{ transform:translateY(-1px); background:var(--gg-orange-dark); }
+    .gg-ghost{ background:transparent; color:#fff; border-color:var(--gg-border); }
+    .gg-ghost:hover{ background:rgba(255,255,255,.10); }
+    .gg-lang.gg-active{ background:var(--gg-orange); color:#fff; border-color:var(--gg-orange); box-shadow:0 6px 18px rgba(255,107,107,.28); }
+    .gg-back{ margin-right:8px; }
 
-    #board{
+    /* ===== Page ===== */
+    .wrap{ max-width:1200px; margin:0 auto; padding:10px 18px 90px; }
+    .page-title{ text-align:center; color:#fff; font-size:40px; font-weight:800; margin:12px 0 6px; letter-spacing:.3px; }
+    .page-sub{ text-align:center; color:#fff; opacity:.9; margin:0 0 26px; }
+
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.10));
+      border:1px solid rgba(255,255,255,.22);
+      border-radius:24px; padding:22px 22px 26px;
+      box-shadow: var(--gg-shadow);
+    }
+    .panel + .panel{ margin-top:20px; }
+    .panel-title{
+      display:flex; align-items:center; gap:10px; color:#fff; margin:2px 4px 18px;
+      font-weight:800; letter-spacing:.2px; font-size:26px;
+    }
+
+    /* ===== Cards grid ===== */
+    .grid{
       display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(var(--card-size), 1fr));
-      gap: var(--card-gap);
-      margin-top: 18px;
+      grid-template-columns: repeat(6, minmax(120px,1fr));
+      gap:22px;
     }
-    .card{
-      position:relative;
-      width: var(--card-size);
-      height: var(--card-size);
-      border-radius: 16px;
-      background: #fff;
-      box-shadow: 0 8px 24px rgba(0,0,0,.12);
-      display:grid;place-items:center;
-      overflow:hidden;
-      user-select:none;
-      touch-action: manipulation;
+    @media (max-width:1000px){
+      .grid{ grid-template-columns: repeat(4, minmax(120px,1fr)); }
     }
-    .card img{
-      width:100%; height:100%;
-      object-fit: contain;
-      padding: 6px;
-      transform: scale(var(--img-scale));
-      transform-origin: center;
-      will-change: transform;
-      pointer-events:none;
+    @media (max-width:680px){
+      .grid{ grid-template-columns: repeat(3, minmax(120px,1fr)); }
     }
+    .tile{
+      background:#fff; border-radius:22px; height:170px;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow: 0 10px 20px rgba(0,0,0,.12);
+      position:relative; cursor:grab; border:4px solid transparent; transition:.18s ease;
+    }
+    .tile img{ width:88%; height:88%; object-fit:contain; }
+    .tile.dragging{ transform:scale(1.07) rotate(2deg); z-index:20; cursor:grabbing; }
+    .tile.selected{ border-color:#ffd166; box-shadow:0 16px 30px rgba(255,209,102,.3); }
+    .tile.hidden{ visibility:hidden; }
 
-    .card.dragging{opacity:.7}
-    .card.selected{outline:4px solid rgba(255,138,149,.9)}
-    .card.attempt{transform:scale(.98);transition:transform .15s}
-    .card.shake{animation:shake .35s}
-    .card.matched{opacity:0;transform:scale(.9);transition:all .15s ease;pointer-events:none}
-    @keyframes shake{10%,90%{transform:translateX(-1px)}20%,80%{transform:translateX(2px)}30%,50%,70%{transform:translateX(-4px)}40%,60%{transform:translateX(4px)}}
+    /* ===== Hits (matched pairs) ===== */
+    .hits-wrap{ display:flex; flex-direction:column; gap:10px; }
+    .hits-empty{ color:#fff; opacity:.85; margin:2px 6px 12px; }
+    .hits{
+      display:flex; flex-wrap:wrap; gap:14px;
+      min-height:42px;
+    }
+    .hit{
+      display:flex; align-items:center; gap:8px;
+      background:rgba(255,255,255,.18);
+      border:1px solid rgba(255,255,255,.28);
+      padding:8px; border-radius:16px; color:#fff;
+      box-shadow:0 6px 16px rgba(0,0,0,.12);
+    }
+    .hit .mini{ width:58px; height:58px; border-radius:12px; background:#fff; display:flex; align-items:center; justify-content:center; }
+    .hit .mini img{ width:90%; height:90%; object-fit:contain; }
+    .hit .ok{ font-weight:800; }
 
-    #foundWrap{margin-top:18px}
-    #foundPairs{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-    .found-pair{display:inline-flex;align-items:center;padding:8px 10px;background:#fff;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
-    .found-pair img{width:56px;height:56px;padding:0}
-    .found-pair span{margin:0 6px;font-weight:700}
+    .cta-row{ display:flex; justify-content:center; padding-top:10px; }
+    .hidden{ display:none !important; }
 
-    #winOverlay{position:fixed;inset:0;background:rgba(0,0,0,.35);display:grid;place-items:center;opacity:0;pointer-events:none;transition:.2s}
-    #winOverlay.show{opacity:1;pointer-events:auto}
-    #winOverlay .modal{background:#fff;padding:24px 28px;border-radius:16px;font-size:18px;min-width:280px;text-align:center;box-shadow:0 16px 44px rgba(0,0,0,.25)}
+    /* ===== Overlay (win) ===== */
+    .overlay{
+      position:fixed; inset:0; display:none; flex-direction:column; align-items:center; justify-content:center; gap:16px;
+      background:linear-gradient(135deg,#7489ffcc,#b084ffcc); backdrop-filter:blur(8px); z-index:1200; color:#fff; text-align:center; padding:16px;
+    }
+    .overlay.show{ display:flex; }
+    .overlay h2{ font-size:42px; margin:4px 0; }
+    .overlay p{ opacity:.95; margin:0 0 10px; }
+    .overlay .btn-row{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+
+    .confetti{ position:absolute; width:10px; height:10px; background:#FFD700; animation: fall 3s linear forwards; }
+    @keyframes fall{ to{ transform:translateY(105vh) rotate(720deg); opacity:0; } }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="topbar">
-      <div style="display:flex;gap:8px;align-items:center;">
-        <a id="backLink" class="cta ghost" href="preview.html">← Zurück</a>
-        <button class="cta ghost" onclick="resetGame()">🔄 Spiel zurücksetzen</button>
+
+  <!-- Topbar (orange) -->
+  <div class="gg-topbar">
+    <a class="gg-btn gg-primary gg-back back-link" href="#">← Zurück</a>
+
+    <div class="gg-flex-spacer"></div>
+
+    <a class="gg-btn gg-ghost gg-lang lang-link" data-lang="de" href="#">Deutsch</a>
+    <a class="gg-btn gg-ghost gg-lang lang-link" data-lang="zh" href="#">中文</a>
+
+    <button class="gg-btn gg-primary reset-btn" type="button">🔄 Neues Spiel</button>
+  </div>
+
+  <div class="wrap">
+    <h1 class="page-title" id="hTitle">Ordne die Karten in 6 Paare</h1>
+    <p class="page-sub" id="hSub">
+      Ziehe zusammengehörige Karten aufeinander (z. B. <em>I</em> ↔ <em>ich</em>). Richtig verbundene Paare verschwinden und erscheinen unten als Treffer.
+    </p>
+
+    <!-- Alle Karten -->
+    <section class="panel">
+      <div class="panel-title">🧩 <span id="allCardsTitle">Alle Karten</span></div>
+      <div class="grid" id="cardsGrid"></div>
+    </section>
+
+    <!-- Korrekte Paare (mit Bildern) -->
+    <section class="panel">
+      <div class="panel-title">✅ <span id="hitsTitle">Korrekte Paare</span></div>
+
+      <div class="hits-wrap">
+        <div class="hits-empty" id="hitsEmpty">Noch keine Treffer – leg los! 😊</div>
+        <div class="hits" id="hits"></div>
+
+        <div class="cta-row">
+          <a class="gg-btn gg-primary hidden" id="toGame2" href="#">▶ Weiter zu Spiel 2</a>
+        </div>
       </div>
-      <div class="lang-switch">
-        <button id="btn-de" class="active" onclick="switchLanguage('de')">Deutsch</button>
-        <button id="btn-zh" onclick="switchLanguage('zh')">中文</button>
-      </div>
-    </div>
+    </section>
+  </div>
 
-    <h1>Ordne die Karten in 6 Paare</h1>
-    <p>Ziehe zusammengehörige Karten aufeinander (z.&nbsp;B. <em>I</em> und <em>ich</em>). Richtige Paare verschwinden und erscheinen unten als Treffer.</p>
-
-    <div id="board" aria-live="polite"></div>
-
-    <div id="foundWrap">
-      <h3>Korrekte Paare</h3>
-      <div id="foundPairs"></div>
+  <!-- Glückwunsch-Overlay -->
+  <div class="overlay" id="winOverlay">
+    <div style="font-size:64px; line-height:1">🎉</div>
+    <h2 id="winTitle">Super gemacht!</h2>
+    <p id="winText">Du hast alle 6 Paare gefunden.</p>
+    <div class="btn-row">
+      <a class="gg-btn gg-primary" id="toGame2Overlay" href="#">▶ Weiter zu Spiel 2</a>
+      <a class="gg-btn gg-primary back-link" id="backPreview" href="#">← Zurück zur Übersicht</a>
     </div>
   </div>
 
-  <!-- Win overlay -->
-  <div id="winOverlay" role="dialog" aria-modal="true" aria-label="Alle Paare gefunden">
-    <div class="modal">
-      🎉 Super! Du hast alle 6 Paare gefunden.
-      <div style="margin-top:12px;display:flex;gap:8px;justify-content:center">
-        <button class="cta ghost" onclick="resetGame()">Nochmal spielen</button>
-        <a class="cta primary" id="nextLink" href="sorting-game.html?lang=de">Weiter zu Spiel 2</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- Analytics zuerst laden -->
+  <script src="language.js"></script>
   <script src="analytics.js"></script>
-
   <script>
-    /* ---------------- Karten-Daten (Dateinamen exakt wie in /cards/) ----------------
-       Hinweis: Falls du z.B. kein german_is.png hast, benenne die Einträge einfach um. */
+    /******** URL / Lang / Variant ********/
+    const qs = new URLSearchParams(location.search);
+    const VARIANT = (qs.get('variant') || 'A').toUpperCase();
+    const LANG    = (qs.get('lang') || localStorage.getItem('grammarGamesLanguage') || 'de').toLowerCase();
 
-    // Deutsch (EN ↔ DE)
-    const SET_DE = [
-      // Pronomen
-      { id:"ich",        img:"cards/german_ich.png",        pair:"PRON_I",   lang:"de", label:"ich" },
-      { id:"I",          img:"cards/german_I.png",          pair:"PRON_I",   lang:"en", label:"I"   },
+    const i18n = {
+      de:{
+        title:"Ordne die Karten in 6 Paare",
+        sub:"Ziehe zusammengehörige Karten aufeinander (z. B. I ↔ ich). Richtig verbundene Paare verschwinden und erscheinen unten als Treffer.",
+        all:"Alle Karten",
+        hits:"Korrekte Paare",
+        empty:"Noch keine Treffer – leg los! 😊",
+        winTitle:"Super gemacht!",
+        winText:"Du hast alle 6 Paare gefunden.",
+        back:"← Zurück",
+        reset:"Neues Spiel",
+        backPreview:"← Zurück zur Übersicht",
+        toGame2:"▶ Weiter zu Spiel 2"
+      },
+      zh:{
+        title:"把卡片配成 6 对",
+        sub:"把对应的卡片拖到一起（例如 I ↔ ich）。正确配对会消失，并在下方显示为命中。",
+        all:"全部卡片",
+        hits:"正确配对",
+        empty:"还没有命中，加油！😊",
+        winTitle:"太棒了！",
+        winText:"你找到了全部 6 对。",
+        back:"← 返回",
+        reset:"新游戏",
+        backPreview:"← 返回概览",
+        toGame2:"▶ 继续到游戏 2"
+      }
+    };
+    function t(k){ return (i18n[LANG]||i18n.de)[k]; }
+    function applyTexts(){
+      document.getElementById('hTitle').textContent = t('title');
+      document.getElementById('hSub').textContent   = t('sub');
+      document.getElementById('allCardsTitle').textContent = t('all');
+      document.getElementById('hitsTitle').textContent     = t('hits');
+      document.getElementById('hitsEmpty').textContent     = t('empty');
+      document.getElementById('winTitle').textContent      = t('winTitle');
+      document.getElementById('winText').textContent       = t('winText');
+      document.getElementById('toGame2').textContent       = t('toGame2');
+      document.getElementById('toGame2Overlay').textContent= t('toGame2');
+      document.querySelector('.reset-btn').innerHTML       = "🔄 " + t('reset');
+      document.querySelector('.lang-link[data-lang="de"]').textContent = "Deutsch";
+      document.querySelector('.lang-link[data-lang="zh"]').textContent = "中文";
+      document.querySelectorAll('.back-link').forEach(a=> a.textContent = t('back'));
+      document.getElementById('backPreview').textContent = t('backPreview');
+    }
 
-      { id:"du",         img:"cards/german_du.png",         pair:"PRON_YOU", lang:"de", label:"du"  },
-      { id:"you",        img:"cards/german_you.png",        pair:"PRON_YOU", lang:"en", label:"you" },
-
-      { id:"er_sie_es",  img:"cards/german_er_sie_es.png",  pair:"PRON_3S",  lang:"de", label:"er/sie/es" },
-      { id:"he_she_it",  img:"cards/german_he_she_it.png",  pair:"PRON_3S",  lang:"en", label:"he/she/it" },
-
-      // Verb "sein" ↔ "to be"
-      { id:"bin",        img:"cards/german_bin.png",        pair:"VERB_AM",  lang:"de", label:"bin" },
-      { id:"am",         img:"cards/german_am.png",         pair:"VERB_AM",  lang:"en", label:"am"  },
-
-      { id:"bist",       img:"cards/german_bist.png",       pair:"VERB_ARE", lang:"de", label:"bist" },
-      { id:"are",        img:"cards/german_are.png",        pair:"VERB_ARE", lang:"en", label:"are" },
-
-      { id:"ist",        img:"cards/german_ist.png",        pair:"VERB_IS",  lang:"de", label:"ist" },
-      { id:"is",         img:"cards/german_is.png",         pair:"VERB_IS",  lang:"en", label:"is"  }
-    ];
-
-    // 中文 (EN ↔ ZH)
-    const SET_ZH = [
-      // Pronomen
-      { id:"wo",           img:"cards/mandarin_wo.png",          pair:"PRON_I",   lang:"zh", label:"我 (wǒ)" },
-      { id:"I_zh",         img:"cards/mandarin_I.png",           pair:"PRON_I",   lang:"en", label:"I" },
-
-      { id:"ni",           img:"cards/mandarin_ni.png",          pair:"PRON_YOU", lang:"zh", label:"你 (nǐ)" },
-      { id:"you_zh",       img:"cards/mandarin_you.png",         pair:"PRON_YOU", lang:"en", label:"you" },
-
-      { id:"ta_ta_ta",     img:"cards/mandarin_ta_ta_ta.png",    pair:"PRON_3S",  lang:"zh", label:"他/她/它 (tā)" },
-      { id:"he_she_it_zh", img:"cards/mandarin_he_she_it.png",   pair:"PRON_3S",  lang:"en", label:"he/she/it" },
-
-      // 是 (shì) ↔ am/are/is
-      { id:"wo_shi",       img:"cards/mandarin_wo_shi.png",      pair:"VERB_AM",  lang:"zh", label:"我是" },
-      { id:"am_zh",        img:"cards/mandarin_am.png",          pair:"VERB_AM",  lang:"en", label:"am"  },
-
-      { id:"ni_shi",       img:"cards/mandarin_ni_shi.png",      pair:"VERB_ARE", lang:"zh", label:"你是" },
-      { id:"are_zh",       img:"cards/mandarin_are.png",         pair:"VERB_ARE", lang:"en", label:"are" },
-
-      { id:"ta_shi",       img:"cards/mandarin_ta_shi.png",      pair:"VERB_IS",  lang:"zh", label:"他/她/它是" },
-      { id:"is_zh",        img:"cards/mandarin_is.png",          pair:"VERB_IS",  lang:"en", label:"is"   }
-    ];
-
-    /* ---------------- Logik ---------------- */
-
-    const $  = (s, r=document)=>r.querySelector(s);
-    const $$ = (s, r=document)=>Array.from(r.querySelectorAll(s));
-    const shuffle = a => a.map(x=>[Math.random(),x]).sort((m,n)=>m[0]-n[0]).map(x=>x[1]);
-
-    let currentLang = (new URLSearchParams(location.search).get('lang') || 'de').toLowerCase();
-    let deck = [], selected = null, matchedPairs = 0;
-    const TOTAL_PAIRS = 6;
-
-    function buildCard(c){
-      const el = document.createElement('div');
-      el.className = 'card';
-      el.draggable = true;
-      el.dataset.id = c.id;
-      el.dataset.pair = c.pair;
-      el.dataset.lang = c.lang;
-
-      const img = document.createElement('img');
-      img.src = c.img;
-      img.alt = c.label;
-      img.decoding = 'async';
-      el.appendChild(img);
-
-      // Drag & Drop
-      el.addEventListener('dragstart', e => {
-        e.dataTransfer.setData('text/plain', c.id);
-        e.dataTransfer.effectAllowed = 'move';
-        el.classList.add('dragging');
+    /* Back + Language + Game2 links keep params */
+    (function navInit(){
+      const back = document.querySelectorAll('.back-link');
+      back.forEach(a=>{
+        const u = new URL('preview.html', location.href);
+        u.searchParams.set('variant', VARIANT);
+        u.searchParams.set('lang', LANG);
+        a.href = u.pathname + '?' + u.searchParams.toString();
       });
-      el.addEventListener('dragend', () => el.classList.remove('dragging'));
-      el.addEventListener('dragover', e => e.preventDefault());
-      el.addEventListener('drop', e => {
+
+      document.querySelectorAll('.lang-link').forEach(a=>{
+        const L = a.dataset.lang;
+        const url = new URL(location.href);
+        url.searchParams.set('lang', L);
+        url.searchParams.set('variant', VARIANT);
+        a.href = url.pathname + '?' + url.searchParams.toString();
+        a.classList.toggle('gg-active', L === LANG);
+      });
+
+      const go2 = new URL('sorting-game.html', location.href);
+      go2.searchParams.set('variant', VARIANT);
+      go2.searchParams.set('lang', LANG);
+      document.getElementById('toGame2').href        =
+      document.getElementById('toGame2Overlay').href = go2.pathname + '?' + go2.searchParams.toString();
+
+      document.querySelector('.reset-btn').addEventListener('click', resetGame);
+    })();
+
+    /******** Karten & Paare ********/
+    // 6 Paare: 3 Pronomen, 3 Formen von "to be"
+    const DECK = [
+      { id:"I",          pair:"I-ich",               file:"german_I.png" },
+      { id:"ich",        pair:"I-ich",               file:"german_ich.png" },
+      { id:"you",        pair:"you-du",              file:"german_you.png" },
+      { id:"du",         pair:"you-du",              file:"german_du.png" },
+      { id:"he_she_it",  pair:"he/she/it-er/sie/es", file:"german_he_she_it.png" },
+      { id:"er_sie_es",  pair:"he/she/it-er/sie/es", file:"german_er_sie_es.png" },
+
+      { id:"am",         pair:"am-bin",              file:"german_am.png" },
+      { id:"bin",        pair:"am-bin",              file:"german_bin.png" },
+      { id:"are",        pair:"are-bist",            file:"german_are.png" },
+      { id:"bist",       pair:"are-bist",            file:"german_bist.png" },
+      { id:"is",         pair:"is-ist",              file:"german_is.png" },
+      { id:"ist",        pair:"is-ist",              file:"german_ist.png" }
+    ];
+
+    const grid = document.getElementById('cardsGrid');
+    const hitsBox = document.getElementById('hits');
+    const hitsEmpty = document.getElementById('hitsEmpty');
+    const toGame2Btn = document.getElementById('toGame2');
+    const winOverlay = document.getElementById('winOverlay');
+
+    let firstPick = null;
+    let matchedPairs = 0;
+
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+    function makeTile(card){
+      const div = document.createElement('div');
+      div.className = 'tile';
+      div.draggable = true;
+      div.dataset.id = card.id;
+      div.dataset.pair = card.pair;
+      div.innerHTML = `<img src="cards/${card.file}" alt="${card.id}">`;
+
+      // drag
+      div.addEventListener('dragstart', e=>{
+        e.dataTransfer.setData('text/plain', JSON.stringify({id:card.id, pair:card.pair}));
+        div.classList.add('dragging');
+      });
+      div.addEventListener('dragend', ()=> div.classList.remove('dragging'));
+
+      // allow drop ON other tiles
+      div.addEventListener('dragover', e=> e.preventDefault());
+      div.addEventListener('drop', e=>{
         e.preventDefault();
-        const fromId = e.dataTransfer.getData('text/plain');
-        const fromEl = document.querySelector(`.card[data-id="${fromId}"]`);
-        if (!fromEl || fromEl === el || el.classList.contains('matched') || fromEl.classList.contains('matched')) return;
-        tryMatch(fromEl, el);
+        const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+        tryMatch(data, {id:card.id, pair:card.pair}, div);
       });
 
-      // Tap-to-match (mobil)
-      el.addEventListener('click', () => {
-        if (el.classList.contains('matched')) return;
-        if (!selected) {
-          selected = el; el.classList.add('selected');
-        } else if (selected === el) {
-          el.classList.remove('selected'); selected = null;
-        } else {
-          tryMatch(selected, el);
-          selected.classList.remove('selected'); selected = null;
+      // click to select / match
+      div.addEventListener('click', ()=>{
+        if (!firstPick){
+          firstPick = div;
+          div.classList.add('selected');
+        }else if(firstPick === div){
+          firstPick.classList.remove('selected');
+          firstPick = null;
+        }else{
+          tryMatch(
+            {id:firstPick.dataset.id, pair:firstPick.dataset.pair},
+            {id:div.dataset.id,       pair:div.dataset.pair},
+            div
+          );
         }
       });
 
-      return el;
+      return div;
     }
 
-    function tryMatch(a, b){
-      a.classList.add('attempt'); b.classList.add('attempt');
+    function renderGrid(){
+      grid.innerHTML = '';
+      shuffle([...DECK]).forEach(c=> grid.appendChild(makeTile(c)));
+    }
 
-      const ok = a.dataset.pair === b.dataset.pair
-              && a.dataset.id   !== b.dataset.id
-              && a.dataset.lang !== b.dataset.lang; // verhindert ich↔ich
+    function tryMatch(a, b, targetTile){
+      if (!a || !b) return;
 
-      if (ok){
-        a.classList.add('matched'); b.classList.add('matched');
-        a.draggable = b.draggable = false;
+      const t1 = grid.querySelector(`.tile[data-id="${a.id}"]`);
+      const t2 = grid.querySelector(`.tile[data-id="${b.id}"]`);
 
-        // ---- Analytics: richtiges Paar ----
-        try { window.analytics?.trackClick('game1_pair', { pair: a.dataset.pair }); } catch {}
+      const sameCard = a.id === b.id;
+      const correct = a.pair === b.pair && !sameCard;
 
-        setTimeout(()=>{
-          addToFound(a,b);
-          a.remove(); b.remove();
-          matchedPairs++;
-          if (matchedPairs===TOTAL_PAIRS) showWin();
-        },150);
-      } else {
-        a.classList.add('shake'); b.classList.add('shake');
-        setTimeout(()=>{ a.classList.remove('shake','attempt'); b.classList.remove('shake','attempt'); },400);
+      if (firstPick) firstPick.classList.remove('selected');
+      firstPick = null;
+
+      if (!correct){
+        // tiny shake for feedback
+        if (targetTile){
+          targetTile.style.transform = 'translateX(-3px)';
+          setTimeout(()=> targetTile.style.transform='', 120);
+        }
+        return;
+      }
+
+      // Correct pair → hide tiles, add to hits list
+      if (t1) t1.classList.add('hidden');
+      if (t2) t2.classList.add('hidden');
+
+      addHitPair(a.id, b.id, a.pair);
+      matchedPairs++;
+
+      tryTrack('game1_pair', { pair: a.pair });
+
+      // Win after 6 pairs
+      if (matchedPairs === 6){
+        toGame2Btn.classList.remove('hidden');
+        setTimeout(showWin, 350);
       }
     }
 
-    function addToFound(a,b){
-      const rail = $('#foundPairs');
-      const wrap = document.createElement('div');
-      wrap.className = 'found-pair';
-      const i1 = a.querySelector('img').cloneNode();
-      const i2 = b.querySelector('img').cloneNode();
-      wrap.appendChild(i1);
-      const plus = document.createElement('span'); plus.textContent = ' + ';
-      wrap.appendChild(plus);
-      wrap.appendChild(i2);
-      rail.appendChild(wrap);
+    function cardFile(id){
+      const c = DECK.find(x=> x.id === id);
+      return c ? c.file : '';
+    }
+
+    function addHitPair(id1, id2, pairName){
+      hitsEmpty.classList.add('hidden');
+
+      // keep a consistent left-right order by file name
+      const files = [cardFile(id1), cardFile(id2)];
+      files.sort();
+
+      const hit = document.createElement('div');
+      hit.className = 'hit';
+      hit.innerHTML = `
+        <span class="ok">✔</span>
+        <span class="mini"><img src="cards/${files[0]}" alt=""></span>
+        <span class="mini"><img src="cards/${files[1]}" alt=""></span>
+      `;
+      hitsBox.appendChild(hit);
     }
 
     function showWin(){
-      $('#winOverlay').classList.add('show');
-
-      // ---- Analytics: Spiel abgeschlossen ----
-      try { window.analytics?.trackClick('game1_complete', {}); } catch {}
+      winOverlay.classList.add('show');
+      for (let i=0;i<60;i++){
+        setTimeout(()=> {
+          const c = document.createElement('div');
+          c.className='confetti';
+          c.style.left = (Math.random()*100)+'%';
+          c.style.top  = '-20px';
+          c.style.background = ['#FFD700','#FF6B6B','#4ECDC4','#45B7D1','#96CEB4'][Math.floor(Math.random()*5)];
+          c.style.animationDelay = (Math.random()*1.2)+'s';
+          document.getElementById('winOverlay').appendChild(c);
+          setTimeout(()=> c.remove(), 3200);
+        }, i*35);
+      }
+      tryTrack('game1_complete');
     }
-
-    function hideWin(){ $('#winOverlay').classList.remove('show'); }
 
     function resetGame(){
-      hideWin();
       matchedPairs = 0;
-      $('#foundPairs').innerHTML = '';
-
-      const data = currentLang === 'zh' ? SET_ZH : SET_DE;
-      deck = shuffle(data.slice());
-
-      const board = $('#board');
-      board.innerHTML = '';
-      deck.forEach(c => board.appendChild(buildCard(c)));
-
-      // UI aktualisieren
-      $('#btn-de').classList.toggle('active', currentLang==='de');
-      $('#btn-zh').classList.toggle('active', currentLang==='zh');
-
-      // Weiter-Link richtig setzen
-      const next = $('#nextLink');
-      if (next) next.href = currentLang==='zh' ? 'sorting-game.html?lang=zh' : 'sorting-game.html?lang=de';
-
-      // ---- Analytics: Start/Reset ----
-      const p = new URLSearchParams(location.search);
-      const meta = {
-        variant: (p.get('variant') || 'A').toUpperCase(),
-        lang: currentLang
-      };
-      try { window.analytics?.trackClick('game1_start', meta); } catch {}
+      firstPick = null;
+      hitsBox.innerHTML = '';
+      hitsEmpty.classList.remove('hidden');
+      document.getElementById('toGame2').classList.add('hidden');
+      winOverlay.classList.remove('show');
+      renderGrid();
+      tryTrack('game1_start');
     }
 
-    function switchLanguage(lang){
-      currentLang = lang;
-      const url = new URL(location.href);
-      url.searchParams.set('lang', lang);
-      history.replaceState({}, '', url); // URL sauber halten
-      resetGame();
+    function tryTrack(evt, payload={}){
+      try{
+        (window.analytics && window.analytics.trackClick)
+          ? window.analytics.trackClick(evt, payload)
+          : (window.analytics?.track?.(evt, payload));
+      }catch(_){}
     }
 
-    // Back-Link so setzen, dass variant/lang erhalten bleiben
-    (function setBackLink(){
-      const p = new URLSearchParams(location.search);
-      const lang = (p.get('lang') || 'de').toLowerCase();
-      const variant = p.get('variant');
+    /* Init */
+    applyTexts();
+    renderGrid();
+    tryTrack('game1_start');
 
-      const target = new URL('preview.html', location.href); // Zielseite bei "Zurück"
-      target.searchParams.set('lang', lang);
-      if (variant) target.searchParams.set('variant', variant);
-
-      const back = document.getElementById('backLink');
-      if (back) back.href = target.pathname + '?' + target.searchParams.toString();
-    })();
-
-    // Start
-    document.addEventListener('DOMContentLoaded', resetGame);
-    window.switchLanguage = switchLanguage;
-    window.resetGame = resetGame;
+    // reset button
+    document.querySelector('.reset-btn').addEventListener('click', resetGame);
   </script>
 </body>
 </html>
