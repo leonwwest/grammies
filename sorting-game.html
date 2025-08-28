@@ -303,7 +303,6 @@
           div.classList.remove('selected');
           return;
         }
-        // clear prev
         document.querySelectorAll('.tile.selected').forEach(x=> x.classList.remove('selected'));
         selectedCardId = card.id;
         div.classList.add('selected');
@@ -568,11 +567,43 @@
       }catch(_){}
     }
 
-    /* Init */
+    /* ------- INIT ------- */
     applyTexts();
     renderCards();
     buildRows();
     tryTrack('game2_start');
+
+    /* ========= NEW: Auto-scroll while dragging (no other changes) ========= */
+    (function enableAutoScrollOnDrag(){
+      const EDGE = 100;      // px from top/bottom to trigger
+      const STEP = 28;       // scroll step in px per event
+      let raf = null;
+
+      function onDragOver(e){
+        // e.clientY is available for mouse drag events
+        const y = e.clientY;
+        if (typeof y !== 'number') return;
+
+        const vh = window.innerHeight;
+        if (y < EDGE){
+          scheduleScroll(-STEP);
+        } else if (vh - y < EDGE){
+          scheduleScroll(STEP);
+        }
+      }
+
+      function scheduleScroll(delta){
+        if (raf) cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(()=> {
+          window.scrollBy(0, delta);
+          raf = null;
+        });
+      }
+
+      // Scroll when dragging anywhere on the page
+      window.addEventListener('dragover', onDragOver, { passive: true });
+    })();
+    /* ========= END auto-scroll ========= */
   </script>
 </body>
 </html>
