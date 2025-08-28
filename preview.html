@@ -3,168 +3,220 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Grammar Games – Beispiel-Spiele ansehen</title>
+  <meta name="description" content="So funktionieren unsere Grammar Games: Vorschau der Druckkarten & Spiele. Gleicher Look & Feel wie die Spiele – jetzt ausprobieren."/>
+  <title>Grammar Games – Vorschau</title>
 
   <link rel="stylesheet" href="shared.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-  <!-- Übersetzungen / Sprachumschaltung -->
-  <script src="language.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
 
   <style>
-    /* ------- kompakte Memory-Vorschau ------- */
-    .memory-card { grid-column: 1 / -1; }
-    .memory-title { display:flex; align-items:center; gap:.5rem }
-    .memory-sub { color:#566; margin:.4rem 0 1rem 0; }
-
-    .strip-compact{
-      display:flex;
-      gap:16px;
-      padding:10px 2px;
-      border-radius:18px;
-      background:linear-gradient(135deg,#dff0e1,#ebf3d8);
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.35);
-
-      /* zentriert die zwei Paare */
-      justify-content:center;
-      align-items:center;
-
-      /* auf kleinen Screens umbrechen statt scrollen */
-      flex-wrap:wrap;
+    /* ==== Base / Background (wie bei den Game-Seiten) ==== */
+    :root{
+      --gg-orange:#FF6B6B;
+      --gg-orange-dark:#ff5a5a;
+      --gg-surface:rgba(255,255,255,.12);
+      --gg-card:rgba(255,255,255,.16);
+      --gg-border:rgba(255,255,255,.55);
+      --gg-shadow:0 12px 30px rgba(26, 26, 44, .22);
+      --ring:rgba(255,255,255,.55);
+      --muted:#e9edff;
     }
-
-    .img-plain{
-      flex:0 0 auto;
-      height:120px;  /* volle Bildhöhe */
-      width:auto;    /* Seitenverhältnis beibehalten */
-      border-radius:14px;               /* weiche Ecken */
-      background:transparent;           /* kein weißer Rand */
-      box-shadow:0 8px 18px rgba(0,0,0,.10);
-      display:block;
+    body{
+      font-family:"Poppins", system-ui, Segoe UI, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 20% -10%, #b9c6ff33, #0000),
+                  radial-gradient(1000px 600px at 90% -10%, #a2b3ff30, #0000),
+                  linear-gradient(135deg,#89a6ff 0%, #bba8ff 50%, #d0b7ff 100%);
+      min-height:100vh;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      color:#222;
     }
+    .container{max-width:1100px;margin:0 auto;padding:0 18px 42px;}
 
-    .mini-badges{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px }
-    .mini-badge{
-      background:#fff; border:1px solid #e9ecf3; padding:6px 10px; border-radius:10px;
-      font-size:.9rem; color:#445; box-shadow:0 6px 14px rgba(0,0,0,.06)
+    /* ==== Topbar exakt wie im Spiel ==== */
+    .gg-topbar{
+      display:flex; align-items:center; gap:12px;
+      padding:14px 18px; position:sticky; top:0; z-index:1050;
+      backdrop-filter:saturate(140%) blur(8px);
     }
+    .gg-flex-spacer{ flex:1; } /* schiebt die Sprachknöpfe nach rechts */
+
+    .gg-btn{
+      display:inline-flex; align-items:center; gap:.5rem;
+      height:38px; padding:0 14px; border-radius:22px;
+      font:600 14px/1.1 "Poppins",system-ui,Segoe UI,Arial,sans-serif;
+      text-decoration:none; cursor:pointer; user-select:none;
+      transition:.18s ease; border:1.5px solid transparent;
+      color:#fff;
+    }
+    .gg-primary{ background:var(--gg-orange); border-color:var(--gg-orange); box-shadow:0 6px 18px rgba(255,107,107,.28); }
+    .gg-primary:hover{ transform:translateY(-1px); background:var(--gg-orange-dark); }
+    .gg-ghost{ background:transparent; color:#fff; border-color:var(--gg-border); }
+    .gg-ghost:hover{ background:rgba(255,255,255,.10); }
+    .gg-lang.gg-active{ background:var(--gg-orange); color:#fff; border-color:var(--gg-orange); box-shadow:0 6px 18px rgba(255,107,107,.28); }
+    .gg-back{ margin-right:8px; }
+
+    /* ==== Überschriften ==== */
+    .title-wrap{text-align:center;margin:10px 0 24px}
+    .title{font-size:clamp(28px,3.4vw,40px);line-height:1.2;color:#fff;font-weight:800}
+    .subtitle{color:var(--muted);opacity:1;margin-top:6px}
+
+    /* ==== Kartenabschnitte ==== */
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.40), rgba(255,255,255,.22));
+      border-radius:18px; padding:20px 20px 18px; margin:20px 0;
+      box-shadow:0 18px 40px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.35);
+      border:1px solid rgba(255,255,255,.35);
+    }
+    .card h3{font-size:20px;margin:0 0 12px;display:flex;align-items:center;gap:10px;color:#fff;font-weight:800}
+    .card p{margin:0 0 16px;color:#fff;opacity:.95}
+
+    /* ==== Vorschau-Strips ==== */
+    .strip{
+      background:linear-gradient(180deg,rgba(255,255,255,.25),rgba(255,255,255,.15));
+      border:1px solid var(--ring);
+      border-radius:16px;padding:16px;display:flex;justify-content:center;gap:18px;align-items:center
+    }
+    .pair{
+      position:relative;display:flex;gap:12px;align-items:center;
+      padding:10px;border-radius:14px;background:rgba(255,255,255,.55);
+      box-shadow:0 6px 16px rgba(0,0,0,.08);border:1px solid rgba(255,255,255,.75)
+    }
+    .pair .check{
+      position:absolute;left:-8px;top:-8px;background:#fff;border:3px solid #c8f7cf;
+      color:#38c172;border-radius:999px;font-size:14px;line-height:1;padding:4px 6px;
+      box-shadow:0 8px 16px rgba(56,193,114,.25)
+    }
+    .tile{
+      background:#fff;border-radius:16px;padding:8px;display:flex;align-items:center;justify-content:center;
+      box-shadow:0 6px 14px rgba(0,0,0,.08);border:1px solid rgba(255,255,255,.75)
+    }
+    .tile img{width:72px;height:72px;display:block}
+
+    /* ==== CTA Buttons (Orange) ==== */
+    .cta-row{ display:flex; justify-content:center; padding-top:12px; }
   </style>
+
+  <script src="language.js"></script>
 </head>
 <body>
-  <!-- Variant selector -->
-  <div class="variant-selector">
-    <a href="index.html?variant=A" class="variant-btn" data-translate="variantA">Variante A: 10-Min Games</a>
-    <a href="index.html?variant=B" class="variant-btn" data-translate="variantB">Variante B: Multisensory Grammar</a>
+
+  <!-- Topbar: Back links (ein Pfeil + Text), Sprachwahl rechts -->
+  <div class="gg-topbar">
+    <a class="gg-btn gg-primary gg-back back-link" href="#">
+      <span class="arrow"></span>
+      <span class="back-text" data-translate="backButton">Zurück</span>
+    </a>
+
+    <div class="gg-flex-spacer"></div>
+
+    <a class="gg-btn gg-ghost gg-lang lang-link" data-lang="de" href="#">Deutsch</a>
+    <a class="gg-btn gg-ghost gg-lang lang-link" data-lang="zh" href="#">中文</a>
   </div>
 
-  <div class="screen">
-    <div class="container">
-      <div class="back-nav">
-        <a href="#" onclick="navigateWithTracking('index.html','back-click'); return false;" class="back-btn" data-translate="backButton">← Zurück</a>
+  <div class="container">
+    <div class="title-wrap">
+      <h1 class="title" data-translate="previewTitle">So funktionieren unsere Grammar Games</h1>
+      <div class="subtitle" data-translate="previewSubtitle">
+        Printable Karten mit einfachen Routinen für zu Hause
       </div>
+    </div>
 
-      <h2 data-translate="previewTitle">So funktionieren unsere Grammar Games</h2>
-      <p class="subtitle" data-translate="previewSubtitle">Printable Karten mit einfachen Routinen für zu Hause</p>
+    <!-- Game 1: Memory -->
+    <section class="card">
+      <h3>🧠 <span data-translate="game1TitleMemory">Memory: Karte zu Karte (Drag & Drop)</span></h3>
+      <p data-translate="game1SubtitleMemory">
+        Ziehe passende Karten zusammen (z. B. <em>I</em> ↔ <em>ich</em>). Finde 6 Paare.
+      </p>
 
-      <!-- ===== GAME 1: KOMPAKT ===== -->
-      <div class="card memory-card">
-        <div class="card-title memory-title" data-translate="game1TitleMemory">🧠 Memory: Karte zu Karte (Drag & Drop)</div>
-
-        <!-- kurze, allgemeine Beschreibung -->
-        <p class="memory-sub">
-          Ziehe passende Karten zusammen (z. B. <em>I</em> ↔ <em>ich</em>). Finde 6 Paare.
-        </p>
-
-        <!-- 2 Bild-Paare, zentriert, ohne weißen Rand -->
-        <div class="strip-compact">
-          <!-- Paar 1: I ↔ ich -->
-          <img class="img-plain" src="cards/german_I.png"   alt="I">
-          <img class="img-plain" src="cards/german_ich.png" alt="ich">
-          <!-- kleiner Abstand zwischen den zwei Paaren -->
-          <span style="width:24px; height:1px; flex:0 0 24px;"></span>
-          <!-- Paar 2: am ↔ bin -->
-          <img class="img-plain" src="cards/german_am.png"  alt="am">
-          <img class="img-plain" src="cards/german_bin.png" alt="bin">
+      <div class="strip" aria-label="Vorschau Spiel 1">
+        <div class="pair">
+          <span class="check">✓</span>
+          <div class="tile"><img src="cards/german_I.png" alt="I"></div>
+          <div class="tile"><img src="cards/german_ich.png" alt="ich"></div>
         </div>
-
-        <!-- kleine Badges -->
-        <div class="mini-badges">
-          <span class="mini-badge">👥 Pronomen &amp; to be</span>
-          <span class="mini-badge">🇩🇪↔️🇬🇧 / 中文</span>
-          <span class="mini-badge">⏱️ 2–4 Min</span>
-        </div>
-
-        <div style="text-align:center; margin-top:14px;">
-          <a class="cta-button primary link-game1" href="card-game.html" data-translate="playGame1Now">
-            ▶ Spiel 1 jetzt spielen
-          </a>
+        <div class="pair">
+          <span class="check">✓</span>
+          <div class="tile"><img src="cards/german_am.png" alt="am"></div>
+          <div class="tile"><img src="cards/german_bin.png" alt="bin"></div>
         </div>
       </div>
 
-      <!-- (optional) zweites Beispiel – kann bleiben oder gelöscht werden -->
-      <div class="card">
-        <div class="card-title" data-translate="characterSentenceGame">🏗️ Charakter-Sätze-Spiel</div>
-        <div class="sentence-builder" style="text-align:center;">
-          <div style="background:linear-gradient(135deg,#ffecd2,#fcb69f); padding:25px; border-radius:20px; margin-bottom:20px;">
-            <h4 style="margin-bottom:20px; color:#2c3e50;" data-translate="charactersBuilding">🎭 Die Charaktere bauen einen Satz!</h4>
+      <div class="cta-row">
+        <a class="gg-btn gg-primary link-game1" href="card-game.html" data-translate="playGame1Now">▶ Spiel 1 jetzt spielen</a>
+      </div>
+    </section>
 
-            <div style="display:flex; gap:15px; justify-content:center; margin-bottom:20px; flex-wrap:wrap; align-items:center;">
-              <div style="background:#fff; border-radius:15px; padding:12px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,.1); transform:scale(.95);">
-                <div style="width:50px; height:50px; background:linear-gradient(135deg,#ff9a9e,#fecfef); border-radius:50%; margin:0 auto 8px; display:flex; align-items:center; justify-content:center; font-size:1.4em;">👧</div>
-                <div style="font-weight:bold; color:#e74c3c; font-size:1.1em;">I</div>
-              </div>
-              <div style="font-size:2em; color:#34495e;">➕</div>
-              <div style="background:#fff; border-radius:15px; padding:12px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,.1); transform:scale(.95);">
-                <div style="width:50px; height:50px; background:linear-gradient(135deg,#a8edea,#fed6e3); border-radius:50%; margin:0 auto 8px; display:flex; align-items:center; justify-content:center; font-size:1.4em;">🎮</div>
-                <div style="font-weight:bold; color:#3498db; font-size:1.1em;">PLAY</div>
-              </div>
-              <div style="font-size:2em; color:#34495e;">➕</div>
-              <div style="background:#fff; border-radius:15px; padding:12px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,.1); transform:scale(.95);">
-                <div style="width:50px; height:50px; background:linear-gradient(135deg,#d299c2,#fef9d7); border-radius:50%; margin:0 auto 8px; display:flex; align-items:center; justify-content:center; font-size:1.4em;">🎲</div>
-                <div style="font-weight:bold; color:#27ae60; font-size:1.1em;">GAMES</div>
-              </div>
-            </div>
+    <!-- Game 2: Sortierspiel -->
+    <section class="card">
+      <h3>🧩 <span data-translate="game2TitleSort">Sortieren: Karten in Felder (Drag & Drop)</span></h3>
+      <p data-translate="game2SubtitleSort">Ziehe passende Karten in die richtigen Felder (z. B. I ↔ ich). Baue 3 richtige Reihen.</p>
 
-            <div style="font-size:2em; color:#34495e; margin:15px 0;">⬇️</div>
-
-            <div style="background:#fff; padding:20px; border-radius:15px; box-shadow:0 5px 20px rgba(0,0,0,.1); border:3px solid #f39c12;">
-              <div style="font-size:1.5em; color:#2c3e50; font-weight:600; margin-bottom:10px;" data-translate="perfectSentence">
-                ✨ "I play games!" ✨
-              </div>
-              <div style="font-size:.9em; color:#7f8c8d;" data-translate="sentenceStructure">
-                👧 Pronomen + 🎮 Verb + 🎲 Nomen = Perfekter Satz!
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="strip" aria-label="Vorschau Spiel 2">
+        <div class="tile"><img src="cards/german_ich.png" alt="ich"></div>
+        <div class="tile"><img src="cards/german_bin.png" alt="bin"></div>
+        <span>=</span>
+        <div class="tile"><img src="cards/german_I.png" alt="I"></div>
+        <div class="tile"><img src="cards/german_am.png" alt="am"></div>
       </div>
 
-      <div style="text-align:center;">
-        <a href="#" class="cta-button primary" onclick="navigateWithTracking('chooser.html','preview-to-chooser'); return false;" data-translate="suitableGames">
-          Passende Spiele für mein Kind
-        </a>
+      <div class="cta-row">
+        <a class="gg-btn gg-primary link-game2" href="sorting-game.html" data-translate="playGame2Now">▶ Spiel 2 jetzt spielen</a>
       </div>
+    </section>
+
+    <!-- Optionaler Footer-CTA (unten; NICHT im Header) -->
+    <div class="cta-row" style="margin-top:26px">
+      <a class="gg-btn gg-primary footer-cta" href="chooser.html" data-translate="suitableGames">Passende Spiele für mein Kind</a>
     </div>
   </div>
 
-  <!-- lang/variant an CTA anhängen -->
+  <script src="analytics.js"></script>
   <script>
-    (function () {
-      const p = new URLSearchParams(location.search);
-      const variant = (p.get('variant') || 'A').toUpperCase();
-      const lang = (p.get('lang') || localStorage.getItem('grammarGamesLanguage') || 'de').toLowerCase();
+    (function(){
+      const qs = new URLSearchParams(location.search);
+      const VARIANT = (qs.get('variant') || window.analytics?.sessionData?.variant || 'A').toUpperCase();
+      const LANG    = (qs.get('lang') || window.languageSystem?.currentLanguage || localStorage.getItem('grammarGamesLanguage') || 'de').toLowerCase();
 
-      document.querySelectorAll('.link-game1').forEach(a => {
-        const url = new URL(a.getAttribute('href'), location.href);
-        url.searchParams.set('variant', variant);
-        url.searchParams.set('lang', lang);
-        a.href = url.pathname + '?' + url.searchParams.toString();
+      // Back-Text sauber setzen (nur EIN Pfeil – Text separat)
+      try {
+        const t = (k)=> window.languageSystem?.t?.(k) || k;
+        const backText = document.querySelector('.back-link .back-text');
+        if (backText) backText.textContent = t('backButton');
+      } catch(_) {}
+
+      // Back → index.html (Params + Tracking)
+      document.querySelectorAll('.back-link').forEach(a=>{
+        const u = new URL('index.html', location.href);
+        u.searchParams.set('variant', VARIANT);
+        u.searchParams.set('lang', LANG);
+        a.href = u.pathname + '?' + u.searchParams.toString();
+        a.addEventListener('click', (e)=>{
+          e.preventDefault();
+          if (window.navigateWithTracking) window.navigateWithTracking(a.href, 'preview-back');
+          else location.href = a.href;
+        });
       });
 
-      // Übersetzungen ggf. erneut anwenden
-      window.languageSystem?.updateDynamicContent?.();
+      // Sprachlinks rechts, Params behalten + Active-State
+      document.querySelectorAll('.lang-link').forEach(a=>{
+        const L = a.dataset.lang;
+        const url = new URL(location.href);
+        url.searchParams.set('lang', L);
+        url.searchParams.set('variant', VARIANT);
+        a.href = url.pathname + '?' + url.searchParams.toString();
+        a.classList.toggle('gg-active', L === LANG);
+      });
+
+      // Game-CTAs und Footer-CTA mit Params + Tracking
+      document.querySelectorAll('.link-game1, .link-game2, .footer-cta').forEach(a=>{
+        const url = new URL(a.getAttribute('href'), location.href);
+        url.searchParams.set('variant', VARIANT);
+        url.searchParams.set('lang', LANG);
+        a.href = url.pathname + '?' + url.searchParams.toString();
+      });
+      document.querySelector('.link-game1')?.addEventListener('click', ()=> window.analytics?.trackClick?.('preview_to_game1'));
+      document.querySelector('.link-game2')?.addEventListener('click', ()=> window.analytics?.trackClick?.('preview_to_game2'));
     })();
   </script>
-
-  <script src="analytics.js"></script>
 </body>
 </html>

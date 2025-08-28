@@ -1,767 +1,609 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grammar Games - Language Sorting Game</title>
-    <link rel="stylesheet" href="shared.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        .game-container {
-            max-width: 100vw;
-            height: 100vh;
-            margin: 0;
-            padding: 20px;
-            background: linear-gradient(135deg, #8FA8FF 0%, #A0B8FF 50%, #C8D9FF 100%);
-            position: relative;
-            overflow: hidden;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grammar Games – Spiel 2 (Sortieren)</title>
 
-        .game-header {
-            text-align: center;
-            margin-bottom: 30px;
-            color: white;
-            position: relative;
-            z-index: 100;
-        }
+  <link rel="stylesheet" href="shared.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 
-        .game-header h1 {
-            font-size: 2.2em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-        }
+  <style>
+    :root{
+      --gg-orange:#FF6B6B;
+      --gg-orange-dark:#ff5a5a;
+      --gg-surface:rgba(255,255,255,.12);
+      --gg-card:rgba(255,255,255,.16);
+      --gg-border:rgba(255,255,255,.55);
+      --gg-shadow:0 12px 30px rgba(26, 26, 44, .22);
+    }
+    body{
+      font-family:"Poppins", system-ui, Segoe UI, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 20% -10%, #b9c6ff33, #0000),
+                  radial-gradient(1000px 600px at 90% -10%, #a2b3ff30, #0000),
+                  linear-gradient(135deg,#89a6ff 0%, #bba8ff 50%, #d0b7ff 100%);
+      min-height:100vh;
+    }
 
-        .game-header p {
-            font-size: 1.1em;
-            opacity: 0.9;
-            margin-bottom: 20px;
-        }
+    /* ====== Topbar ====== */
+    .gg-topbar{
+      display:flex; align-items:center; gap:12px;
+      padding:14px 18px; position:sticky; top:0; z-index:1050;
+      backdrop-filter:saturate(140%) blur(8px);
+    }
+    .gg-flex-spacer{ flex:1; }
+    .gg-btn{
+      display:inline-flex; align-items:center; gap:.5rem;
+      height:38px; padding:0 14px; border-radius:22px;
+      font:600 14px/1.1 "Poppins",system-ui,Segoe UI,Arial,sans-serif;
+      text-decoration:none; cursor:pointer; user-select:none;
+      transition:.18s ease; border:1.5px solid transparent;
+    }
+    .gg-primary{ background:var(--gg-orange); color:#fff; border-color:var(--gg-orange); box-shadow:0 6px 18px rgba(255,107,107,.28); }
+    .gg-primary:hover{ transform:translateY(-1px); background:var(--gg-orange-dark); }
+    .gg-ghost{ background:transparent; color:#fff; border-color:var(--gg-border); }
+    .gg-ghost:hover{ background:rgba(255,255,255,.10); }
+    .gg-lang.gg-active{ background:var(--gg-orange); color:#fff; border-color:var(--gg-orange); box-shadow:0 6px 18px rgba(255,107,107,.28); }
+    .gg-back{ margin-right:8px; }
 
-        .language-selector {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 200;
-        }
+    /* ====== Page ====== */
+    .wrap{ max-width:1200px; margin:0 auto; padding:10px 18px 80px; }
+    .page-title{ text-align:center; color:#fff; font-size:40px; font-weight:800; margin:12px 0 6px; letter-spacing:.3px; }
+    .page-sub{ text-align:center; color:#fff; opacity:.9; margin:0 0 26px; }
 
-        .language-btn {
-            background: linear-gradient(45deg, #FF8A95, #FFB3BA);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 138, 149, 0.3);
-            margin-left: 10px;
-        }
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.10));
+      border:1px solid rgba(255,255,255,.22);
+      border-radius:24px; padding:22px 22px 26px;
+      box-shadow: var(--gg-shadow);
+    }
+    .panel + .panel{ margin-top:20px; }
+    .panel-title{
+      display:flex; align-items:center; gap:10px; color:#fff; margin:2px 4px 18px;
+      font-weight:800; letter-spacing:.2px; font-size:26px;
+    }
 
-        .language-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255, 138, 149, 0.4);
-        }
+    /* ====== Floating cards ====== */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(6, minmax(120px,1fr));
+      gap:22px;
+    }
+    @media (max-width:1000px){
+      .grid{ grid-template-columns: repeat(4, minmax(120px,1fr)); }
+    }
+    @media (max-width:680px){
+      .grid{ grid-template-columns: repeat(3, minmax(120px,1fr)); }
+    }
+    .tile{
+      background:#fff; border-radius:22px; height:170px;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow: 0 10px 20px rgba(0,0,0,.12);
+      position:relative; cursor:grab; border:4px solid transparent; transition:.18s ease;
+    }
+    .tile img{ width:88%; height:88%; object-fit:contain; }
+    .tile.dragging{ transform:scale(1.07) rotate(2deg); z-index:20; cursor:grabbing; }
+    .tile.selected{ border-color:#ffd166; box-shadow:0 16px 30px rgba(255,209,102,.3); }
 
-        .language-btn.active {
-            background: linear-gradient(45deg, #4CAF50, #81C784);
-        }
+    /* ====== Sorting rows ====== */
+    .rows{ display:flex; flex-direction:column; gap:18px; }
+    .row{
+      background: rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.22);
+      border-radius:18px; padding:16px 16px 18px;
+    }
+    .row.locked{ outline:3px solid #46d39a; box-shadow:0 0 0 4px rgba(70,211,154,.18) inset; }
 
-        .game-controls {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 200;
-        }
+    .row-head{
+      display:flex; gap:16px; align-items:center; justify-content:space-between;
+      margin-bottom:14px; color:#fff; font-weight:700;
+    }
+    .tags{ display:flex; gap:8px; flex-wrap:wrap; }
+    .tag{ background:#fff; color:#2c2c44; border-radius:999px; padding:6px 10px; font-weight:600; box-shadow:0 4px 10px rgba(0,0,0,.12); }
 
-        .reset-btn {
-            background: linear-gradient(45deg, #FF8A95, #FFB3BA);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 138, 149, 0.3);
-        }
+    .cols{ display:flex; align-items:center; gap:16px; }
+    .col{ flex:1; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .label{
+      display:flex; align-items:center; justify-content:center;
+      background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.28);
+      color:#fff; font-weight:700; border-radius:12px; height:44px; min-width:170px;
+    }
+    .equals{ color:#fff; font-size:28px; font-weight:800; padding:0 8px; }
 
-        .reset-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255, 138, 149, 0.4);
-        }
+    .slot{
+      width:82px; height:82px; border-radius:14px; background:rgba(255,255,255,.12);
+      border:2px dashed rgba(255,255,255,.55);
+      display:flex; align-items:center; justify-content:center;
+      transition:.15s ease; position:relative;
+    }
+    .row.locked .slot{ border-style:solid; border-color:#46d39a; background:rgba(70,211,154,.12); }
+    .slot.hover{ transform:scale(1.04); background:rgba(255,255,255,.24); }
+    .slot img{ width:100%; height:100%; object-fit:cover; border-radius:12px; }
 
-        .game-area {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            height: calc(100vh - 160px);
-            margin-top: 20px;
-        }
-
-        .floating-cards-area {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 20px;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 20px;
-        }
-
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 20px;
-            justify-items: center;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .sorting-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            flex: 1;
-        }
-
-        .card {
-            position: relative;
-            width: 140px;
-            height: 140px;
-            background: white;
-            border-radius: 15px;
-            cursor: grab;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            user-select: none;
-            border: 3px solid transparent;
-            z-index: 10;
-        }
-
-        .card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 12px;
-        }
-
-        .card:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            z-index: 50;
-        }
-
-        .card.dragging {
-            cursor: grabbing;
-            transform: rotate(5deg) scale(1.1);
-            z-index: 1000;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-        }
-
-        .card.sorted {
-            opacity: 0.7;
-            pointer-events: none;
-        }
-
-        .card.available:hover {
-            transform: translateY(-5px) scale(1.05);
-        }
-
-        .sorting-column {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 20px;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            display: flex;
-            flex-direction: column;
-            min-height: 500px;
-        }
-
-        .column-header {
-            text-align: center;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 15px;
-            color: white;
-            font-size: 1.8em;
-            font-weight: 700;
-        }
-
-        .column-header.german {
-            background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
-        }
-
-        .column-header.english {
-            background: linear-gradient(45deg, #4ECDC4, #81E6D9);
-        }
-
-        .sorting-area {
-            flex: 1;
-            border: 4px dashed rgba(255, 255, 255, 0.8);
-            border-radius: 15px;
-            padding: 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
-            align-content: start;
-            transition: all 0.3s ease;
-            min-height: 300px;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .sorting-area.drop-active {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: #4CAF50;
-            border-style: solid;
-        }
-
-        .sorted-card {
-            width: 100%;
-            height: 140px;
-            background: white;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .sorted-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 12px;
-        }
-
-        .sorted-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .success-message {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #4CAF50, #81C784);
-            color: white;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            text-align: center;
-        }
-
-        .success-message .celebration {
-            font-size: 4em;
-            margin-bottom: 20px;
-            animation: bounce 1s infinite;
-        }
-
-        .success-message h2 {
-            font-size: 3em;
-            margin-bottom: 20px;
-        }
-
-        .success-message p {
-            font-size: 1.5em;
-            margin-bottom: 30px;
-            opacity: 0.9;
-        }
-
-        .play-again-btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 2px solid white;
-            padding: 15px 30px;
-            border-radius: 30px;
-            font-size: 1.2em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .play-again-btn:hover {
-            background: white;
-            color: #4CAF50;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-30px); }
-            60% { transform: translateY(-15px); }
-        }
-
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: #FFD700;
-            animation: confetti-fall 3s linear infinite;
-        }
-
-        @keyframes confetti-fall {
-            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-        }
-
-        @media (max-width: 768px) {
-            .sorting-container {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .card {
-                width: 120px;
-                height: 120px;
-            }
-
-            .cards-grid {
-                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-                gap: 15px;
-            }
-
-            .column-header {
-                font-size: 1.4em;
-            }
-
-            .game-header h1 {
-                font-size: 1.8em;
-            }
-
-            .sorting-area {
-                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-                gap: 10px;
-                min-height: 250px;
-            }
-
-            .sorted-card {
-                height: 120px;
-            }
-
-            .floating-cards-area {
-                padding: 15px;
-            }
-        }
-    </style>
+    /* ====== Overlay ====== */
+    .overlay{
+      position:fixed; inset:0; display:none; flex-direction:column; align-items:center; justify-content:center; gap:12px;
+      background:linear-gradient(135deg,#7489ffcc,#b084ffcc); backdrop-filter:blur(8px); z-index:1200; color:#fff; text-align:center; padding:16px;
+    }
+    .overlay.show{ display:flex; }
+    .overlay h2{ font-size:42px; margin:4px 0; }
+    .overlay p{ opacity:.95; margin:0 0 10px; }
+    .confetti{ position:absolute; width:10px; height:10px; background:#FFD700; animation: fall 3s linear forwards; }
+    @keyframes fall{ to{ transform:translateY(105vh) rotate(720deg); opacity:0; } }
+  </style>
 </head>
 <body>
-    <div class="game-container">
-        <div class="language-selector">
-            <button class="language-btn active" onclick="setLanguage('german')">Deutsch</button>
-            <button class="language-btn" onclick="setLanguage('mandarin')">中文</button>
-        </div>
 
-        <div class="game-controls">
-            <button class="reset-btn" onclick="resetGame()">🔄 <span id="resetText">Neues Spiel</span></button>
-        </div>
+  <!-- Topbar -->
+  <div class="gg-topbar">
+    <a class="gg-btn gg-primary gg-back back-link" href="#">← Zurück</a>
 
-        <div class="game-header">
-            <h1 id="gameTitle">Lass uns noch einmal spielen!</h1>
-            <p id="gameInstructions">Welche Sprachen siehst du? Kannst du das Rätsel lösen?</p>
-        </div>
+    <div class="gg-flex-spacer"></div>
 
-        <div class="game-area">
-            <div class="floating-cards-area">
-                <h3 style="color: white; text-align: center; margin-bottom: 15px;">📚 Alle Karten / All Cards</h3>
-                <div class="cards-grid" id="cardsGrid">
-                    <!-- Cards will be generated here -->
-                </div>
-            </div>
+    <a class="gg-btn gg-ghost gg-lang lang-link" data-lang="de" href="#">Deutsch</a>
+    <a class="gg-btn gg-ghost gg-lang lang-link" data-lang="zh" href="#">中文</a>
 
-            <div class="sorting-container">
-                <div class="sorting-column">
-                    <div class="column-header german" id="germanHeader">Deutsch</div>
-                    <div class="sorting-area" id="germanArea" data-language="german">
-                        <!-- German cards will be sorted here -->
-                    </div>
-                </div>
+    <button class="gg-btn gg-primary reset-btn" type="button">🔄 Neues Spiel</button>
+  </div>
 
-                <div class="sorting-column">
-                    <div class="column-header english" id="englishHeader">English</div>
-                    <div class="sorting-area" id="englishArea" data-language="english">
-                        <!-- English cards will be sorted here -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+  <div class="wrap">
+    <h1 class="page-title" id="hTitle">Sprach-Sortierspiel</h1>
+    <p class="page-sub" id="hSub">Welche Sprachen siehst du? Kannst du das Rätsel lösen?</p>
 
-    <div class="success-message" id="successMessage">
-        <div class="celebration">🎉</div>
-        <h2 id="successTitle">Super!</h2>
-        <p id="successText">Du hast alle Karten richtig sortiert!</p>
-        <button class="play-again-btn" onclick="resetGame()">
-            <span id="playAgainText">Nochmal spielen</span>
-        </button>
-    </div>
+    <!-- Floating cards -->
+    <section class="panel">
+      <div class="panel-title">📍 <span id="allCardsTitle">Alle Karten zum Sortieren</span></div>
+      <div class="grid" id="cardsGrid"></div>
+    </section>
 
-    <script>
-        // Language data
-        const translations = {
-            german: {
-                gameTitle: "Lass uns noch einmal spielen!",
-                gameInstructions: "Welche Sprachen siehst du? Kannst du das Rätsel lösen?",
-                germanHeader: "Deutsch",
-                englishHeader: "Englisch",
-                resetText: "Neues Spiel",
-                successTitle: "Super!",
-                successText: "Du hast alle Karten richtig sortiert!",
-                playAgainText: "Nochmal spielen"
-            },
-            mandarin: {
-                gameTitle: "再玩一次！",
-                gameInstructions: "你看到了哪些语言？你能完成拼图吗？",
-                germanHeader: "普通话",
-                englishHeader: "英语", 
-                resetText: "新游戏",
-                successTitle: "太棒了！",
-                successText: "你正确分类了所有卡片！",
-                playAgainText: "再玩一次"
-            }
-        };
+    <!-- Rows -->
+    <section class="panel">
+      <div class="panel-title">🎯 <span id="rowsTitle">Sortiere die Karten hier</span></div>
 
-        // Card data for sorting game
-        const cardSets = {
-            german: [
-                // German cards
-                { id: 1, filename: "german_ich.png", language: "german" },
-                { id: 2, filename: "german_du.png", language: "german" },
-                { id: 3, filename: "german_er_sie_es.png", language: "german" },
-                { id: 4, filename: "german_bin.png", language: "german" },
-                { id: 5, filename: "german_bist.png", language: "german" },
-                { id: 6, filename: "german_ist.png", language: "german" },
-                
-                // English cards
-                { id: 7, filename: "german_I.png", language: "english" },
-                { id: 8, filename: "german_you.png", language: "english" },
-                { id: 9, filename: "german_he_she_it.png", language: "english" },
-                { id: 10, filename: "german_am.png", language: "english" },
-                { id: 11, filename: "german_are.png", language: "english" },
-                { id: 12, filename: "german_is.png", language: "english" }
-            ],
-            mandarin: [
-                // Mandarin cards
-                { id: 1, filename: "mandarin_wo.png", language: "german" }, // Using "german" column for mandarin
-                { id: 2, filename: "mandarin_ni.png", language: "german" },
-                { id: 3, filename: "mandarin_ta_ta_ta.png", language: "german" },
-                { id: 4, filename: "mandarin_wo_shi.png", language: "german" },
-                { id: 5, filename: "mandarin_ni_shi.png", language: "german" },
-                { id: 6, filename: "mandarin_ta_shi.png", language: "german" },
-                
-                // English cards
-                { id: 7, filename: "mandarin_I.png", language: "english" },
-                { id: 8, filename: "mandarin_you.png", language: "english" },
-                { id: 9, filename: "mandarin_he_she_it.png", language: "english" },
-                { id: 10, filename: "mandarin_am.png", language: "english" },
-                { id: 11, filename: "mandarin_are.png", language: "english" },
-                { id: 12, filename: "mandarin_is.png", language: "english" }
-            ]
-        };
+      <div class="rows" id="rows">
+        <!-- row template - 3 rows -->
+      </div>
+    </section>
+  </div>
 
-        let currentLanguage = 'german';
-        let draggedCard = null;
-        let sortedCards = new Set();
-        let gameCompleted = false;
+  <!-- Win Overlay -->
+  <div class="overlay" id="winOverlay">
+    <div style="font-size:64px; line-height:1">🎉</div>
+    <h2 id="winTitle">Großartig!</h2>
+    <p id="winText">Du hast alle Sätze korrekt gebaut.</p>
+    <a class="gg-btn gg-primary back-link" id="backPreview" href="#">← Zurück zur Übersicht</a>
+  </div>
 
-        // Initialize the game
-        function initGame() {
-            createFloatingCards();
-            setupDragAndDrop();
-            updateLanguage();
-            
-            setTimeout(() => {
-                console.log('Sorting game initialized. Cards available:', document.querySelectorAll('.card:not(.sorted)').length);
-            }, 100);
+  <script src="language.js"></script>
+  <script src="analytics.js"></script>
+
+  <script>
+    /******** URL / Lang / Variant ********/
+    const qs = new URLSearchParams(location.search);
+    const VARIANT = (qs.get('variant') || 'A').toUpperCase();
+    const LANG    = (qs.get('lang') || localStorage.getItem('grammarGamesLanguage') || 'de').toLowerCase();
+
+    const i18n = {
+      de:{
+        title:"Sprach-Sortierspiel",
+        sub:"Welche Sprachen siehst du? Kannst du das Rätsel lösen?",
+        all:"Alle Karten zum Sortieren",
+        rows:"Sortiere die Karten hier",
+        de:"Deutsch", enLabel:"English",
+        winTitle:"Großartig!",
+        winText:"Du hast alle Sätze korrekt gebaut.",
+        back:"← Zurück",
+        reset:"Neues Spiel",
+        backPreview:"← Zurück zur Übersicht"
+      },
+      zh:{
+        title:"语言分类游戏",
+        sub:"你看到了哪些语言？你能完成拼图吗？",
+        all:"所有卡片待分类",
+        rows:"在此分类卡片",
+        de:"德语", enLabel:"英语",
+        winTitle:"太棒了！",
+        winText:"你把所有句子都正确完成了。",
+        back:"← 返回",
+        reset:"新游戏",
+        backPreview:"← 返回概览"
+      }
+    };
+
+    function t(k){ return (i18n[LANG]||i18n.de)[k]; }
+    function applyTexts(){
+      document.getElementById('hTitle').textContent = t('title');
+      document.getElementById('hSub').textContent   = t('sub');
+      document.getElementById('allCardsTitle').textContent = t('all');
+      document.getElementById('rowsTitle').textContent     = t('rows');
+      document.getElementById('winTitle').textContent      = t('winTitle');
+      document.getElementById('winText').textContent       = t('winText');
+      document.querySelector('.reset-btn').innerHTML       = "🔄 " + t('reset');
+      document.querySelector('.lang-link[data-lang="de"]').textContent = t('de');
+      document.querySelector('.lang-link[data-lang="zh"]').textContent = "中文";
+      document.getElementById('backPreview').textContent   = t('backPreview');
+      document.querySelector('.back-link').textContent     = t('back');
+    }
+
+    /* Back + Language links keep params */
+    (function navInit(){
+      const back = document.querySelectorAll('.back-link');
+      back.forEach(a=>{
+        const u = new URL('preview.html', location.href);
+        u.searchParams.set('variant', VARIANT);
+        u.searchParams.set('lang', LANG);
+        a.href = u.pathname + '?' + u.searchParams.toString();
+      });
+
+      document.querySelectorAll('.lang-link').forEach(a=>{
+        const L = a.dataset.lang;
+        const url = new URL(location.href);
+        url.searchParams.set('lang', L);
+        url.searchParams.set('variant', VARIANT);
+        a.href = url.pathname + '?' + url.searchParams.toString();
+        a.classList.toggle('gg-active', L === LANG);
+      });
+
+      document.querySelector('.reset-btn').addEventListener('click', resetGame);
+    })();
+
+    /******** Deck ********/
+    const DECK = [
+      { id:"I",            file:"german_I.png",           side:"en" },
+      { id:"ich",          file:"german_ich.png",         side:"de" },
+      { id:"you",          file:"german_you.png",         side:"en" },
+      { id:"du",           file:"german_du.png",          side:"de" },
+      { id:"he_she_it",    file:"german_he_she_it.png",   side:"en" },
+      { id:"er_sie_es",    file:"german_er_sie_es.png",   side:"de" },
+      { id:"am",           file:"german_am.png",          side:"en" },
+      { id:"bin",          file:"german_bin.png",         side:"de" },
+      { id:"are",          file:"german_are.png",         side:"en" },
+      { id:"bist",         file:"german_bist.png",        side:"de" },
+      { id:"is",           file:"german_is.png",          side:"en" },
+      { id:"ist",          file:"german_ist.png",         side:"de" }
+    ];
+
+    /* Target pairs: row can be any of these */
+    const TARGETS = [
+      { name:"you-are ↔ du-bist",  de:new Set(["du","bist"]),         en:new Set(["you","are"]) },
+      { name:"I-am ↔ ich-bin",     de:new Set(["ich","bin"]),         en:new Set(["I","am"]) },
+      { name:"he/she/it-is ↔ er/sie/es-ist", de:new Set(["er_sie_es","ist"]), en:new Set(["he_she_it","is"]) }
+    ];
+
+    const grid = document.getElementById('cardsGrid');
+    const rowsEl = document.getElementById('rows');
+    const winOverlay = document.getElementById('winOverlay');
+
+    const placed = new Map();     // cardId -> {row, slotEl}
+    const rowState = [1,2,3].map(()=>({ de:new Set(), en:new Set(), locked:false }));
+
+    let selectedCardId = null;
+
+    function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+    function makeCard(card){
+      const div = document.createElement('div');
+      div.className = 'tile';
+      div.draggable = true;
+      div.dataset.id = card.id;
+      div.dataset.side = card.side;
+      div.innerHTML = `<img src="cards/${card.file}" alt="${card.id}">`;
+
+      // drag
+      div.addEventListener('dragstart', e=>{
+        e.dataTransfer.setData('text/plain', card.id);
+        div.classList.add('dragging');
+      });
+      div.addEventListener('dragend', ()=> div.classList.remove('dragging'));
+
+      // click select
+      div.addEventListener('click', ()=>{
+        if (selectedCardId === card.id){
+          selectedCardId = null;
+          div.classList.remove('selected');
+          return;
+        }
+        document.querySelectorAll('.tile.selected').forEach(x=> x.classList.remove('selected'));
+        selectedCardId = card.id;
+        div.classList.add('selected');
+      });
+
+      return div;
+    }
+
+    function renderCards(){
+      grid.innerHTML = '';
+      shuffle([...DECK]).forEach(c=> grid.appendChild(makeCard(c)));
+    }
+
+    function buildRows(){
+      rowsEl.innerHTML = '';
+      for (let i=0;i<3;i++){
+        const idx = i; // row index
+        const row = document.createElement('div');
+        row.className = 'row';
+        row.dataset.index = idx;
+
+        const head = document.createElement('div');
+        head.className = 'row-head';
+        head.innerHTML = `
+          <div class="tags">
+            <span class="tag">Row ${idx+1}</span>
+            <span class="tag" style="opacity:.7">Beliebige der 3 Ziel-Sätze</span>
+          </div>
+        `;
+
+        const cols = document.createElement('div');
+        cols.className = 'cols';
+        const colLeft = document.createElement('div');
+        colLeft.className = 'col';
+        const colRight = document.createElement('div');
+        colRight.className = 'col';
+
+        const labelDe = document.createElement('div');
+        labelDe.className = 'label';
+        labelDe.textContent = t('de');
+        const labelEn = document.createElement('div');
+        labelEn.className = 'label';
+        labelEn.textContent = t('enLabel');
+
+        colLeft.appendChild(labelDe);
+        colRight.appendChild(labelEn);
+
+        // 2 de slots
+        for (let s=0;s<2;s++){
+          colLeft.appendChild(makeSlot(idx, 'de'));
+        }
+        // equals
+        const eq = document.createElement('div');
+        eq.className = 'equals'; eq.textContent = '=';
+        // 2 en slots
+        for (let s=0;s<2;s++){
+          colRight.appendChild(makeSlot(idx, 'en'));
         }
 
-        function setLanguage(language) {
-            currentLanguage = language;
-            
-            // Update button states
-            document.querySelectorAll('.language-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            resetGame();
+        cols.appendChild(colLeft);
+        cols.appendChild(eq);
+        cols.appendChild(colRight);
+        row.appendChild(head);
+        row.appendChild(cols);
+        rowsEl.appendChild(row);
+      }
+    }
+
+    function makeSlot(rowIndex, side){
+      const slot = document.createElement('div');
+      slot.className = 'slot';
+      slot.dataset.row = rowIndex;
+      slot.dataset.side = side;
+
+      // DnD
+      slot.addEventListener('dragover', e=>{ e.preventDefault(); if(!rowState[rowIndex].locked && !slot.firstChild) slot.classList.add('hover'); });
+      slot.addEventListener('dragleave', ()=> slot.classList.remove('hover'));
+      slot.addEventListener('drop', e=>{
+        e.preventDefault();
+        slot.classList.remove('hover');
+        const id = e.dataTransfer.getData('text/plain');
+        placeIntoSlot(id, slot);
+      });
+
+      // Click target for selected card
+      slot.addEventListener('click', ()=>{
+        if (slot.firstChild){
+          // remove existing -> back to pool
+          const img = slot.firstChild;
+          const id = img.dataset.id;
+          removeFromSlot(id, slot);
+          return;
         }
+        if (selectedCardId){ placeIntoSlot(selectedCardId, slot); }
+      });
 
-        function updateLanguage() {
-            const t = translations[currentLanguage];
-            document.getElementById('gameTitle').textContent = t.gameTitle;
-            document.getElementById('gameInstructions').textContent = t.gameInstructions;
-            document.getElementById('germanHeader').textContent = t.germanHeader;
-            document.getElementById('englishHeader').textContent = t.englishHeader;
-            document.getElementById('resetText').textContent = t.resetText;
-            document.getElementById('successTitle').textContent = t.successTitle;
-            document.getElementById('successText').textContent = t.successText;
-            document.getElementById('playAgainText').textContent = t.playAgainText;
+      return slot;
+    }
+
+    function getCardMeta(id){ return DECK.find(c=> c.id===id); }
+
+    function placeIntoSlot(cardId, slot){
+      const meta = getCardMeta(cardId);
+      if (!meta) return;
+      const rowIdx = Number(slot.dataset.row);
+      const side = slot.dataset.side;
+
+      if (rowState[rowIdx].locked) return;
+      if (slot.firstChild) return; // already filled
+      if (meta.side !== side) return; // must fit side (de/en)
+
+      // If card was placed elsewhere, remove there first
+      if (placed.has(cardId)){
+        const prev = placed.get(cardId);
+        if (prev && prev.slotEl && prev.slotEl.firstChild){
+          prev.slotEl.firstChild.remove();
+          updateRowSets(prev.row, getCardMeta(cardId), 'remove');
         }
+      }
 
-        // Create cards in grid layout
-        function createFloatingCards() {
-            const container = document.getElementById('cardsGrid');
-            const cards = cardSets[currentLanguage];
-            const shuffledCards = [...cards].sort(() => Math.random() - 0.5);
-            
-            container.innerHTML = '';
-            
-            shuffledCards.forEach((card, index) => {
-                const cardElement = document.createElement('div');
-                cardElement.className = 'card available';
-                cardElement.draggable = true;
-                cardElement.dataset.cardId = card.id;
-                cardElement.dataset.language = card.language;
-                
-                cardElement.innerHTML = `<img src="cards/${card.filename}" alt="Card ${card.id}" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'background: linear-gradient(135deg, #ff9a9e, #fecfef); width: 100%; height: 100%; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 0.8em; color: white; text-align: center;\\'>${card.filename}</div>'">`;
-                
-                // Add drag event listeners
-                cardElement.addEventListener('dragstart', handleDragStart);
-                cardElement.addEventListener('dragend', handleDragEnd);
-                cardElement.addEventListener('touchstart', handleTouchStart, { passive: false });
-                cardElement.addEventListener('touchmove', handleTouchMove, { passive: false });
-                cardElement.addEventListener('touchend', handleTouchEnd, { passive: false });
-                
-                container.appendChild(cardElement);
-            });
+      // create preview in slot
+      const img = document.createElement('img');
+      img.src = `cards/${meta.file}`;
+      img.alt = cardId;
+      img.dataset.id = cardId;
+      slot.appendChild(img);
+
+      placed.set(cardId, {row: rowIdx, slotEl: slot});
+      updateRowSets(rowIdx, meta, 'add');
+
+      // hide source tile & unselect
+      const tile = grid.querySelector(`.tile[data-id="${cardId}"]`);
+      if (tile){ tile.style.visibility = 'hidden'; tile.classList.remove('selected'); }
+      if (selectedCardId === cardId) selectedCardId = null;
+
+      // Check row
+      maybeValidateRow(rowIdx);
+    }
+
+    function removeFromSlot(cardId, slot){
+      const meta = getCardMeta(cardId);
+      if (!meta) return;
+      const rowIdx = Number(slot.dataset.row);
+      if (rowState[rowIdx].locked) return;
+
+      // remove visual
+      if (slot.firstChild) slot.firstChild.remove();
+
+      // unhide tile
+      const tile = grid.querySelector(`.tile[data-id="${cardId}"]`);
+      if (tile){ tile.style.visibility = 'visible'; }
+
+      placed.delete(cardId);
+      updateRowSets(rowIdx, meta, 'remove');
+    }
+
+    function updateRowSets(rowIdx, meta, op){
+      const set = rowState[rowIdx][meta.side]; // de or en
+      if (op==='add') set.add(meta.id);
+      else if (op==='remove') set.delete(meta.id);
+    }
+
+    function setEquals(aSet, bSet){
+      if (aSet.size !== bSet.size) return false;
+      for (const x of aSet) if (!bSet.has(x)) return false;
+      return true;
+    }
+
+    function findMatchingTarget(rowIdx){
+      const deSet = rowState[rowIdx].de;
+      const enSet = rowState[rowIdx].en;
+      for (const t of TARGETS){
+        if (setEquals(deSet, t.de) && setEquals(enSet, t.en)) return t;
+      }
+      return null;
+    }
+
+    function shakeRow(rowIdx){
+      const row = rowsEl.querySelector(`.row[data-index="${rowIdx}"]`);
+      row.style.transform = 'translateX(-3px)';
+      setTimeout(()=> row.style.transform = '', 120);
+    }
+
+    function clearRow(rowIdx){
+      // return all cards to pool
+      const row = rowsEl.querySelector(`.row[data-index="${rowIdx}"]`);
+      row.querySelectorAll('.slot').forEach(slot=>{
+        if (slot.firstChild){
+          const id = slot.firstChild.dataset.id;
+          removeFromSlot(id, slot);
         }
+      });
+    }
 
-        // Setup drag and drop for sorting areas
-        function setupDragAndDrop() {
-            const sortingAreas = document.querySelectorAll('.sorting-area');
+    function lockRow(rowIdx){
+      rowState[rowIdx].locked = true;
+      const row = rowsEl.querySelector(`.row[data-index="${rowIdx}"]`);
+      row.classList.add('locked');
+      row.querySelectorAll('.slot').forEach(s=> s.classList.remove('hover'));
+    }
 
-            sortingAreas.forEach(area => {
-                area.removeEventListener('dragover', handleDragOver);
-                area.removeEventListener('dragenter', handleDragEnter);
-                area.removeEventListener('dragleave', handleDragLeave);
-                area.removeEventListener('drop', handleDrop);
-                
-                area.addEventListener('dragover', handleDragOver);
-                area.addEventListener('dragenter', handleDragEnter);
-                area.addEventListener('dragleave', handleDragLeave);
-                area.addEventListener('drop', handleDrop);
-            });
+    function maybeValidateRow(rowIdx){
+      // must be 2 de + 2 en
+      const st = rowState[rowIdx];
+      if (st.de.size < 2 || st.en.size < 2) return;
+
+      const target = findMatchingTarget(rowIdx);
+      if (!target){
+        // wrong – return cards to pool
+        shakeRow(rowIdx);
+        setTimeout(()=> clearRow(rowIdx), 160);
+        return;
+      }
+
+      // correct
+      lockRow(rowIdx);
+
+      tryTrack('game2_row', {row: rowIdx+1, target: target.name});
+
+      // Win if all three locked
+      if (rowState.every(r=> r.locked)){
+        setTimeout(showWin, 200);
+      }
+    }
+
+    function showWin(){
+      winOverlay.classList.add('show');
+      for (let i=0;i<60;i++){
+        setTimeout(()=> {
+          const c = document.createElement('div');
+          c.className='confetti';
+          c.style.left = (Math.random()*100)+'%';
+          c.style.top  = '-20px';
+          c.style.background = ['#FFD700','#FF6B6B','#4ECDC4','#45B7D1','#96CEB4'][Math.floor(Math.random()*5)];
+          c.style.animationDelay = (Math.random()*1.2)+'s';
+          document.getElementById('winOverlay').appendChild(c);
+          setTimeout(()=> c.remove(), 3200);
+        }, i*35);
+      }
+      tryTrack('game2_complete');
+    }
+
+    function resetGame(){
+      // clear state
+      placed.clear();
+      for (let i=0;i<3;i++){ rowState[i].de.clear(); rowState[i].en.clear(); rowState[i].locked=false; }
+      winOverlay.classList.remove('show');
+
+      // restore tiles
+      renderCards();
+      // rebuild rows to reset locks/slots
+      buildRows();
+
+      tryTrack('game2_start');
+    }
+
+    function tryTrack(evt, payload={}){
+      try{
+        (window.analytics && window.analytics.trackClick)
+          ? window.analytics.trackClick(evt, payload)
+          : (window.analytics?.track?.(evt, payload));
+      }catch(_){}
+    }
+
+    /* ------- INIT ------- */
+    applyTexts();
+    renderCards();
+    buildRows();
+    tryTrack('game2_start');
+
+    /* ========= NEW: Auto-scroll while dragging (no other changes) ========= */
+    (function enableAutoScrollOnDrag(){
+      const EDGE = 100;      // px from top/bottom to trigger
+      const STEP = 28;       // scroll step in px per event
+      let raf = null;
+
+      function onDragOver(e){
+        // e.clientY is available for mouse drag events
+        const y = e.clientY;
+        if (typeof y !== 'number') return;
+
+        const vh = window.innerHeight;
+        if (y < EDGE){
+          scheduleScroll(-STEP);
+        } else if (vh - y < EDGE){
+          scheduleScroll(STEP);
         }
+      }
 
-        let touchCardElement = null;
-        let touchOffset = { x: 0, y: 0 };
-
-        function handleDragStart(e) {
-            const card = e.target.closest('.card');
-            if (!card) return;
-            
-            const cardId = parseInt(card.dataset.cardId);
-            if (sortedCards.has(cardId)) {
-                e.preventDefault();
-                return false;
-            }
-            
-            draggedCard = card;
-            card.classList.add('dragging');
-            card.classList.remove('floating');
-            
-            if (e.dataTransfer) {
-                e.dataTransfer.effectAllowed = 'move';
-                e.dataTransfer.setData('text/plain', cardId.toString());
-            }
-            
-            console.log('Drag started for card:', cardId);
-        }
-
-        function handleTouchStart(e) {
-            e.preventDefault();
-            const card = e.target.closest('.card');
-            if (!card || sortedCards.has(parseInt(card.dataset.cardId))) {
-                return;
-            }
-            
-            touchCardElement = card;
-            const touch = e.touches[0];
-            const rect = card.getBoundingClientRect();
-            touchOffset.x = touch.clientX - rect.left;
-            touchOffset.y = touch.clientY - rect.top;
-            
-            card.classList.add('dragging');
-            card.classList.remove('floating');
-        }
-
-        function handleTouchMove(e) {
-            e.preventDefault();
-            if (!touchCardElement) return;
-            
-            const touch = e.touches[0];
-            touchCardElement.style.left = (touch.clientX - touchOffset.x) + 'px';
-            touchCardElement.style.top = (touch.clientY - touchOffset.y) + 'px';
-            touchCardElement.style.zIndex = '1000';
-        }
-
-        function handleTouchEnd(e) {
-            e.preventDefault();
-            if (!touchCardElement) return;
-            
-            const touch = e.changedTouches[0];
-            const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-            const sortingArea = elementBelow ? elementBelow.closest('.sorting-area') : null;
-            
-            if (sortingArea) {
-                draggedCard = touchCardElement;
-                handleDrop({ target: sortingArea, preventDefault: () => {} });
-            }
-            
-            touchCardElement.classList.remove('dragging');
-            if (!sortedCards.has(parseInt(touchCardElement.dataset.cardId))) {
-                touchCardElement.classList.add('floating');
-            }
-            touchCardElement.style.zIndex = '10';
-            touchCardElement = null;
-        }
-
-        function handleDragEnd(e) {
-            const card = e.target.closest('.card');
-            if (!card) return;
-            
-            card.classList.remove('dragging');
-            const cardId = parseInt(card.dataset.cardId);
-            
-            if (!sortedCards.has(cardId)) {
-                card.classList.add('floating');
-            }
-            
-            draggedCard = null;
-            console.log('Drag ended for card:', cardId);
-        }
-
-        function handleDragOver(e) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-        }
-
-        function handleDragEnter(e) {
-            e.preventDefault();
-            if (e.target.classList.contains('sorting-area')) {
-                e.target.classList.add('drop-active');
-            }
-        }
-
-        function handleDragLeave(e) {
-            if (e.target.classList.contains('sorting-area')) {
-                e.target.classList.remove('drop-active');
-            }
-        }
-
-        function handleDrop(e) {
-            e.preventDefault();
-            e.target.classList.remove('drop-active');
-            
-            if (!draggedCard || !e.target.classList.contains('sorting-area')) return;
-            
-            const sortingArea = e.target;
-            const cardId = parseInt(draggedCard.dataset.cardId);
-            const cardLanguage = draggedCard.dataset.language;
-            const areaLanguage = sortingArea.dataset.language;
-            
-            // Check if card is dropped in correct area
-            if (cardLanguage === areaLanguage) {
-                // Correct placement
-                const sortedCard = document.createElement('div');
-                sortedCard.className = 'sorted-card';
-                sortedCard.innerHTML = draggedCard.innerHTML;
-                sortingArea.appendChild(sortedCard);
-                
-                // Hide original card
-                draggedCard.style.display = 'none';
-                sortedCards.add(cardId);
-                
-                // Add success animation
-                sortedCard.style.transform = 'scale(1.1)';
-                setTimeout(() => {
-                    sortedCard.style.transform = 'scale(1)';
-                }, 300);
-                
-                // Check if game is complete
-                if (sortedCards.size === 12) {
-                    setTimeout(showCelebration, 500);
-                }
-            } else {
-                // Wrong placement - card returns to floating area
-                setTimeout(() => {
-                    draggedCard.classList.add('floating');
-                }, 500);
-            }
-        }
-
-        function showCelebration() {
-            gameCompleted = true;
-            const successMessage = document.getElementById('successMessage');
-            successMessage.style.display = 'flex';
-            
-            // Create confetti effect
-            for (let i = 0; i < 50; i++) {
-                setTimeout(() => {
-                    createConfetti();
-                }, i * 100);
-            }
-        }
-
-        function createConfetti() {
-            const confetti = document.createElement('div');
-            confetti.className = 'confetti';
-            confetti.style.left = Math.random() * 100 + '%';
-            confetti.style.backgroundColor = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4'][Math.floor(Math.random() * 5)];
-            confetti.style.animationDelay = Math.random() * 3 + 's';
-            
-            document.getElementById('successMessage').appendChild(confetti);
-            
-            setTimeout(() => {
-                confetti.remove();
-            }, 3000);
-        }
-
-        function resetGame() {
-            gameCompleted = false;
-            sortedCards.clear();
-            
-            // Hide success message
-            document.getElementById('successMessage').style.display = 'none';
-            
-            // Clear sorting areas
-            document.querySelectorAll('.sorting-area').forEach(area => {
-                area.innerHTML = '';
-                area.classList.remove('drop-active');
-            });
-            
-            // Remove all cards
-            document.getElementById('cardsGrid').innerHTML = '';
-            
-            // Recreate game
-            initGame();
-        }
-
-        // Initialize the game when page loads
-        document.addEventListener('DOMContentLoaded', initGame);
-
-        // Handle window resize
-        let resizeTimeout;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-                if (!gameCompleted) {
-                    createFloatingCards();
-                    setupDragAndDrop();
-                }
-            }, 250);
+      function scheduleScroll(delta){
+        if (raf) cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(()=> {
+          window.scrollBy(0, delta);
+          raf = null;
         });
-    </script>
+      }
+
+      // Scroll when dragging anywhere on the page
+      window.addEventListener('dragover', onDragOver, { passive: true });
+    })();
+    /* ========= END auto-scroll ========= */
+  </script>
 </body>
 </html>

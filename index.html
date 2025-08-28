@@ -1,73 +1,149 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grammar Games - 10-Min Grammatik für Kinder</title>
-    <link rel="stylesheet" href="shared.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="language.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grammar Games – 10-Min Grammatik für Kinder</title>
+
+  <link rel="stylesheet" href="shared.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root{
+      --gg-orange:#FF6B6B;
+      --gg-orange-dark:#ff5a5a;
+      --gg-border:rgba(255,255,255,.55);
+      --gg-shadow:0 12px 30px rgba(26, 26, 44, .22);
+    }
+    body{
+      font-family:"Poppins",system-ui,Segoe UI,Arial,sans-serif;
+      background: radial-gradient(1200px 600px at 20% -10%, #b9c6ff33, #0000),
+                  radial-gradient(1000px 600px at 90% -10%, #a2b3ff30, #0000),
+                  linear-gradient(135deg,#89a6ff 0%, #bba8ff 50%, #d0b7ff 100%);
+      min-height:100vh;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+    .wrap{max-width:1150px;margin:0 auto;padding:0 18px 48px;}
+
+    /* Topbar */
+    .gg-topbar{
+      display:flex; align-items:center; gap:12px;
+      padding:14px 18px; position:sticky; top:0; z-index:1050;
+      backdrop-filter:saturate(140%) blur(8px);
+    }
+    .gg-flex-spacer{ flex:1; }
+    .gg-btn{
+      display:inline-flex; align-items:center; gap:.5rem;
+      height:38px; padding:0 14px; border-radius:22px;
+      font:600 14px/1.1 "Poppins",system-ui,Segoe UI,Arial,sans-serif;
+      text-decoration:none; cursor:pointer; user-select:none;
+      transition:.18s ease; border:1.5px solid transparent; color:#fff;
+    }
+    .gg-primary{ background:var(--gg-orange); border-color:var(--gg-orange); box-shadow:0 6px 18px rgba(255,107,107,.28); }
+    .gg-primary:hover{ transform:translateY(-1px); background:var(--gg-orange-dark); }
+    .gg-ghost{ background:transparent; color:#fff; border-color:var(--gg-border); }
+    .gg-ghost:hover{ background:rgba(255,255,255,.10); }
+    .gg-lang.gg-active{ background:var(--gg-orange); color:#fff; border-color:var(--gg-orange); box-shadow:0 6px 18px rgba(255,107,107,.28); }
+
+    /* Hero */
+    .hero{ display:grid; grid-template-columns: 1fr; gap:22px; padding:18px; }
+    .h1{
+      margin:10px 0 6px; font-weight:800; color:#fff;
+      font-size:clamp(32px,6.2vw,64px); line-height:1.1;
+      text-wrap:balance;
+    }
+    .sub{ color:#eef; opacity:.95; max-width:720px; margin:8px 0 18px; font-size:18px; }
+
+    /* Feature cards */
+    .features{ display:grid; grid-template-columns: repeat(2,minmax(240px,1fr)); gap:18px; max-width:860px; }
+    @media (max-width:720px){ .features{ grid-template-columns: 1fr; } }
+    .feat{
+      display:flex; align-items:center; gap:12px;
+      background:linear-gradient(180deg,rgba(255,255,255,.25),rgba(255,255,255,.15));
+      border:1.5px solid var(--gg-border); border-radius:18px; padding:14px 16px;
+      box-shadow:var(--gg-shadow); color:#fff; font-weight:700;
+    }
+    .feat .icon{ font-size:20px; line-height:1; }
+
+    .cta-row{ margin-top:18px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  </style>
+
+  <script src="language.js"></script>
 </head>
 <body>
-    <!-- A/B Test Variant Selector -->
-    <div class="variant-selector">
-        <a href="?variant=A" class="variant-btn" onclick="setVariant('A'); return false;" data-translate="variantA">Variante A: 10-Min Games</a>
-        <a href="?variant=B" class="variant-btn" onclick="setVariant('B'); return false;" data-translate="variantB">Variante B: Multisensory Grammar</a>
-    </div>
+  <!-- Topbar: language only (right side) -->
+  <div class="gg-topbar">
+    <div class="gg-flex-spacer"></div>
+    <a class="gg-btn gg-ghost gg-lang lang-link" data-lang="de" href="#">Deutsch</a>
+    <a class="gg-btn gg-ghost gg-lang lang-link" data-lang="zh" href="#">中文</a>
+  </div>
 
-    <!-- Screen 1: Hero Landing -->
-    <div class="screen">
-        <div class="container">
-            <div class="hero-content" style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;">
-                <div class="hero-left">
-                    <div class="badge" data-translate="ageRange">Für Kinder 4-10 Jahre</div>
-                    <h1 id="hero-headline" data-translate="heroHeadlineA">10-Minuten Grammatik-Games</h1>
-                    <p id="hero-subline" data-translate="heroSublineA">Spielerisch, multisensorisch, kurz und strukturiert - Grammatik lernen war noch nie so einfach!</p>
+  <div class="wrap">
+    <section class="hero">
+      <!-- age badge removed -->
 
-                    <div class="value-props">
-                        <div class="prop">
-                            <div class="icon">🎮</div>
-                            <span data-translate="playful">Spielerisch</span>
-                        </div>
-                        <div class="prop">
-                            <div class="icon">🎨</div>
-                            <span data-translate="multisensory">Multisensorisch</span>
-                        </div>
-                        <div class="prop">
-                            <div class="icon">⏰</div>
-                            <span data-translate="timeLimit">Nur 10 Minuten</span>
-                        </div>
-                        <div class="prop">
-                            <div class="icon">📋</div>
-                            <span data-translate="structured">Strukturiert</span>
-                        </div>
-                    </div>
+      <h1 class="h1" data-translate="heroHeadlineA">10-Minuten<br/>Grammatik-Games</h1>
+      <p class="sub" data-translate="heroSublineA">
+        Spielerisch, multisensorisch, kurz und strukturiert – Grammatik lernen war noch nie so einfach!
+      </p>
 
-                    <a href="#" class="cta-button primary" onclick="navigateWithTracking('preview.html', 'hero-to-preview'); return false;" data-translate="viewExampleGames">
-                        Beispiel-Games ansehen
-                    </a>
-                </div>
-                
-                <div class="hero-visual">
-                    <div class="game-preview-card" style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15); transform: rotate(3deg); transition: transform 0.3s ease;">
-                        <div class="card-header" style="font-weight: 600; color: #2c3e50; margin-bottom: 20px; font-size: 1.2em;" data-translate="grammarGame1">Grammar Game #1</div>
-                        <div class="card-content">
-                            <div class="game-elements" style="display: flex; gap: 10px; margin-bottom: 15px;">
-                                <div class="color-dot red"></div>
-                                <div class="color-dot blue"></div>
-                                <div class="color-dot green"></div>
-                            </div>
-                            <p style="color: #666; font-weight: 500;" data-translate="nounVerbAdj">Nomen • Verb • Adjektiv</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+      <div class="features">
+        <div class="feat"><span class="icon">🎮</span><span data-translate="playful">Spielerisch</span></div>
+        <div class="feat"><span class="icon">🎨</span><span data-translate="multisensory">Multisensorisch</span></div>
+        <div class="feat"><span class="icon">⏱️</span><span data-translate="timeLimit">Nur 10 Minuten</span></div>
+        <div class="feat"><span class="icon">📋</span><span data-translate="structured">Strukturiert</span></div>
+      </div>
 
+      <div class="cta-row">
+        <a class="gg-btn gg-primary hero-cta" href="preview.html" data-translate="viewExampleGames">▶ Beispiel-Games ansehen</a>
+      </div>
+    </section>
+  </div>
 
+  <script src="analytics.js"></script>
+  <script>
+    (function(){
+      const VARIANT = 'A'; // fixed
+      const qs = new URLSearchParams(location.search);
+      const LANG = (qs.get('lang') || window.languageSystem?.currentLanguage || localStorage.getItem('grammarGamesLanguage') || 'de').toLowerCase();
 
-    <script src="analytics.js"></script>
+      /* 1) APPLY TRANSLATIONS ON THE HOMEPAGE */
+      try {
+        // Use whichever exists in your language.js
+        if (window.setLanguageFromQuery) {
+          window.setLanguageFromQuery(LANG);   // applies + stores + updates UI
+        } else if (window.languageSystem?.setLanguageFromQuery) {
+          window.languageSystem.setLanguageFromQuery(LANG);
+        } else if (window.languageSystem?.applyTranslations) {
+          window.languageSystem.currentLanguage = LANG;
+          window.languageSystem.applyTranslations();
+        }
+      } catch (_) {}
 
+      /* 2) Language buttons keep params + active state */
+      document.querySelectorAll('.lang-link').forEach(a=>{
+        const L = a.dataset.lang;
+        const url = new URL(location.href);
+        url.searchParams.set('lang', L);
+        url.searchParams.set('variant', VARIANT);
+        a.href = url.pathname + '?' + url.searchParams.toString();
+        a.classList.toggle('gg-active', L === LANG);
+      });
+
+      /* 3) CTA → preview with variant A + current lang (+ tracking) */
+      const cta = document.querySelector('.hero-cta');
+      if (cta){
+        const u = new URL('preview.html', location.href);
+        u.searchParams.set('variant', VARIANT);
+        u.searchParams.set('lang', LANG);
+        cta.href = u.pathname + '?' + u.searchParams.toString();
+        cta.addEventListener('click', (e)=>{
+          e.preventDefault();
+          if (window.navigateWithTracking) window.navigateWithTracking(cta.href, 'hero-to-preview');
+          else location.href = cta.href;
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
