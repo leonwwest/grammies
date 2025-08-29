@@ -11,7 +11,7 @@ Ein vollständig funktionsfähiger Clickable Prototype für das Grammar Games Ex
 
 ### Option 1: Lokaler Server (empfohlen)
 ```bash
-cd /Users/leonwestermeir/Documents/grammies_prototype
+cd grammies_prototype
 python3 -m http.server 8080
 ```
 Dann öffnen Sie: http://localhost:8080

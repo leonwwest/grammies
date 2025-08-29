@@ -3,64 +3,44 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="So funktionieren unsere Grammar Games: Vorschau der Druckkarten & Spiele. Gleicher Look & Feel wie die Spiele – jetzt ausprobieren."/>
+  <meta name="description" content="So funktionieren unsere Grammar Games: kurze, multisensorische Übungen mit Karten. Gleicher Look & Feel wie die Spiele – jetzt ausprobieren."/>
   <title>Grammar Games – Vorschau</title>
 
   <link rel="stylesheet" href="shared.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
 
   <style>
-    /* ==== Base / Background (wie bei den Game-Seiten) ==== */
-    :root{
-      --gg-orange:#FF6B6B;
-      --gg-orange-dark:#ff5a5a;
-      --gg-surface:rgba(255,255,255,.12);
-      --gg-card:rgba(255,255,255,.16);
-      --gg-border:rgba(255,255,255,.55);
-      --gg-shadow:0 12px 30px rgba(26, 26, 44, .22);
-      --ring:rgba(255,255,255,.55);
-      --muted:#e9edff;
-    }
-    body{
-      font-family:"Poppins", system-ui, Segoe UI, Arial, sans-serif;
-      background: radial-gradient(1200px 600px at 20% -10%, #b9c6ff33, #0000),
-                  radial-gradient(1000px 600px at 90% -10%, #a2b3ff30, #0000),
-                  linear-gradient(135deg,#89a6ff 0%, #bba8ff 50%, #d0b7ff 100%);
-      min-height:100vh;
-      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-      color:#222;
-    }
+    /* nur lokales Styling – KEIN eigener Body-Background hier! */
     .container{max-width:1100px;margin:0 auto;padding:0 18px 42px;}
 
-    /* ==== Topbar exakt wie im Spiel ==== */
+    /* Topbar wie in den Games */
     .gg-topbar{
       display:flex; align-items:center; gap:12px;
       padding:14px 18px; position:sticky; top:0; z-index:1050;
       backdrop-filter:saturate(140%) blur(8px);
     }
-    .gg-flex-spacer{ flex:1; } /* schiebt die Sprachknöpfe nach rechts */
+    .gg-flex-spacer{ flex:1; }
 
     .gg-btn{
       display:inline-flex; align-items:center; gap:.5rem;
       height:38px; padding:0 14px; border-radius:22px;
       font:600 14px/1.1 "Poppins",system-ui,Segoe UI,Arial,sans-serif;
       text-decoration:none; cursor:pointer; user-select:none;
-      transition:.18s ease; border:1.5px solid transparent;
-      color:#fff;
+      transition:.18s ease; border:1.5px solid transparent; color:#fff;
     }
-    .gg-primary{ background:var(--gg-orange); border-color:var(--gg-orange); box-shadow:0 6px 18px rgba(255,107,107,.28); }
-    .gg-primary:hover{ transform:translateY(-1px); background:var(--gg-orange-dark); }
-    .gg-ghost{ background:transparent; color:#fff; border-color:var(--gg-border); }
+    .gg-primary{ background:#FF6B6B; border-color:#FF6B6B; box-shadow:0 6px 18px rgba(255,107,107,.28); }
+    .gg-primary:hover{ transform:translateY(-1px); background:#ff5a5a; }
+    .gg-ghost{ background:transparent; color:#fff; border-color:rgba(255,255,255,.35); }
     .gg-ghost:hover{ background:rgba(255,255,255,.10); }
-    .gg-lang.gg-active{ background:var(--gg-orange); color:#fff; border-color:var(--gg-orange); box-shadow:0 6px 18px rgba(255,107,107,.28); }
+    .gg-lang.gg-active{ background:#FF6B6B; color:#fff; border-color:#FF6B6B; box-shadow:0 6px 18px rgba(255,107,107,.28); }
     .gg-back{ margin-right:8px; }
 
-    /* ==== Überschriften ==== */
+    /* Überschriften */
     .title-wrap{text-align:center;margin:10px 0 24px}
     .title{font-size:clamp(28px,3.4vw,40px);line-height:1.2;color:#fff;font-weight:800}
-    .subtitle{color:var(--muted);opacity:1;margin-top:6px}
+    .subtitle{color:#fff;opacity:.9;margin-top:6px}
 
-    /* ==== Kartenabschnitte ==== */
+    /* Kartenabschnitte */
     .card{
       background:linear-gradient(180deg, rgba(255,255,255,.40), rgba(255,255,255,.22));
       border-radius:18px; padding:20px 20px 18px; margin:20px 0;
@@ -70,37 +50,33 @@
     .card h3{font-size:20px;margin:0 0 12px;display:flex;align-items:center;gap:10px;color:#fff;font-weight:800}
     .card p{margin:0 0 16px;color:#fff;opacity:.95}
 
-    /* ==== Vorschau-Strips ==== */
+    /* Vorschau-Strips */
     .strip{
       background:linear-gradient(180deg,rgba(255,255,255,.25),rgba(255,255,255,.15));
-      border:1px solid var(--ring);
-      border-radius:16px;padding:16px;display:flex;justify-content:center;gap:18px;align-items:center
+      border:1px solid rgba(255,255,255,.55);
+      border-radius:16px; padding:16px;
+      display:flex; justify-content:center; gap:18px; align-items:center;
     }
     .pair{
-      position:relative;display:flex;gap:12px;align-items:center;
-      padding:10px;border-radius:14px;background:rgba(255,255,255,.55);
-      box-shadow:0 6px 16px rgba(0,0,0,.08);border:1px solid rgba(255,255,255,.75)
+      position:relative; display:flex; gap:12px; align-items:center;
+      padding:10px; border-radius:14px; background:rgba(255,255,255,.55);
+      box-shadow:0 6px 16px rgba(0,0,0,.08); border:1px solid rgba(255,255,255,.75)
     }
     .pair .check{
-      position:absolute;left:-8px;top:-8px;background:#fff;border:3px solid #c8f7cf;
-      color:#38c172;border-radius:999px;font-size:14px;line-height:1;padding:4px 6px;
+      position:absolute; left:-8px; top:-8px; background:#fff; border:3px solid #c8f7cf;
+      color:#38c172; border-radius:999px; font-size:14px; line-height:1; padding:4px 6px;
       box-shadow:0 8px 16px rgba(56,193,114,.25)
     }
     .tile{
-      background:#fff;border-radius:16px;padding:8px;display:flex;align-items:center;justify-content:center;
-      box-shadow:0 6px 14px rgba(0,0,0,.08);border:1px solid rgba(255,255,255,.75)
+      background:#fff; border-radius:16px; padding:8px; display:flex; align-items:center; justify-content:center;
+      width:110px; height:110px; border:3px solid #e8f0ff; box-shadow:0 8px 16px rgba(0,0,0,.08)
     }
-    .tile img{width:72px;height:72px;display:block}
-
-    /* ==== CTA Buttons (Orange) ==== */
-    .cta-row{ display:flex; justify-content:center; padding-top:12px; }
+    .tile img{width:90%; height:90%; object-fit:contain}
+    .cta-row{display:flex; justify-content:center; margin-top:14px}
   </style>
-
-  <script src="language.js"></script>
 </head>
 <body>
-
-  <!-- Topbar: Back links (ein Pfeil + Text), Sprachwahl rechts -->
+  <!-- Topbar -->
   <div class="gg-topbar">
     <a class="gg-btn gg-primary gg-back back-link" href="#">
       <span class="arrow">←</span>
@@ -164,58 +140,90 @@
       </div>
     </section>
 
-    <!-- Optionaler Footer-CTA (unten; NICHT im Header) -->
     <div class="cta-row" style="margin-top:26px">
       <a class="gg-btn gg-primary footer-cta" href="chooser.html" data-translate="suitableGames">Passende Spiele für mein Kind</a>
     </div>
   </div>
 
+  <script src="language.js"></script>
   <script src="analytics.js"></script>
   <script>
     (function(){
       const qs = new URLSearchParams(location.search);
-      const VARIANT = (qs.get('variant') || window.analytics?.sessionData?.variant || 'A').toUpperCase();
-      const LANG    = (qs.get('lang') || window.languageSystem?.currentLanguage || localStorage.getItem('grammarGamesLanguage') || 'de').toLowerCase();
+      const VARIANT = (qs.get('variant') || 'A').toUpperCase();
+      const LANG    = (qs.get('lang') || localStorage.getItem('grammarGamesLanguage') || 'de').toLowerCase();
 
-      // Back-Text sauber setzen (nur EIN Pfeil – Text separat)
+      // Back-Text
       try {
         const t = (k)=> window.languageSystem?.t?.(k) || k;
         const backText = document.querySelector('.back-link .back-text');
         if (backText) backText.textContent = t('backButton');
       } catch(_) {}
 
-      // Back → index.html (Params + Tracking)
+      // Back → index.html (Params)
       document.querySelectorAll('.back-link').forEach(a=>{
         const u = new URL('index.html', location.href);
         u.searchParams.set('variant', VARIANT);
         u.searchParams.set('lang', LANG);
         a.href = u.pathname + '?' + u.searchParams.toString();
-        a.addEventListener('click', (e)=>{
+      });
+
+      // Sprache aktiv markieren + Wechsel
+      document.querySelectorAll('.lang-link').forEach(btn=>{
+        if (btn.dataset.lang === LANG) btn.classList.add('gg-active');
+        btn.addEventListener('click', (e)=>{
           e.preventDefault();
-          if (window.navigateWithTracking) window.navigateWithTracking(a.href, 'preview-back');
-          else location.href = a.href;
+          const lang = btn.dataset.lang;
+          localStorage.setItem('grammarGamesLanguage', lang);
+          const u = new URL(location.href);
+          u.searchParams.set('lang', lang);
+          location.href = u.pathname + '?' + u.searchParams.toString();
         });
       });
 
-      // Sprachlinks rechts, Params behalten + Active-State
-      document.querySelectorAll('.lang-link').forEach(a=>{
-        const L = a.dataset.lang;
-        const url = new URL(location.href);
-        url.searchParams.set('lang', L);
-        url.searchParams.set('variant', VARIANT);
-        a.href = url.pathname + '?' + url.searchParams.toString();
-        a.classList.toggle('gg-active', L === LANG);
-      });
+      /* swap demo images by lang (Game 1 & 2) */
+      (function(){
+        try{
+          // Game 1
+          const imgs1 = document.querySelectorAll('.strip .pair .tile img');
+          if (LANG === 'zh' && imgs1.length >= 4) {
+            imgs1[0].src = 'cards/mandarin_I.png';      imgs1[0].alt = 'I';
+            imgs1[1].src = 'cards/mandarin_wo.png';     imgs1[1].alt = 'wo';
+            imgs1[2].src = 'cards/mandarin_am.png';     imgs1[2].alt = 'am';
+            imgs1[3].src = 'cards/mandarin_wo_shi.png'; imgs1[3].alt = 'wo shi';
+          } else if (imgs1.length >= 4) {
+            imgs1[0].src = 'cards/german_I.png';   imgs1[0].alt = 'I';
+            imgs1[1].src = 'cards/german_ich.png'; imgs1[1].alt = 'ich';
+            imgs1[2].src = 'cards/german_am.png';  imgs1[2].alt = 'am';
+            imgs1[3].src = 'cards/german_bin.png'; imgs1[3].alt = 'bin';
+          }
 
-      // Game-CTAs und Footer-CTA mit Params + Tracking
+          // Game 2
+          const strips = document.querySelectorAll('.strip');
+          if (strips.length >= 2) {
+            const imgs2 = strips[1].querySelectorAll('.tile img');
+            if (LANG === 'zh' && imgs2.length >= 4) {
+              imgs2[0].src = 'cards/mandarin_wo.png';      imgs2[0].alt = 'wo';
+              imgs2[1].src = 'cards/mandarin_wo_shi.png';  imgs2[1].alt = 'wo shi';
+              imgs2[2].src = 'cards/mandarin_I.png';       imgs2[2].alt = 'I';
+              imgs2[3].src = 'cards/mandarin_am.png';      imgs2[3].alt = 'am';
+            } else if (imgs2.length >= 4) {
+              imgs2[0].src = 'cards/german_ich.png'; imgs2[0].alt = 'ich';
+              imgs2[1].src = 'cards/german_bin.png'; imgs2[1].alt = 'bin';
+              imgs2[2].src = 'cards/german_I.png';   imgs2[2].alt = 'I';
+              imgs2[3].src = 'cards/german_am.png';  imgs2[3].alt = 'am';
+            }
+          }
+        }catch(_){}
+      })();
+
+      // CTAs: Params mitgeben
       document.querySelectorAll('.link-game1, .link-game2, .footer-cta').forEach(a=>{
         const url = new URL(a.getAttribute('href'), location.href);
         url.searchParams.set('variant', VARIANT);
         url.searchParams.set('lang', LANG);
         a.href = url.pathname + '?' + url.searchParams.toString();
       });
-      document.querySelector('.link-game1')?.addEventListener('click', ()=> window.analytics?.trackClick?.('preview_to_game1'));
-      document.querySelector('.link-game2')?.addEventListener('click', ()=> window.analytics?.trackClick?.('preview_to_game2'));
     })();
   </script>
 </body>

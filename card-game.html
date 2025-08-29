@@ -257,7 +257,7 @@
 
     /******** Karten & Paare ********/
     // 6 Paare: 3 Pronomen, 3 Formen von "to be"
-    const DECK = [
+    const DECK_DE = [
       { id:"I",          pair:"I-ich",               file:"german_I.png" },
       { id:"ich",        pair:"I-ich",               file:"german_ich.png" },
       { id:"you",        pair:"you-du",              file:"german_you.png" },
@@ -272,6 +272,24 @@
       { id:"is",         pair:"is-ist",              file:"german_is.png" },
       { id:"ist",        pair:"is-ist",              file:"german_ist.png" }
     ];
+
+    const DECK_ZH = [
+      { id:"I",          pair:"I-wo",                 file:"mandarin_I.png" },
+      { id:"wo",         pair:"I-wo",                 file:"mandarin_wo.png" },
+      { id:"you",        pair:"you-ni",               file:"mandarin_you.png" },
+      { id:"ni",         pair:"you-ni",               file:"mandarin_ni.png" },
+      { id:"he_she_it",  pair:"he/she/it-ta/ta/ta",   file:"mandarin_he_she_it.png" },
+      { id:"ta_ta_ta",   pair:"he/she/it-ta/ta/ta",   file:"mandarin_ta_ta_ta.png" },
+
+      { id:"am",         pair:"am-wo_shi",            file:"mandarin_am.png" },
+      { id:"wo_shi",     pair:"am-wo_shi",            file:"mandarin_wo_shi.png" },
+      { id:"are",        pair:"are-ni_shi",           file:"mandarin_are.png" },
+      { id:"ni_shi",     pair:"are-ni_shi",           file:"mandarin_ni_shi.png" },
+      { id:"is",         pair:"is-ta_shi",            file:"mandarin_is.png" },
+      { id:"ta_shi",     pair:"is-ta_shi",            file:"mandarin_ta_shi.png" }
+    ];
+
+    const DECK = (LANG === 'zh') ? DECK_ZH : DECK_DE;
 
     const grid = document.getElementById('cardsGrid');
     const hitsBox = document.getElementById('hits');
