@@ -277,7 +277,15 @@
     setLanguage(lang = 'de') {
       this.currentLanguage = String(lang).toLowerCase();
       try { localStorage.setItem('grammarGamesLanguage', this.currentLanguage); } catch(_) {}
+      try { document.documentElement.setAttribute('lang', this.currentLanguage); } catch(_) {}
       this.applyTranslations(document);
+      try {
+        document.querySelectorAll('.lang-link').forEach(a => {
+          const active = (a.dataset.lang || '').toLowerCase() === this.currentLanguage;
+          a.classList.toggle('gg-active', active);
+          a.setAttribute('aria-current', active ? 'page' : 'false');
+        });
+      } catch(_) {}
     },
 
     setLanguageFromQuery(langMaybe) {

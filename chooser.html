@@ -97,7 +97,7 @@
   </div>
 
   <div class="wrap">
-    <h1 class="title" data-translate="chooserTitle">Wie alt ist Ihr Kind?</h1>
+    <h1 class="title" id="pageTitle" tabindex="-1" data-translate="chooserTitle">Wie alt ist Ihr Kind?</h1>
     <p class="sub" data-translate="chooserSubtitle">Wir zeigen Ihnen die passenden Grammar Games</p>
 
     <div class="grid">
@@ -125,7 +125,7 @@
     </div>
   </div>
 
-  <div class="toast" id="toast">✔ Auswahl übernommen …</div>
+  <div class="toast" id="toast" role="status" aria-live="polite">✔ Auswahl übernommen …</div>
 
   <script src="analytics.js"></script>
   <script>
@@ -141,6 +141,13 @@
           window.languageSystem.currentLanguage = LANG;
           window.languageSystem.applyTranslations();
         }
+      } catch(_) {}
+
+      // Set document lang and focus heading for accessibility
+      try {
+        document.documentElement.setAttribute('lang', LANG);
+        const h = document.getElementById('pageTitle');
+        if (h) h.focus();
       } catch(_) {}
 
       /* 1b) Fallback to German text if chooser keys are missing */
@@ -191,6 +198,7 @@
         url.searchParams.set('variant', VARIANT);
         a.href = url.pathname + '?' + url.searchParams.toString();
         a.classList.toggle('gg-active', L === LANG);
+        a.setAttribute('aria-current', L === LANG ? 'page' : 'false');
       });
 
       /* 4) Age card click → toast + redirect to capture.html?age= */

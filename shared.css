@@ -197,3 +197,12 @@ label{ font-weight:600; color:#0f172a; }
   .variant-btn{ padding:8px 12px; font-size:12px; height:34px; }
   .age-card{ padding:24px; border-radius:22px; }
 }
+
+/* ===== Reduced motion preference ===== */
+@media (prefers-reduced-motion: reduce){
+  *{
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

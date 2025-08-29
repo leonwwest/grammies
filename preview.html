@@ -7,6 +7,7 @@
   <title>Grammar Games – Vorschau</title>
 
   <link rel="stylesheet" href="shared.css"/>
+  <link rel="prefetch" href="chooser.html" as="document"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
 
   <style>
@@ -107,13 +108,13 @@
       <div class="strip" aria-label="Vorschau Spiel 1">
         <div class="pair">
           <span class="check">✓</span>
-          <div class="tile"><img src="cards/german_I.png" alt="I"></div>
-          <div class="tile"><img src="cards/german_ich.png" alt="ich"></div>
+          <div class="tile"><img src="cards/german_I.png" alt="I" width="110" height="110" loading="lazy" decoding="async"></div>
+          <div class="tile"><img src="cards/german_ich.png" alt="ich" width="110" height="110" loading="lazy" decoding="async"></div>
         </div>
         <div class="pair">
           <span class="check">✓</span>
-          <div class="tile"><img src="cards/german_am.png" alt="am"></div>
-          <div class="tile"><img src="cards/german_bin.png" alt="bin"></div>
+          <div class="tile"><img src="cards/german_am.png" alt="am" width="110" height="110" loading="lazy" decoding="async"></div>
+          <div class="tile"><img src="cards/german_bin.png" alt="bin" width="110" height="110" loading="lazy" decoding="async"></div>
         </div>
       </div>
 
@@ -128,11 +129,11 @@
       <p data-translate="game2SubtitleSort">Ziehe passende Karten in die richtigen Felder (z. B. I ↔ ich). Baue 3 richtige Reihen.</p>
 
       <div class="strip" aria-label="Vorschau Spiel 2">
-        <div class="tile"><img src="cards/german_ich.png" alt="ich"></div>
-        <div class="tile"><img src="cards/german_bin.png" alt="bin"></div>
+        <div class="tile"><img src="cards/german_ich.png" alt="ich" width="110" height="110" loading="lazy" decoding="async"></div>
+        <div class="tile"><img src="cards/german_bin.png" alt="bin" width="110" height="110" loading="lazy" decoding="async"></div>
         <span>=</span>
-        <div class="tile"><img src="cards/german_I.png" alt="I"></div>
-        <div class="tile"><img src="cards/german_am.png" alt="am"></div>
+        <div class="tile"><img src="cards/german_I.png" alt="I" width="110" height="110" loading="lazy" decoding="async"></div>
+        <div class="tile"><img src="cards/german_am.png" alt="am" width="110" height="110" loading="lazy" decoding="async"></div>
       </div>
 
       <div class="cta-row">
@@ -217,12 +218,25 @@
         }catch(_){}
       })();
 
-      // CTAs: Params mitgeben
+      // CTAs: Params mitgeben + tracking
       document.querySelectorAll('.link-game1, .link-game2, .footer-cta').forEach(a=>{
         const url = new URL(a.getAttribute('href'), location.href);
         url.searchParams.set('variant', VARIANT);
         url.searchParams.set('lang', LANG);
         a.href = url.pathname + '?' + url.searchParams.toString();
+        if (a.classList.contains('footer-cta')){
+          a.addEventListener('click', (e)=>{
+            e.preventDefault();
+            const href = a.href;
+            if (window.navigateWithTracking) window.navigateWithTracking(href, 'preview-to-chooser');
+            else location.href = href;
+          });
+        }
+      });
+
+      // Mark active language with aria-current
+      document.querySelectorAll('.lang-link').forEach(btn=>{
+        btn.setAttribute('aria-current', btn.dataset.lang === LANG ? 'page' : 'false');
       });
     })();
   </script>

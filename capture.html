@@ -108,7 +108,7 @@
   </div>
 
   <div class="wrap">
-    <h1 class="title" data-translate="freeStarterPack">Kostenloses Starter-Pack</h1>
+    <h1 class="title" id="pageTitle" tabindex="-1" data-translate="freeStarterPack">Kostenloses Starter-Pack</h1>
     <p class="sub" data-translate="starterPackDesc">Sofort-Download mit 4 Beispiel-Spielen passend zum Alter Ihres Kindes.</p>
 
     <section class="pack-card">
@@ -117,9 +117,9 @@
     </section>
 
     <form class="form" id="captureForm" novalidate>
-      <input class="input" id="nameInput" type="text" autocomplete="name" placeholder="Ihr Name">
-      <input class="input" id="emailInput" type="email" autocomplete="email" placeholder="E-Mail">
-      <div class="error" id="errorBox"></div>
+      <input class="input" id="nameInput" type="text" autocomplete="name" placeholder="Ihr Name" aria-describedby="errorBox">
+      <input class="input" id="emailInput" type="email" autocomplete="email" placeholder="E-Mail" aria-describedby="errorBox">
+      <div class="error" id="errorBox" role="alert" aria-live="assertive"></div>
       <button class="submit" id="submitBtn" type="submit" data-translate="getStarterPack">Starter-Pack erhalten</button>
       <div class="badges">
         <span data-translate="freeUnbinding">Jederzeit abmelden</span>
@@ -146,6 +146,13 @@
         }
       } catch(_){}
 
+      // Set document lang and focus heading for accessibility
+      try {
+        document.documentElement.setAttribute('lang', LANG);
+        const h = document.getElementById('pageTitle');
+        if (h) h.focus();
+      } catch(_) {}
+
       // Back → chooser.html (keep age/lang)
       document.querySelectorAll('.back-link').forEach(a=>{
         const u = new URL('chooser.html', location.href);
@@ -164,6 +171,7 @@
         u.searchParams.set('age', AGE);
         a.href = u.pathname + '?' + u.searchParams.toString();
         a.classList.toggle('gg-active', L === LANG);
+        a.setAttribute('aria-current', L === LANG ? 'page' : 'false');
       });
 
       // Render pack list by age
@@ -216,11 +224,13 @@
         if (name.length < 2){
           errorBox.textContent = t('validNameRequired');
           errorBox.style.display='block';
+          errorBox.focus && errorBox.focus();
           return;
         }
         if (!validEmail(email)){
           errorBox.textContent = t('validEmailRequired');
           errorBox.style.display='block';
+          errorBox.focus && errorBox.focus();
           return;
         }
 
@@ -234,7 +244,7 @@
           u.searchParams.set('variant', VARIANT);
           u.searchParams.set('age', AGE);
           const href = u.pathname + '?' + u.searchParams.toString();
-          try { window.analytics?.trackClick?.('capture_submit', { age: AGE }); } catch(_){}
+          try { window.analytics?.trackClick?.('email-submit', { age: AGE }); } catch(_){}
           location.href = href;
         }, 900);
       });
