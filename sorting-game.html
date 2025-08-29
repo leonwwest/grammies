@@ -87,13 +87,13 @@
       .equals{ align-self:center; font-size:22px; }
     }
     .tile{
-      background:#fff; border-radius:22px; height:170px;
+      background:transparent; border-radius:22px; height:170px;
       display:flex; align-items:center; justify-content:center;
-      box-shadow: 0 10px 20px rgba(0,0,0,.12);
-      position:relative; cursor:grab; border:4px solid transparent; transition:.18s ease;
+      box-shadow:none;
+      position:relative; cursor:grab; border:none; transition:.18s ease;
       touch-action:none; /* allow custom touch dragging without scrolling */
     }
-    .tile img{ width:88%; height:88%; object-fit:contain; }
+    .tile img{ width:100%; height:100%; object-fit:contain; }
     .tile.dragging{ transform:scale(1.07) rotate(2deg); z-index:20; cursor:grabbing; }
     .tile.selected{ border-color:#ffd166; box-shadow:0 16px 30px rgba(255,209,102,.3); }
 
