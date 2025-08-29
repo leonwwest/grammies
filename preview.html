@@ -107,7 +107,11 @@
       </p>
 
       <div class="strip" id="g1Preview" aria-label="Vorschau Spiel 1">
-        <div class="tile"><img id="g1PreviewImg" src="cards/german_ich.png" alt="ich" width="110" height="110" loading="lazy" decoding="async"></div>
+        <div class="pair">
+          <span class="check">✓</span>
+          <div class="tile"><img id="g1Left" src="cards/german_I.png" alt="I" width="110" height="110" loading="lazy" decoding="async"></div>
+          <div class="tile"><img id="g1Right" src="cards/german_ich.png" alt="ich" width="110" height="110" loading="lazy" decoding="async"></div>
+        </div>
       </div>
 
       <div class="cta-row">
@@ -180,11 +184,17 @@
       /* swap demo images by lang (Game 1 & 2) */
       (function(){
         try{
-          // Game 1 (single-card preview)
-          const g1 = document.getElementById('g1PreviewImg');
-          if (g1){
-            if (LANG === 'zh') { g1.src = 'cards/mandarin_wo.png'; g1.alt = 'wo'; }
-            else { g1.src = 'cards/german_ich.png'; g1.alt = 'ich'; }
+          // Game 1 – show one correct pair
+          const g1L = document.getElementById('g1Left');
+          const g1R = document.getElementById('g1Right');
+          if (g1L && g1R){
+            if (LANG === 'zh') {
+              g1L.src = 'cards/mandarin_I.png'; g1L.alt = 'I';
+              g1R.src = 'cards/mandarin_wo.png'; g1R.alt = 'wo';
+            } else {
+              g1L.src = 'cards/german_I.png'; g1L.alt = 'I';
+              g1R.src = 'cards/german_ich.png'; g1R.alt = 'ich';
+            }
           }
 
           // Game 2
