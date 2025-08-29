@@ -73,13 +73,14 @@
       .grid{ grid-template-columns: repeat(4, minmax(120px,1fr)); }
     }
     @media (max-width:680px){
-      .grid{ grid-template-columns: repeat(3, minmax(120px,1fr)); }
+      .grid{ grid-template-columns: repeat(3, minmax(100px,1fr)); }
     }
     .tile{
       background:#fff; border-radius:22px; height:170px;
       display:flex; align-items:center; justify-content:center;
       box-shadow: 0 10px 20px rgba(0,0,0,.12);
       position:relative; cursor:grab; border:4px solid transparent; transition:.18s ease;
+      touch-action: none; /* enable smooth touch dragging without page scroll */
     }
     .tile img{ width:88%; height:88%; object-fit:contain; }
     .tile.dragging{ transform:scale(1.07) rotate(2deg); z-index:20; cursor:grabbing; }
@@ -341,6 +342,32 @@
           );
         }
       });
+
+      // Pointer-based drag for touch devices (mobile-friendly)
+      div.addEventListener('pointerdown', (e)=>{
+        div.classList.add('dragging');
+        try{ div.setPointerCapture(e.pointerId); }catch(_){ }
+        div.__dragMeta = { id: card.id, pair: card.pair };
+      });
+      div.addEventListener('pointerup', (e)=>{
+        div.classList.remove('dragging');
+        const meta = div.__dragMeta; delete div.__dragMeta;
+        if (!meta) return;
+        // Temporarily hide source to hit-test element underneath
+        const prevVis = div.style.visibility;
+        div.style.visibility = 'hidden';
+        const el = document.elementFromPoint(e.clientX, e.clientY);
+        div.style.visibility = prevVis;
+        const target = el && el.closest ? el.closest('.tile') : null;
+        if (target && target !== div){
+          tryMatch(
+            { id: meta.id, pair: meta.pair },
+            { id: target.dataset.id, pair: target.dataset.pair },
+            target
+          );
+        }
+      });
+      div.addEventListener('pointercancel', ()=>{ div.classList.remove('dragging'); div.__dragMeta = null; });
 
       return div;
     }

@@ -73,13 +73,14 @@
       .grid{ grid-template-columns: repeat(4, minmax(120px,1fr)); }
     }
     @media (max-width:680px){
-      .grid{ grid-template-columns: repeat(3, minmax(120px,1fr)); }
+      .grid{ grid-template-columns: repeat(3, minmax(100px,1fr)); }
     }
     .tile{
       background:#fff; border-radius:22px; height:170px;
       display:flex; align-items:center; justify-content:center;
       box-shadow: 0 10px 20px rgba(0,0,0,.12);
       position:relative; cursor:grab; border:4px solid transparent; transition:.18s ease;
+      touch-action:none; /* allow custom touch dragging without scrolling */
     }
     .tile img{ width:88%; height:88%; object-fit:contain; }
     .tile.dragging{ transform:scale(1.07) rotate(2deg); z-index:20; cursor:grabbing; }
@@ -339,6 +340,26 @@
         div.classList.add('selected');
       });
 
+      // Pointer down/up to allow touch users to "drop" into a slot by lifting over it
+      div.addEventListener('pointerdown', (e)=>{
+        div.classList.add('dragging');
+        try{ div.setPointerCapture(e.pointerId); }catch(_){ }
+        div.__dragId = card.id;
+      });
+      div.addEventListener('pointerup', (e)=>{
+        div.classList.remove('dragging');
+        const id = div.__dragId; delete div.__dragId;
+        if (!id) return;
+        // Temporarily hide to detect the element under the finger
+        const prevVis = div.style.visibility;
+        div.style.visibility = 'hidden';
+        const el = document.elementFromPoint(e.clientX, e.clientY);
+        div.style.visibility = prevVis;
+        const slot = el && el.closest ? el.closest('.slot') : null;
+        if (slot){ placeIntoSlot(id, slot); }
+      });
+      div.addEventListener('pointercancel', ()=>{ div.classList.remove('dragging'); div.__dragId = null; });
+
       return div;
     }
 
@@ -430,6 +451,10 @@
         }
         if (selectedCardId){ placeIntoSlot(selectedCardId, slot); }
       });
+
+      // Pointer enter/leave to highlight hover on touch drag
+      slot.addEventListener('pointerenter', ()=>{ if(!rowState[rowIndex].locked && !slot.firstChild) slot.classList.add('hover'); });
+      slot.addEventListener('pointerleave', ()=> slot.classList.remove('hover'));
 
       return slot;
     }
