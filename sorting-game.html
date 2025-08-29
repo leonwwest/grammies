@@ -80,7 +80,8 @@
       .row{ padding:12px 12px 14px; }
       .row-head{ gap:10px; margin-bottom:10px; }
       .cols{ flex-direction:column; align-items:stretch; gap:10px; }
-      .col{ justify-content:center; }
+      .col{ justify-content:center; flex-direction:column; }
+      .slot-row{ justify-content:center; }
       .label{ min-width:auto; padding:0 10px; height:34px; font-size:14px; }
       .slot{ width:68px; height:68px; }
       .equals{ align-self:center; font-size:22px; }
@@ -124,6 +125,7 @@
 
     .cols{ display:flex; align-items:center; gap:16px; }
     .col{ flex:1; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .slot-row{ display:flex; gap:10px; align-items:center; justify-content:center; }
     .label{
       display:flex; align-items:center; justify-content:center;
       background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.28);
@@ -443,22 +445,22 @@
         labelEn.textContent = t('enLabel');
 
         colLeft.appendChild(labelDe);
-        colRight.appendChild(labelEn);
+        const deRow = document.createElement('div');
+        deRow.className = 'slot-row';
+        for (let s=0;s<2;s++){ deRow.appendChild(makeSlot(idx, 'de')); }
+        colLeft.appendChild(deRow);
 
-        // 2 de slots
-        for (let s=0;s<2;s++){
-          colLeft.appendChild(makeSlot(idx, 'de'));
-        }
-        // equals
-        const eq = document.createElement('div');
-        eq.className = 'equals'; eq.textContent = '=';
-        // 2 en slots
-        for (let s=0;s<2;s++){
-          colRight.appendChild(makeSlot(idx, 'en'));
-        }
+        const labelEq = document.createElement('div');
+        labelEq.className = 'equals'; labelEq.textContent = '=';
+
+        colRight.appendChild(labelEn);
+        const enRow = document.createElement('div');
+        enRow.className = 'slot-row';
+        for (let s=0;s<2;s++){ enRow.appendChild(makeSlot(idx, 'en')); }
+        colRight.appendChild(enRow);
 
         cols.appendChild(colLeft);
-        cols.appendChild(eq);
+        cols.appendChild(labelEq);
         cols.appendChild(colRight);
         row.appendChild(head);
         row.appendChild(cols);
