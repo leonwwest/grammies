@@ -89,6 +89,19 @@
     .tile.selected img{ transform: scale(0.98); transition: transform .12s ease; }
     .tile.matched{ animation: popOut .22s ease-out forwards; }
     @keyframes popOut{ from{ transform: scale(1); opacity:1 } to{ transform: scale(.92); opacity: .2 } }
+    .tile.hover{ transform:scale(1.04); box-shadow:0 16px 30px rgba(255,255,255,.22); animation: pulse 1s ease-in-out infinite; }
+    @keyframes pulse{ 0%{ box-shadow:0 0 0 0 rgba(255,255,255,.16);} 50%{ box-shadow:0 0 0 6px rgba(255,255,255,.10);} 100%{ box-shadow:0 0 0 0 rgba(255,255,255,.16);} }
+    .tile.flash{ animation: dropFlash .35s ease-out; }
+    @keyframes dropFlash{ from{ background:#e8fff3; } to{ background:#fff; } }
+
+    /* Floating ghost while touch-dragging */
+    .drag-ghost{
+      position:fixed; left:0; top:0; z-index:2000; pointer-events:none;
+      box-shadow:0 18px 36px rgba(0,0,0,.25); border-radius:12px; background:#fff;
+      transform:translate3d(0,0,0) scale(1.06);
+      will-change:transform; opacity:.96;
+    }
+    .drag-ghost img{ width:100%; height:100%; object-fit:contain; border-radius:12px; }
     .tile.hidden{ visibility:hidden; }
 
     /* ===== Hits (matched pairs) ===== */
@@ -323,11 +336,14 @@
       div.addEventListener('dragend', ()=> div.classList.remove('dragging'));
 
       // allow drop ON other tiles
-      div.addEventListener('dragover', e=> e.preventDefault());
+      div.addEventListener('dragover', e=> { e.preventDefault(); div.classList.add('hover'); });
+      div.addEventListener('dragleave', ()=> div.classList.remove('hover'));
       div.addEventListener('drop', e=>{
         e.preventDefault();
+        div.classList.remove('hover');
         const data = JSON.parse(e.dataTransfer.getData('text/plain'));
         tryMatch(data, {id:card.id, pair:card.pair}, div);
+        div.classList.add('flash'); setTimeout(()=> div.classList.remove('flash'), 300);
       });
 
       // click to select / match
@@ -352,6 +368,21 @@
         div.classList.add('dragging');
         try{ div.setPointerCapture(e.pointerId); }catch(_){ }
         div.__dragMeta = { id: card.id, pair: card.pair };
+        const rect = div.getBoundingClientRect();
+        const ghost = document.createElement('div');
+        ghost.className = 'drag-ghost';
+        ghost.style.width = rect.width + 'px';
+        ghost.style.height = rect.height + 'px';
+        ghost.style.transform = `translate(${e.clientX - rect.width/2}px, ${e.clientY - rect.height/2}px)`;
+        ghost.innerHTML = `<img src="cards/${card.file}" alt="">`;
+        document.body.appendChild(ghost);
+        div.__ghost = ghost;
+      });
+      div.addEventListener('pointermove', (e)=>{
+        if (div.__ghost){
+          const g = div.__ghost; const w = g.offsetWidth, h = g.offsetHeight;
+          g.style.transform = `translate(${e.clientX - w/2}px, ${e.clientY - h/2}px)`;
+        }
       });
       div.addEventListener('pointerup', (e)=>{
         div.classList.remove('dragging');
@@ -369,9 +400,11 @@
             { id: target.dataset.id, pair: target.dataset.pair },
             target
           );
+          target.classList.add('flash'); setTimeout(()=> target.classList.remove('flash'), 300);
         }
+        if (div.__ghost){ div.__ghost.remove(); div.__ghost = null; }
       });
-      div.addEventListener('pointercancel', ()=>{ div.classList.remove('dragging'); div.__dragMeta = null; });
+      div.addEventListener('pointercancel', ()=>{ div.classList.remove('dragging'); div.__dragMeta = null; if (div.__ghost){ div.__ghost.remove(); div.__ghost = null; } });
 
       return div;
     }
