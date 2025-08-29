@@ -52,7 +52,7 @@ body{
   backdrop-filter:saturate(140%) blur(8px);
 }
 .gg-flex-spacer{ flex:1; }
-.gg-topbar .gg-btn{ min-width:92px; justify-content:center; }
+.gg-topbar .gg-btn{ justify-content:center; }
 
 /* ===== Buttons ===== */
 .gg-btn{
@@ -191,9 +191,13 @@ label{ font-weight:600; color:#0f172a; }
   .container, .wrap{ padding:0 14px 32px; }
   .strip .tile{ width:86px; height:86px; }
   .gg-btn{ height:36px; padding:0 12px; font-size:13px; }
-  .gg-topbar{ gap:10px; }
-  .gg-topbar .gg-btn{ min-width:86px; }
+  .gg-topbar{ gap:8px; }
   .form-row{ grid-template-columns:1fr; }
+}
+
+/* Extra-narrow: keep reset button on one line */
+@media (max-width: 420px){
+  .gg-topbar .reset-btn{ font-size:12px; padding:0 10px; }
 }
 @media (max-width: 480px){
   .strip .tile{ width:80px; height:80px; }
@@ -203,3 +207,6 @@ label{ font-weight:600; color:#0f172a; }
 }
 
 /* (reduced-motion block temporarily removed) */
+@media (max-width: 380px){
+  .gg-topbar .reset-btn{ font-size:11.5px; letter-spacing:.1px; padding:0 8px; }
+}
