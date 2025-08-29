@@ -191,6 +191,8 @@
         rows:"Sortiere die Karten hier",
         de:"Deutsch", enLabel:"English",
         winTitle:"Großartig!",
+        rowAnyOf3:"Beliebige der 3 Ziel-Sätze",
+        rowLabel:"Zeile",
         winText:"Du hast alle Sätze korrekt gebaut.",
         back:"← Zurück",
         reset:"Neues Spiel",
@@ -203,6 +205,10 @@
         rows:"在此分类卡片",
         de:"德语", enLabel:"英语",
         winTitle:"太棒了！",
+        rowAnyOf3:"Beliebige der 3 Ziel-Sätze",
+        rowLabel:"Zeile",
+        rowAnyOf3:"任选 3 个目标句子之一",
+        rowLabel:"第 {{n}} 行",
         winText:"你把所有句子都正确完成了。",
         back:"← 返回",
         reset:"新游戏",
@@ -351,10 +357,11 @@
 
         const head = document.createElement('div');
         head.className = 'row-head';
+        const rowTitle = (LANG === 'zh') ? t('rowLabel').replace('{{n}}', (idx+1)) : (t('rowLabel') + ' ' + (idx+1));
         head.innerHTML = `
           <div class="tags">
-            <span class="tag">Row ${idx+1}</span>
-            <span class="tag" style="opacity:.7">Beliebige der 3 Ziel-Sätze</span>
+            <span class="tag">${rowTitle}</span>
+            <span class="tag" style="opacity:.7">${t('rowAnyOf3')}</span>
           </div>
         `;
 

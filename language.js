@@ -297,7 +297,11 @@
   window.setLanguageFromQuery = function (lang) { return languageSystem.setLanguageFromQuery(lang); };
   window.setLanguage = function (lang) { return languageSystem.setLanguage(lang); };
 
-  // Auto-apply once DOM is ready
+  
+  // Back-compat aliases
+  window.languageSystem.changeLanguage = function (lang) { return languageSystem.setLanguage(lang); };
+  window.changeLanguage = function (lang) { return languageSystem.setLanguage(lang); };
+// Auto-apply once DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => languageSystem.setLanguageFromQuery());
   } else {
