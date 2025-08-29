@@ -1,101 +1,226 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grammar Games - Altersgruppe wählen</title>
-    <link rel="stylesheet" href="shared.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="language.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grammar Games – Altersgruppe wählen</title>
+
+  <link rel="stylesheet" href="shared.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root{
+      --gg-orange:#FF6B6B;
+      --gg-orange-dark:#ff5a5a;
+      --gg-border:rgba(255,255,255,.55);
+      --gg-shadow:0 12px 30px rgba(26, 26, 44, .22);
+    }
+    body{
+      font-family:"Poppins",system-ui,Segoe UI,Arial,sans-serif;
+      background: radial-gradient(1200px 600px at 20% -10%, #b9c6ff33, #0000),
+                  radial-gradient(1000px 600px at 90% -10%, #a2b3ff30, #0000),
+                  linear-gradient(135deg,#89a6ff 0%, #bba8ff 50%, #d0b7ff 100%);
+      min-height:100vh;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      color:#0f172a;
+    }
+
+    /* ===== Topbar (matching games/preview) ===== */
+    .gg-topbar{
+      display:flex; align-items:center; gap:12px;
+      padding:14px 18px; position:sticky; top:0; z-index:1050;
+      backdrop-filter:saturate(140%) blur(8px);
+    }
+    .gg-flex-spacer{ flex:1; }
+    .gg-btn{
+      display:inline-flex; align-items:center; gap:.5rem;
+      height:38px; padding:0 14px; border-radius:22px;
+      font:600 14px/1.1 "Poppins",system-ui,Segoe UI,Arial,sans-serif;
+      text-decoration:none; cursor:pointer; user-select:none;
+      transition:.18s ease; border:1.5px solid transparent; color:#fff;
+    }
+    .gg-primary{ background:var(--gg-orange); border-color:var(--gg-orange); box-shadow:0 6px 18px rgba(255,107,107,.28); }
+    .gg-primary:hover{ transform:translateY(-1px); background:var(--gg-orange-dark); }
+    .gg-ghost{ background:transparent; color:#fff; border-color:var(--gg-border); }
+    .gg-ghost:hover{ background:rgba(255,255,255,.10); }
+    .gg-lang.gg-active{ background:var(--gg-orange); color:#fff; border-color:var(--gg-orange); box-shadow:0 6px 18px rgba(255,107,107,.28); }
+    .gg-back{ margin-right:8px; }
+
+    /* ===== Page layout ===== */
+    .wrap{ max-width:1200px; margin:0 auto; padding:0 18px 64px; }
+    .title{ text-align:center; color:#fff; font-size:clamp(28px,3.4vw,40px); font-weight:800; margin:14px 0 6px; }
+    .sub{ text-align:center; color:#eef; opacity:.98; margin:0 0 26px; }
+
+    .grid{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+    @media (max-width:900px){ .grid{ grid-template-columns:1fr; } }
+
+    .age-card{
+      background:#fff;
+      border-radius:24px; padding:28px 26px;
+      box-shadow:0 28px 60px rgba(0,0,0,.14);
+      border:1px solid rgba(255,255,255,.55);
+      transition:.18s ease;
+      cursor:pointer;
+    }
+    .age-card:hover{ transform:translateY(-2px); box-shadow:0 36px 70px rgba(0,0,0,.16); }
+    .age-title{ font-size:clamp(24px,2.6vw,34px); margin:0 0 6px; color:#0f172a; font-weight:800; letter-spacing:.2px; }
+    .age-desc{ margin:0 0 14px; color:#6b7280; font-weight:600; }
+
+    .list{ margin:10px 0 0; padding:0; list-style:none; }
+    .list li{ display:flex; align-items:center; gap:10px; padding:8px 0; color:#334155; }
+    .list li .emoji{ width:24px; text-align:center; }
+
+    /* tiny feedback toast */
+    .toast{
+      position:fixed; left:50%; bottom:22px; transform:translateX(-50%);
+      background:rgba(255,255,255,.95); color:#111827; padding:10px 14px;
+      border-radius:999px; border:1px solid rgba(0,0,0,.06); box-shadow:0 10px 30px rgba(0,0,0,.18);
+      display:none; z-index:1200;
+    }
+  </style>
+
+  <script src="language.js"></script>
 </head>
 <body>
-    <!-- A/B Test Variant Selector -->
-    <div class="variant-selector">
-        <a href="index.html?variant=A" class="variant-btn" data-translate="variantA">Variante A: 10-Min Games</a>
-        <a href="index.html?variant=B" class="variant-btn" data-translate="variantB">Variante B: Multisensory Grammar</a>
+
+  <!-- Topbar -->
+  <div class="gg-topbar">
+    <a class="gg-btn gg-primary gg-back back-link" href="#">
+      <span class="arrow">←</span>
+      <span class="back-text" data-translate="backButton">Zurück</span>
+    </a>
+
+    <div class="gg-flex-spacer"></div>
+
+    <a class="gg-btn gg-ghost gg-lang lang-link" data-lang="de" href="#">Deutsch</a>
+    <a class="gg-btn gg-ghost gg-lang lang-link" data-lang="zh" href="#">中文</a>
+  </div>
+
+  <div class="wrap">
+    <h1 class="title" data-translate="chooserTitle">Wie alt ist Ihr Kind?</h1>
+    <p class="sub" data-translate="chooserSubtitle">Wir zeigen Ihnen die passenden Grammar Games</p>
+
+    <div class="grid">
+      <!-- 4–6 -->
+      <article class="age-card" data-age="4-6" tabindex="0" role="button" aria-label="4–6 Jahre auswählen">
+        <h2 class="age-title" data-translate="age46Title">4–6 Jahre</h2>
+        <div class="age-desc" data-translate="age46Desc">Spielerische Grundlagen</div>
+        <ul class="list">
+          <li><span class="emoji">🐱</span><span data-translate="ex1a">Tier-Wörter sortieren</span></li>
+          <li><span class="emoji">🌈</span><span data-translate="ex1b">Farben-Adjektive</span></li>
+          <li><span class="emoji">🏃‍♀️</span><span data-translate="ex1c">Action-Verben</span></li>
+        </ul>
+      </article>
+
+      <!-- 7–10 -->
+      <article class="age-card" data-age="7-10" tabindex="0" role="button" aria-label="7–10 Jahre auswählen">
+        <h2 class="age-title" data-translate="age710Title">7–10 Jahre</h2>
+        <div class="age-desc" data-translate="age710Desc">Strukturierte Grammatik</div>
+        <ul class="list">
+          <li><span class="emoji">🧩</span><span data-translate="ex2a">Sätze konstruieren</span></li>
+          <li><span class="emoji">⚡</span><span data-translate="ex2b">Zeit-Formen-Quiz</span></li>
+          <li><span class="emoji">🔤</span><span data-translate="ex2c">Wortarten-Memory</span></li>
+        </ul>
+      </article>
     </div>
+  </div>
 
-    <!-- Screen 3: Age Chooser -->
-    <div class="screen">
-        <div class="container">
-            <div class="back-nav">
-                <a href="#" onclick="navigateWithTracking('preview.html', 'back-click'); return false;" class="back-btn" data-translate="backButton">← Zurück</a>
-            </div>
-            
-            <h2 data-translate="ageQuestion">Wie alt ist Ihr Kind?</h2>
-            <p class="subtitle" data-translate="ageSubtitle">Wir zeigen Ihnen die passenden Grammar Games</p>
-            
-            <div class="age-options">
-                <a href="#" class="age-card" onclick="selectAge('4-6'); return false;" data-age="4-6">
-                    <div class="age-range" data-translate="age46">4-6 Jahre</div>
-                    <div class="age-description" data-translate="age46Desc">Spielerische Grundlagen</div>
-                    <div class="example-games">
-                        <h4 data-translate="age46Examples">Beispiel-Spiele:</h4>
-                        <ul>
-                            <li data-translate="age46Game1">🐱 Tier-Wörter sortieren</li>
-                            <li data-translate="age46Game2">🌈 Farben-Adjektive</li>
-                            <li data-translate="age46Game3">🏃‍♂️ Action-Verben</li>
-                        </ul>
-                    </div>
-                </a>
-                
-                <a href="#" class="age-card" onclick="selectAge('7-10'); return false;" data-age="7-10">
-                    <div class="age-range" data-translate="age710">7-10 Jahre</div>
-                    <div class="age-description" data-translate="age710Desc">Strukturierte Grammatik</div>
-                    <div class="example-games">
-                        <h4 data-translate="age710Examples">Beispiel-Spiele:</h4>
-                        <ul>
-                            <li data-translate="age710Game1">📝 Sätze konstruieren</li>
-                            <li data-translate="age710Game2">⚡ Zeit-Formen-Quiz</li>
-                            <li data-translate="age710Game3">🔤 Wortarten-Memory</li>
-                        </ul>
-                    </div>
-                </a>
-            </div>
+  <div class="toast" id="toast">✔ Auswahl übernommen …</div>
 
-            <!-- Selection feedback -->
-            <div id="selection-feedback" style="text-align: center; margin-top: 30px; display: none;">
-                <div class="card" style="background: linear-gradient(135deg, #FF8A95, #FFB3BA); color: white; max-width: 500px; margin: 0 auto;">
-                    <h3 style="color: white;" data-translate="perfect">✓ Perfekt!</h3>
-                    <p style="color: rgba(255,255,255,0.9); font-size: 1.1em;" id="selection-text" data-translate="ageSelected">Altersgruppe ausgewählt</p>
-                    <div style="margin-top: 20px;">
-                        <span style="opacity: 0.8;" data-translate="redirecting">Leite Sie weiter zu personalisierten Inhalten...</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+  <script src="analytics.js"></script>
+  <script>
+    (function(){
+      const VARIANT = 'A'; // fixed
+      const qs = new URLSearchParams(location.search);
+      const LANG = (qs.get('lang') || window.languageSystem?.currentLanguage || localStorage.getItem('grammarGamesLanguage') || 'de').toLowerCase();
 
-
-
-    <script src="analytics.js"></script>
-    <script>
-        function selectAge(age) {
-            // Track age selection
-            trackClick('age-selected', { age: age });
-            
-            // Visual feedback
-            document.querySelectorAll('.age-card').forEach(card => {
-                card.style.opacity = '0.5';
-            });
-            
-            event.target.closest('.age-card').style.opacity = '1';
-            event.target.closest('.age-card').style.border = '3px solid #FF8A95';
-            event.target.closest('.age-card').style.transform = 'scale(1.02)';
-            
-            // Show feedback
-            const feedback = document.getElementById('selection-feedback');
-            const selectionText = document.getElementById('selection-text');
-            
-            feedback.style.display = 'block';
-            selectionText.textContent = window.languageSystem.t('ageSpecificText', { age: age });
-            
-            // Auto-advance after 2 seconds
-            setTimeout(() => {
-                const captureUrl = `capture.html?age=${age}`;
-                navigateWithTracking(captureUrl, 'chooser-to-capture', { age: age });
-            }, 2000);
+      /* 1) Apply translations */
+      try {
+        if (window.setLanguageFromQuery) window.setLanguageFromQuery(LANG);
+        else if (window.languageSystem?.applyTranslations) {
+          window.languageSystem.currentLanguage = LANG;
+          window.languageSystem.applyTranslations();
         }
-    </script>
+      } catch(_) {}
+
+      /* 1b) Fallback to German text if chooser keys are missing */
+      const fallbacks = {
+        chooserTitle: 'Wie alt ist Ihr Kind?',
+        chooserSubtitle: 'Wir zeigen Ihnen die passenden Grammar Games',
+        age46Title: '4–6 Jahre',
+        age46Desc: 'Spielerische Grundlagen',
+        ex1a: 'Tier-Wörter sortieren',
+        ex1b: 'Farben-Adjektive',
+        ex1c: 'Action-Verben',
+        age710Title: '7–10 Jahre',
+        age710Desc: 'Strukturierte Grammatik',
+        ex2a: 'Sätze konstruieren',
+        ex2b: 'Zeit-Formen-Quiz',
+        ex2c: 'Wortarten-Memory'
+      };
+      try {
+        const t = (k)=> window.languageSystem?.t?.(k) || k;
+        document.querySelectorAll('[data-translate]').forEach(el=>{
+          const k = el.getAttribute('data-translate');
+          if (t(k) === k && fallbacks[k]) el.innerHTML = fallbacks[k];
+        });
+      } catch(_){}
+
+      /* 2) Back → preview.html with params + tracking */
+      document.querySelectorAll('.back-link').forEach(a=>{
+        const u = new URL('preview.html', location.href);   // go back to preview
+        u.searchParams.set('variant', VARIANT);
+        u.searchParams.set('lang', LANG);
+        a.href = u.pathname + '?' + u.searchParams.toString();
+        a.addEventListener('click', (e)=>{
+          e.preventDefault();
+          if (window.navigateWithTracking) {
+            window.navigateWithTracking(a.href, 'chooser-back-to-preview');
+            setTimeout(()=> location.href = a.href, 150);
+          } else {
+            location.href = a.href;
+          }
+        });
+      });
+
+      /* 3) Language links keep params + active state */
+      document.querySelectorAll('.lang-link').forEach(a=>{
+        const L = a.dataset.lang;
+        const url = new URL(location.href);
+        url.searchParams.set('lang', L);
+        url.searchParams.set('variant', VARIANT);
+        a.href = url.pathname + '?' + url.searchParams.toString();
+        a.classList.toggle('gg-active', L === LANG);
+      });
+
+      /* 4) Age card click → toast + redirect to capture.html?age= */
+      const toast = document.getElementById('toast');
+      function showToast(msg){
+        toast.textContent = msg || '✔ Auswahl übernommen …';
+        toast.style.display = 'block';
+        setTimeout(()=> toast.style.display = 'none', 1200);
+      }
+
+      document.querySelectorAll('.age-card').forEach(card=>{
+        function go(){
+          const age = card.dataset.age;
+          showToast('✔ Auswahl übernommen …');
+          const u = new URL('capture.html', location.href);
+          u.searchParams.set('age', age);
+          u.searchParams.set('variant', VARIANT);
+          u.searchParams.set('lang', LANG);
+          const href = u.pathname + '?' + u.searchParams.toString();
+          if (window.navigateWithTracking) {
+            window.navigateWithTracking(href, 'chooser-to-capture', { age });
+            setTimeout(()=> location.href = href, 200);
+          } else {
+            location.href = href;
+          }
+        }
+        card.addEventListener('click', go);
+        card.addEventListener('keypress', (e)=>{ if (e.key==='Enter' || e.key===' ') { e.preventDefault(); go(); }});
+      });
+    })();
+  </script>
 </body>
 </html>

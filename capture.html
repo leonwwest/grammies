@@ -1,164 +1,244 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grammar Games - Kostenloses Starter-Pack erhalten</title>
-    <link rel="stylesheet" href="shared.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="language.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grammar Games – Starter-Pack</title>
+
+  <link rel="stylesheet" href="shared.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root{
+      --gg-orange:#FF6B6B;
+      --gg-orange-dark:#ff5a5a;
+      --gg-border:rgba(255,255,255,.55);
+      --gg-shadow:0 12px 30px rgba(26, 26, 44, .22);
+    }
+    body{
+      font-family:"Poppins",system-ui,Segoe UI,Arial,sans-serif;
+      background: radial-gradient(1200px 600px at 20% -10%, #b9c6ff33, #0000),
+                  radial-gradient(1000px 600px at 90% -10%, #a2b3ff30, #0000),
+                  linear-gradient(135deg,#89a6ff 0%, #bba8ff 50%, #d0b7ff 100%);
+      min-height:100vh;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      color:#0f172a;
+    }
+
+    /* ===== Topbar (matching the site) ===== */
+    .gg-topbar{
+      display:flex; align-items:center; gap:12px;
+      padding:14px 18px; position:sticky; top:0; z-index:1050;
+      backdrop-filter:saturate(140%) blur(8px);
+    }
+    .gg-flex-spacer{ flex:1; }
+    .gg-btn{
+      display:inline-flex; align-items:center; gap:.5rem;
+      height:38px; padding:0 14px; border-radius:22px;
+      font:600 14px/1.1 "Poppins",system-ui,Segoe UI,Arial,sans-serif;
+      text-decoration:none; cursor:pointer; user-select:none;
+      transition:.18s ease; border:1.5px solid transparent; color:#fff;
+    }
+    .gg-primary{ background:var(--gg-orange); border-color:var(--gg-orange); box-shadow:0 6px 18px rgba(255,107,107,.28); }
+    .gg-primary:hover{ transform:translateY(-1px); background:var(--gg-orange-dark); }
+    .gg-ghost{ background:transparent; color:#fff; border-color:var(--gg-border); }
+    .gg-ghost:hover{ background:rgba(255,255,255,.10); }
+    .gg-lang.gg-active{ background:var(--gg-orange); color:#fff; border-color:var(--gg-orange); box-shadow:0 6px 18px rgba(255,107,107,.28); }
+    .gg-back{ margin-right:8px; }
+
+    /* ===== Page ===== */
+    .wrap{ max-width:900px; margin:0 auto; padding:0 18px 72px; }
+    .title{ text-align:center; color:#fff; font-size:clamp(28px,3.4vw,40px); font-weight:800; margin:14px 0 6px; }
+    .sub{ text-align:center; color:#eef; opacity:.98; margin:0 0 24px; }
+
+    .pack-card{
+      background:#fff; border:1px solid rgba(255,255,255,.6);
+      border-radius:24px; box-shadow:0 28px 60px rgba(0,0,0,.14);
+      padding:22px 20px 18px; margin:0 auto 20px; max-width:760px;
+    }
+    .pack-title{ text-align:center; font-weight:800; font-size:28px; margin:6px 0 16px; color:#0f172a; }
+
+    .list{ display:grid; gap:12px; padding:0; list-style:none; }
+    .row{
+      display:flex; align-items:center; gap:12px;
+      background:#f6f8fb; border:1px solid #eef2f7; border-radius:14px;
+      padding:12px 14px;
+    }
+    .row .emoji{
+      width:40px; height:40px; display:inline-flex; align-items:center; justify-content:center;
+      border-radius:999px; background:linear-gradient(45deg,#ff8a95,#ffb3ba);
+      font-size:20px;
+    }
+    .row .txt{ font-weight:600; color:#2c3e50; }
+
+    .form{
+      max-width:760px; margin:18px auto 0; display:grid; gap:12px;
+    }
+    .input{
+      height:54px; border-radius:24px; border:1.5px solid rgba(255,255,255,.55);
+      background:rgba(255,255,255,.9); padding:0 18px; font:600 15px/1 "Poppins",system-ui,Segoe UI,Arial,sans-serif; color:#0f172a;
+      box-shadow:0 12px 30px rgba(0,0,0,.10); outline:none;
+    }
+    .input::placeholder{ color:#94a3b8; font-weight:600; }
+    .submit{
+      height:54px; border-radius:28px; border:1.5px solid transparent; color:#fff;
+      background:var(--gg-orange); font:800 16px/1 "Poppins",system-ui,Segoe UI,Arial,sans-serif;
+      box-shadow:0 10px 24px rgba(255,107,107,.28); cursor:pointer; transition:.18s ease;
+    }
+    .submit:hover{ transform:translateY(-1px); background:var(--gg-orange-dark); }
+    .badges{ display:flex; justify-content:center; gap:24px; margin-top:10px; color:#eef; font-weight:700; }
+
+    .error{ color:#fff; background:#ef4444; border-radius:12px; padding:8px 12px; display:none; width:max-content; margin:6px auto 0; }
+  </style>
+
+  <script src="language.js"></script>
 </head>
 <body>
-    <!-- A/B Test Variant Selector -->
-    <div class="variant-selector">
-        <a href="index.html?variant=A" class="variant-btn" data-translate="variantA">Variante A: 10-Min Games</a>
-        <a href="index.html?variant=B" class="variant-btn" data-translate="variantB">Variante B: Multisensory Grammar</a>
-    </div>
 
-    <!-- Screen 4: Email Capture -->
-    <div class="screen">
-        <div class="container">
-            <div class="back-nav">
-                <a href="#" onclick="navigateWithTracking('chooser.html', 'back-click'); return false;" class="back-btn" data-translate="backButton">← Zurück</a>
-            </div>
-            
-            <div class="capture-content" style="max-width: 600px; margin: 0 auto; text-align: center;">
-                <h2 data-translate="freeStarterPack">Kostenloses Starter-Pack erhalten</h2>
-                <p class="subtitle" data-translate="starterPackDesc">3 sofort einsetzbare Grammar Games + Anleitung per E-Mail</p>
-                
-                <div class="card" style="margin-bottom: 40px;">
-                    <h3 id="pack-title" data-translate="personalPack">Ihr persönliches Starter-Pack:</h3>
-                    <div class="pack-contents" id="pack-contents">
-                        <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px;">
-                            <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">📋</div>
-                            <span style="font-weight: 500; color: #2c3e50;" data-translate="packItem1">3 Printable Game-Karten</span>
-                        </div>
-                        <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px;">
-                            <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">📖</div>
-                            <span style="font-weight: 500; color: #2c3e50;" data-translate="packItem2">Schritt-für-Schritt Anleitung</span>
-                        </div>
-                        <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px;">
-                            <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">🎯</div>
-                            <span style="font-weight: 500; color: #2c3e50;" data-translate="packItem3">Altersgerechte Schwierigkeit</span>
-                        </div>
-                        <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
-                            <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">⏱️</div>
-                            <span style="font-weight: 500; color: #2c3e50;" data-translate="packItem4">Je nur 10 Minuten</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <form id="email-form" class="email-form" onsubmit="submitEmail(event); return false;" style="margin-bottom: 30px;">
-                    <div class="form-group">
-                        <input type="email" id="email-input" required>
-                        <input type="text" id="name-input">
-                    </div>
-                    
-                    <button type="submit" class="cta-button primary large" id="submit-btn" data-translate="getStarterPack">
-                        🎁 Kostenloses Starter-Pack erhalten
-                    </button>
-                </form>
-                
-                <div class="trust-indicators">
-                    <div class="indicator" data-translate="freeUnbinding">✓ Kostenlos & unverbindlich</div>
-                    <div class="indicator" data-translate="immediateDownload">✓ Sofortiger Download</div>
-                    <div class="indicator" data-translate="noSpam">✓ Keine Spam-Mails</div>
-                </div>
-            </div>
-        </div>
-    </div>
+  <!-- Topbar -->
+  <div class="gg-topbar">
+    <a class="gg-btn gg-primary gg-back back-link" href="#">
+      <span>←</span><span data-translate="backButton" style="margin-left:.25rem">Zurück</span>
+    </a>
 
+    <div class="gg-flex-spacer"></div>
 
+    <a class="gg-btn gg-ghost gg-lang lang-link" data-lang="de" href="#">Deutsch</a>
+    <a class="gg-btn gg-ghost gg-lang lang-link" data-lang="zh" href="#">中文</a>
+  </div>
 
-    <script src="analytics.js"></script>
-    <script>
-        // Update pack content based on age from URL parameter
-        document.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const age = urlParams.get('age');
-            
-            if (age) {
-                updatePackContent(age);
-            }
-        });
-        
-        function updatePackContent(age) {
-            const packTitle = document.getElementById('pack-title');
-            const packContents = document.getElementById('pack-contents');
-            
-            if (age === '4-6') {
-                packTitle.textContent = window.languageSystem.t('starterPack46');
-                packContents.innerHTML = `
-                    <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px;">
-                        <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">🐱</div>
-                        <span style="font-weight: 500; color: #2c3e50;">${window.languageSystem.t('pack46Item1')}</span>
-                    </div>
-                    <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px;">
-                        <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">🌈</div>
-                        <span style="font-weight: 500; color: #2c3e50;">${window.languageSystem.t('pack46Item2')}</span>
-                    </div>
-                    <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px;">
-                        <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">🏃‍♂️</div>
-                        <span style="font-weight: 500; color: #2c3e50;">${window.languageSystem.t('pack46Item3')}</span>
-                    </div>
-                    <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
-                        <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">📖</div>
-                        <span style="font-weight: 500; color: #2c3e50;">${window.languageSystem.t('pack46Item4')}</span>
-                    </div>
-                `;
-            } else if (age === '7-10') {
-                packTitle.textContent = window.languageSystem.t('starterPack710');
-                packContents.innerHTML = `
-                    <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px;">
-                        <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">📝</div>
-                        <span style="font-weight: 500; color: #2c3e50;">${window.languageSystem.t('pack710Item1')}</span>
-                    </div>
-                    <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px;">
-                        <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">⚡</div>
-                        <span style="font-weight: 500; color: #2c3e50;">${window.languageSystem.t('pack710Item2')}</span>
-                    </div>
-                    <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px;">
-                        <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">🔤</div>
-                        <span style="font-weight: 500; color: #2c3e50;">${window.languageSystem.t('pack710Item3')}</span>
-                    </div>
-                    <div class="pack-item" style="display: flex; align-items: center; gap: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
-                        <div class="icon" style="font-size: 1.5em; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #FF8A95, #FFB3BA); border-radius: 50%;">🎯</div>
-                        <span style="font-weight: 500; color: #2c3e50;">${window.languageSystem.t('pack710Item4')}</span>
-                    </div>
-                `;
-            }
+  <div class="wrap">
+    <h1 class="title" data-translate="freeStarterPack">Kostenloses Starter-Pack</h1>
+    <p class="sub" data-translate="starterPackDesc">Sofort-Download mit 4 Beispiel-Spielen passend zum Alter Ihres Kindes.</p>
+
+    <section class="pack-card">
+      <h2 class="pack-title" id="packTitle">Starter-Pack</h2>
+      <ul class="list" id="packList"></ul>
+    </section>
+
+    <form class="form" id="captureForm" novalidate>
+      <input class="input" id="nameInput" type="text" autocomplete="name" placeholder="Ihr Name">
+      <input class="input" id="emailInput" type="email" autocomplete="email" placeholder="E-Mail">
+      <div class="error" id="errorBox"></div>
+      <button class="submit" id="submitBtn" type="submit" data-translate="getStarterPack">Starter-Pack erhalten</button>
+      <div class="badges">
+        <span data-translate="freeUnbinding">Jederzeit abmelden</span>
+        <span data-translate="immediateDownload">Sofort-Download</span>
+        <span data-translate="noSpam">Kein Spam</span>
+      </div>
+    </form>
+  </div>
+
+  <script src="analytics.js"></script>
+  <script>
+    (function(){
+      const VARIANT='A';
+      const qs = new URLSearchParams(location.search);
+      const LANG = (qs.get('lang') || window.languageSystem?.currentLanguage || localStorage.getItem('grammarGamesLanguage') || 'de').toLowerCase();
+      const AGE  = qs.get('age') || '4-6';
+
+      // Apply language
+      try {
+        if (window.setLanguageFromQuery) window.setLanguageFromQuery(LANG);
+        else if (window.languageSystem?.applyTranslations) {
+          window.languageSystem.currentLanguage = LANG;
+          window.languageSystem.applyTranslations();
         }
-        
-        function submitEmail(event) {
-            event.preventDefault();
-            
-            const emailInput = document.getElementById('email-input');
-            const nameInput = document.getElementById('name-input');
-            const submitBtn = document.getElementById('submit-btn');
-            
-            // Validate email
-            if (!emailInput.value || !emailInput.value.includes('@')) {
-                alert(window.languageSystem.t('validEmailRequired'));
-                return;
-            }
-            
-            // Track email submission
-            trackClick('email-submit', {
-                email: emailInput.value,
-                name: nameInput.value || 'Anonymous',
-                timestamp: new Date().toISOString()
-            });
-            
-            // Show loading state
-            submitBtn.textContent = window.languageSystem.t('sending');
-            submitBtn.disabled = true;
-            
-            // Simulate API call delay
-            setTimeout(() => {
-                // Navigate to thank you page
-                navigateWithTracking('thankyou.html', 'email-submitted');
-            }, 1500);
+      } catch(_){}
+
+      // Back → chooser.html (keep age/lang)
+      document.querySelectorAll('.back-link').forEach(a=>{
+        const u = new URL('chooser.html', location.href);
+        u.searchParams.set('lang', LANG);
+        u.searchParams.set('variant', VARIANT);
+        u.searchParams.set('age', AGE);
+        a.href = u.pathname + '?' + u.searchParams.toString();
+      });
+
+      // Language links keep params + active
+      document.querySelectorAll('.lang-link').forEach(a=>{
+        const L = a.dataset.lang;
+        const u = new URL(location.href);
+        u.searchParams.set('lang', L);
+        u.searchParams.set('variant', VARIANT);
+        u.searchParams.set('age', AGE);
+        a.href = u.pathname + '?' + u.searchParams.toString();
+        a.classList.toggle('gg-active', L === LANG);
+      });
+
+      // Render pack list by age
+      const t = (k)=> window.languageSystem?.t?.(k) || k;
+      const packTitle = document.getElementById('packTitle');
+      const packList  = document.getElementById('packList');
+
+      const items46 = [
+        { emoji:'🐱', key:'pack46Item1' },
+        { emoji:'🌈', key:'pack46Item2' },
+        { emoji:'🏃‍♂️', key:'pack46Item3' },
+        { emoji:'📖', key:'pack46Item4' },
+      ];
+      const items710 = [
+        { emoji:'🧩', key:'pack710Item1' },
+        { emoji:'⚡', key:'pack710Item2' },
+        { emoji:'🔤', key:'pack710Item3' },
+        { emoji:'📝', key:'pack710Item4' },
+      ];
+
+      const list = AGE==='7-10' ? items710 : items46;
+      packTitle.textContent = AGE==='7-10' ? t('starterPack710') : t('starterPack46');
+
+      packList.innerHTML = '';
+      list.forEach(it=>{
+        const li = document.createElement('li');
+        li.className = 'row';
+        li.innerHTML = `<span class="emoji">${it.emoji}</span><span class="txt">${t(it.key)}</span>`;
+        packList.appendChild(li);
+      });
+
+      // Form
+      const nameInput  = document.getElementById('nameInput');
+      const emailInput = document.getElementById('emailInput');
+      const errorBox   = document.getElementById('errorBox');
+      const submitBtn  = document.getElementById('submitBtn');
+
+      // placeholders by language
+      nameInput.placeholder  = t('namePlaceholder');
+      emailInput.placeholder = t('emailPlaceholder');
+
+      function validEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v||'').trim()); }
+
+      document.getElementById('captureForm').addEventListener('submit', function(e){
+        e.preventDefault();
+        errorBox.style.display='none';
+        const name  = nameInput.value.trim();
+        const email = emailInput.value.trim();
+
+        if (name.length < 2){
+          errorBox.textContent = t('validNameRequired');
+          errorBox.style.display='block';
+          return;
         }
-    </script>
+        if (!validEmail(email)){
+          errorBox.textContent = t('validEmailRequired');
+          errorBox.style.display='block';
+          return;
+        }
+
+        // Submit (simulated) and go to thankyou.html
+        submitBtn.textContent = t('sending');
+        submitBtn.disabled = true;
+
+        setTimeout(()=>{
+          const u = new URL('thankyou.html', location.href);
+          u.searchParams.set('lang', LANG);
+          u.searchParams.set('variant', VARIANT);
+          u.searchParams.set('age', AGE);
+          const href = u.pathname + '?' + u.searchParams.toString();
+          try { window.analytics?.trackClick?.('capture_submit', { age: AGE }); } catch(_){}
+          location.href = href;
+        }, 900);
+      });
+    })();
+  </script>
 </body>
 </html>
