@@ -75,6 +75,14 @@
     @media (max-width:680px){
       .grid{ grid-template-columns: repeat(3, minmax(100px,1fr)); }
     }
+    @media (max-width:640px){
+      .tile{ height:140px; }
+      .cols{ flex-direction:column; align-items:stretch; gap:12px; }
+      .col{ justify-content:center; }
+      .label{ min-width:auto; padding:0 10px; height:36px; font-size:14px; }
+      .slot{ width:70px; height:70px; }
+      .equals{ align-self:center; }
+    }
     .tile{
       background:#fff; border-radius:22px; height:170px;
       display:flex; align-items:center; justify-content:center;
