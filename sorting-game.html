@@ -248,7 +248,7 @@
     })();
 
     /******** Deck ********/
-    const DECK = [
+    const DECK_DE = [
       { id:"I",            file:"german_I.png",           side:"en" },
       { id:"ich",          file:"german_ich.png",         side:"de" },
       { id:"you",          file:"german_you.png",         side:"en" },
@@ -263,12 +263,37 @@
       { id:"ist",          file:"german_ist.png",         side:"de" }
     ];
 
+    const DECK_ZH = [
+      { id:"I",            file:"mandarin_I.png",         side:"en" },
+      { id:"wo",           file:"mandarin_wo.png",        side:"de" },
+      { id:"you",          file:"mandarin_you.png",       side:"en" },
+      { id:"ni",           file:"mandarin_ni.png",        side:"de" },
+      { id:"he_she_it",    file:"mandarin_he_she_it.png", side:"en" },
+      { id:"ta_ta_ta",     file:"mandarin_ta_ta_ta.png",  side:"de" },
+      { id:"am",           file:"mandarin_am.png",        side:"en" },
+      { id:"wo_shi",       file:"mandarin_wo_shi.png",    side:"de" },
+      { id:"are",          file:"mandarin_are.png",       side:"en" },
+      { id:"ni_shi",       file:"mandarin_ni_shi.png",    side:"de" },
+      { id:"is",           file:"mandarin_is.png",        side:"en" },
+      { id:"ta_shi",       file:"mandarin_ta_shi.png",    side:"de" }
+    ];
+
+    const DECK = (LANG === 'zh') ? DECK_ZH : DECK_DE;
+
     /* Target pairs: row can be any of these */
-    const TARGETS = [
+    const TARGETS_DE = [
       { name:"you-are ↔ du-bist",  de:new Set(["du","bist"]),         en:new Set(["you","are"]) },
       { name:"I-am ↔ ich-bin",     de:new Set(["ich","bin"]),         en:new Set(["I","am"]) },
       { name:"he/she/it-is ↔ er/sie/es-ist", de:new Set(["er_sie_es","ist"]), en:new Set(["he_she_it","is"]) }
     ];
+
+    const TARGETS_ZH = [
+      { name:"you-are ↔ 你-是",      de:new Set(["ni","ni_shi"]),       en:new Set(["you","are"]) },
+      { name:"I-am ↔ 我-是",         de:new Set(["wo","wo_shi"]),       en:new Set(["I","am"]) },
+      { name:"he/she/it-is ↔ 他/她/它-是", de:new Set(["ta_ta_ta","ta_shi"]), en:new Set(["he_she_it","is"]) }
+    ];
+
+    const TARGETS = (LANG === 'zh') ? TARGETS_ZH : TARGETS_DE;
 
     const grid = document.getElementById('cardsGrid');
     const rowsEl = document.getElementById('rows');
@@ -342,7 +367,7 @@
 
         const labelDe = document.createElement('div');
         labelDe.className = 'label';
-        labelDe.textContent = t('de');
+        labelDe.textContent = (LANG === 'zh') ? '中文' : t('de');
         const labelEn = document.createElement('div');
         labelEn.className = 'label';
         labelEn.textContent = t('enLabel');
