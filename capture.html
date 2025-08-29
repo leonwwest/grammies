@@ -116,9 +116,11 @@
       <ul class="list" id="packList"></ul>
     </section>
 
-    <form class="form" id="captureForm" novalidate>
-      <input class="input" id="nameInput" type="text" autocomplete="name" placeholder="Ihr Name">
-      <input class="input" id="emailInput" type="email" autocomplete="email" placeholder="E-Mail">
+    <form class="form" id="captureForm" name="starter-pack" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thankyou.html" novalidate>
+      <input type="hidden" name="form-name" value="starter-pack">
+      <p class="hidden"><label>Don’t fill this out: <input name="bot-field"></label></p>
+      <input class="input" id="nameInput" name="name" type="text" autocomplete="name" placeholder="Ihr Name" required>
+      <input class="input" id="emailInput" name="email" type="email" autocomplete="email" placeholder="E-Mail" required>
       <div class="error" id="errorBox"></div>
       <button class="submit" id="submitBtn" type="submit" data-translate="getStarterPack">Starter-Pack erhalten</button>
       <div class="badges">
@@ -126,6 +128,11 @@
         <span data-translate="immediateDownload">Sofort-Download</span>
         <span data-translate="noSpam">Kein Spam</span>
       </div>
+    </form>
+    <!-- Hidden copy so Netlify detects the form at build time (safe for SPAs) -->
+    <form name="starter-pack" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input name="name" />
+      <input name="email" />
     </form>
   </div>
 
@@ -208,6 +215,11 @@
       emailInput.placeholder = t('emailPlaceholder');
 
       function validEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v||'').trim()); }
+      function encode(data){
+        return Object.keys(data)
+          .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
+          .join('&');
+      }
 
       document.getElementById('captureForm').addEventListener('submit', async function(e){
         e.preventDefault();
@@ -226,17 +238,24 @@
           return;
         }
 
-        // Submit to backend and go to thankyou.html
+        // Submit to Netlify Forms and then go to thankyou.html
         submitBtn.textContent = t('sending');
         submitBtn.disabled = true;
 
         try {
-          const res = await fetch('/api/subscribe', {
+          const res = await fetch('/', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, email, age: AGE, lang: LANG, variant: VARIANT })
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: encode({
+              'form-name': 'starter-pack',
+              name,
+              email,
+              age: AGE,
+              lang: LANG,
+              variant: VARIANT
+            })
           });
-          if (!res.ok) throw new Error('subscribe_failed');
+          if (!res.ok) throw new Error('netlify_submit_failed');
         } catch (err) {
           errorBox.textContent = t('subscribeError');
           errorBox.style.display = 'block';
