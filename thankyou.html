@@ -119,7 +119,6 @@
 
       // Sprache aus Query/localStorage übernehmen & anwenden
       const LANG = window.languageSystem.setLanguageFromQuery(qs.get('lang'));
-      try { document.documentElement.setAttribute('lang', LANG); } catch(_) {}
 
       // Sprachen umschalten (URL-Param aktualisieren)
       document.querySelectorAll('.lang-link').forEach(btn=>{
@@ -131,7 +130,6 @@
           window.languageSystem.setLanguage(lang);
           location.href = u.pathname + '?' + u.searchParams.toString();
         });
-        btn.setAttribute('aria-current', btn.dataset.lang === LANG ? 'page' : 'false');
       });
 
       // Zurück-Link mit Params

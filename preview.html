@@ -159,6 +159,9 @@
         const t = (k)=> window.languageSystem?.t?.(k) || k;
         const backText = document.querySelector('.back-link .back-text');
         if (backText) backText.textContent = t('backButton');
+        // Ensure translated copy for Game 1 subtitle reflects current language
+        const g1 = document.querySelector('[data-translate="game1SubtitleMemory"]');
+        if (g1) g1.innerHTML = t('game1SubtitleMemory');
       } catch(_) {}
 
       // Back → index.html (Params)
@@ -234,10 +237,7 @@
         }
       });
 
-      // Mark active language with aria-current
-      document.querySelectorAll('.lang-link').forEach(btn=>{
-        btn.setAttribute('aria-current', btn.dataset.lang === LANG ? 'page' : 'false');
-      });
+      // (a11y attributes intentionally omitted for now)
     })();
   </script>
 </body>

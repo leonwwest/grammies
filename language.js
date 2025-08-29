@@ -17,6 +17,7 @@
       variantA: 'Variante A: 10-Min Games',
       variantB: 'Variante B: Multisensory Grammar',
       sending: 'Senden …',
+      subscribeError: 'Server nicht erreichbar. Bitte später erneut versuchen.',
 
       // --- Startseite (Hero) ---
       heroHeadlineA: '10-Minuten<br/>Grammatik-Games',
@@ -98,6 +99,7 @@
       variantA: 'A 方案：10 分钟游戏',
       variantB: 'B 方案：多感官语法',
       sending: '发送中…',
+      subscribeError: '服务器暂时不可用，请稍后重试。',
 
       // --- 首页 (Hero) ---
       heroHeadlineA: '10 分钟语法游戏',
@@ -113,7 +115,7 @@
       previewTitle: '我们的语法游戏这样玩',
       previewSubtitle: '可打印卡片，简单家庭流程',
       game1TitleMemory: '配对记忆：卡对卡（拖拽）',
-      game1SubtitleMemory: '把对应的卡片拖到一起（如 I ↔ ich），找到 6 对。',
+      game1SubtitleMemory: '把对应的卡片拖到一起（如 I ↔ 我），找到 6 对。',
       playGame1Now: '▶ 立即开始游戏 1',
       game2TitleSort: '分类：拖到正确区域（拖拽）',
       game2SubtitleSort: '把对应的卡片拖到正确区域，完成 3 行。',
@@ -176,6 +178,7 @@
       variantA: 'Variant A: 10-Min Games',
       variantB: 'Variant B: Multisensory Grammar',
       sending: 'Sending…',
+      subscribeError: 'Server unavailable. Please try again later.',
 
       // --- Homepage (Hero) ---
       heroHeadlineA: '10-Minute<br/>Grammar Games',
@@ -277,13 +280,11 @@
     setLanguage(lang = 'de') {
       this.currentLanguage = String(lang).toLowerCase();
       try { localStorage.setItem('grammarGamesLanguage', this.currentLanguage); } catch(_) {}
-      try { document.documentElement.setAttribute('lang', this.currentLanguage); } catch(_) {}
       this.applyTranslations(document);
       try {
         document.querySelectorAll('.lang-link').forEach(a => {
           const active = (a.dataset.lang || '').toLowerCase() === this.currentLanguage;
           a.classList.toggle('gg-active', active);
-          a.setAttribute('aria-current', active ? 'page' : 'false');
         });
       } catch(_) {}
     },
